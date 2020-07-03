@@ -1,2 +1,3 @@
-# lightops-commerce-gateway
-GraphQL gateway for LightOps Commerce services. (LightOps.Commerce.Gateway)
+# LightOps Commerce - Storefront API Gateway
+
+GraphQL based Storefront API gateway for LightOps Commerce services.
