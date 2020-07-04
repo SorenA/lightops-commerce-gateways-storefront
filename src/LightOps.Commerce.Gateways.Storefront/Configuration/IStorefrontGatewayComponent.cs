@@ -2,5 +2,6 @@
 {
     public interface IStorefrontGatewayComponent
     {
+        IStorefrontGatewayComponent UseContentPages(string grpcEndpoint);
     }
 }
