@@ -27,6 +27,7 @@ namespace Sample.StorefrontGateway
                     {
                         // Configure
                         gateway.UseContentPages("http://sample-content-page-service:80");
+                        gateway.UseNavigations("http://sample-navigation-service:80");
                     });
             });
 

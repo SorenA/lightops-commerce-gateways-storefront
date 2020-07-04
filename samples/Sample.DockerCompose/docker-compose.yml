@@ -25,6 +25,18 @@ services:
     ports:
       - "127.0.0.1:30801:80"
 
+  sample-navigation-service:
+    image: sample-navigation-service
+    build:
+      context: ..
+      dockerfile: Sample.NavigationService/Dockerfile
+    networks: 
+      - backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "127.0.0.1:30802:80"
+
 networks:
   backend:
     driver: "bridge"
