@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\" />
-    <Folder Include="Api\" />
+    <Protobuf Include="**/*.proto" GrpcServices="Client" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package service.content_page.v1;
+
+option csharp_namespace = "LightOps.Commerce.Proto.Services.ContentPage.V1";
+
+import "google/protobuf/wrappers.proto";
+
+/*************
+ * Models
+ *************/
+message ProtoContentPage {
+	string id = 1;
+	string handle = 2;
+	string url = 3;
+
+	google.protobuf.StringValue parent_content_page_id = 4;
+
+	string title = 5;
+	string type = 6;
+	string description = 7;
+
+	string seo_title = 8;
+	string seo_description = 9;
+
+	string primary_image = 10;
+}
+
+/*************
+ * Services
+ *************/
+service ProtoContentPageService {
+	rpc GetContentPage(ProtoGetContentPageRequest) returns (ProtoGetContentPageResponse) {}
+	rpc GetContentPagesByRoot(ProtoGetContentPagesByRootRequest) returns (ProtoGetContentPagesByRootResponse) {}
+	rpc GetContentPagesByParentId(ProtoGetContentPagesByParentIdRequest) returns (ProtoGetContentPagesByParentIdResponse) {}
+	rpc GetContentPagesBySearch(ProtoGetContentPagesBySearchRequest) returns (ProtoGetContentPagesBySearchResponse) {}
+}
+
+/*************
+ * Service Models
+ *************/
+// GetContentPage
+message ProtoGetContentPageRequest {
+	oneof identifier {
+		string id = 1;
+		string handle = 2;
+	}
+}
+
+message ProtoGetContentPageResponse {
+	ProtoContentPage content_page = 1;
+}
+
+// GetContentPagesByRoot
+message ProtoGetContentPagesByRootRequest {
+
+}
+
+message ProtoGetContentPagesByRootResponse {
+	repeated ProtoContentPage content_pages = 1;
+}
+
+// GetContentPagesByParendId
+message ProtoGetContentPagesByParentIdRequest {
+	string parent_id = 1;
+}
+
+message ProtoGetContentPagesByParentIdResponse {
+	repeated ProtoContentPage content_pages = 1;
+}
+
+// GetContentPagesBySearch
+message ProtoGetContentPagesBySearchRequest {
+	string search_term = 1;
+}
+
+message ProtoGetContentPagesBySearchResponse {
+	repeated ProtoContentPage content_pages = 1;
+}
