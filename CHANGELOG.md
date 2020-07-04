@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2020-07-04
+
 ### Added
 
 - CHANGELOG file
@@ -21,4 +23,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Meta-field gRPC service connection to v1 service definition
 - Sample applications with mock data and GraphQL API
 
-[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/master...develop
+[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.1.0...develop
+[0.1.0]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.1.0
