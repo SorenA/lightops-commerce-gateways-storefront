@@ -5,7 +5,9 @@ GraphQL based Storefront API gateway for LightOps Commerce services.
 Provides a GraphQL API for the following services:
 
 - Content Page V1
+  - Nested MetaField V1
 - Navigation V1
+  - Nested MetaField V1
 
 ![Nuget](https://img.shields.io/nuget/v/LightOps.Commerce.Gateways.Storefront)
 
@@ -22,6 +24,7 @@ Sample applications hosting the gRPC services with mock data are also available:
 
 - `samples/Sample.ContentPageService`
 - `samples/Sample.NavigationService`
+- `samples/Sample.MetaFieldService`
 
 All samples may be started simultaneously using the `docker-compose` setup in the  `samples/Sample.DockerCompose` project.
 
@@ -47,6 +50,7 @@ services.AddLightOpsDependencyInjection(root =>
             // Configure service connections
             gateway.UseContentPages("http://sample-content-page-service:80");
             gateway.UseNavigations("http://sample-navigation-service:80");
+            gateway.UseMetaFields("http://sample-meta-field-service:80");
         });
 });
 ```
@@ -79,5 +83,6 @@ public interface IStorefrontGatewayComponent
 {
     IStorefrontGatewayComponent UseContentPages(string grpcEndpoint);
     IStorefrontGatewayComponent UseNavigations(string grpcEndpoint);
+    IStorefrontGatewayComponent UseMetaFields(string grpcEndpoint);
 }
 ```
