@@ -42,10 +42,10 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 
         private readonly Dictionary<Services, ServiceRegistration> _services = new Dictionary<Services, ServiceRegistration>
         {
-            [Services.GrpcCallerService] = ServiceRegistration.Scoped<IGrpcCallerService, GrpcCallerService>(),
-            [Services.ContentPageService] = ServiceRegistration.Scoped<IContentPageService, ContentPageGrpcService>(),
-            [Services.NavigationService] = ServiceRegistration.Scoped<INavigationService, NavigationGrpcService>(),
-            [Services.MetaFieldService] = ServiceRegistration.Scoped<IMetaFieldService, MetaFieldGrpcService>(),
+            [Services.GrpcCallerService] = ServiceRegistration.Transient<IGrpcCallerService, GrpcCallerService>(),
+            [Services.ContentPageService] = ServiceRegistration.Transient<IContentPageService, ContentPageGrpcService>(),
+            [Services.NavigationService] = ServiceRegistration.Transient<INavigationService, NavigationGrpcService>(),
+            [Services.MetaFieldService] = ServiceRegistration.Transient<IMetaFieldService, MetaFieldGrpcService>(),
         };
         #endregion Services
 
@@ -61,13 +61,13 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         private readonly Dictionary<Mappers, ServiceRegistration> _mappers = new Dictionary<Mappers, ServiceRegistration>
         {
             [Mappers.ProtoContentPageMapperV1] = ServiceRegistration
-                .Scoped<IMapper<Proto.Services.ContentPage.V1.ProtoContentPage, IContentPage>, ProtoContentPageMapper>(),
+                .Transient<IMapper<Proto.Services.ContentPage.V1.ProtoContentPage, IContentPage>, ProtoContentPageMapper>(),
             [Mappers.ProtoNavigationMapperV1] = ServiceRegistration
-                .Scoped<IMapper<Proto.Services.Navigation.V1.ProtoNavigation, INavigation>, ProtoNavigationMapper>(),
+                .Transient<IMapper<Proto.Services.Navigation.V1.ProtoNavigation, INavigation>, ProtoNavigationMapper>(),
             [Mappers.ProtoNavigationLinkMapperV1] = ServiceRegistration
-                .Scoped<IMapper<Proto.Services.Navigation.V1.ProtoNavigationLink, INavigationLink>, ProtoNavigationLinkMapper>(),
+                .Transient<IMapper<Proto.Services.Navigation.V1.ProtoNavigationLink, INavigationLink>, ProtoNavigationLinkMapper>(),
             [Mappers.ProtoMetaFieldMapperV1] = ServiceRegistration
-                .Scoped<IMapper<Proto.Services.MetaField.V1.ProtoMetaField, IMetaField>, ProtoMetaFieldMapper>(),
+                .Transient<IMapper<Proto.Services.MetaField.V1.ProtoMetaField, IMetaField>, ProtoMetaFieldMapper>(),
         };
         #endregion Mappers
 
