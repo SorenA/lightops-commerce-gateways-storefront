@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  sample-storefront-gateway:
+    image: sample-storefront-gateway
+    build:
+      context: ..
+      dockerfile: Sample.StorefrontGateway/Dockerfile
+    networks: 
+      - backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "127.0.0.1:30800:80"
+
+  sample-content-page-service:
+    image: sample-content-page-service
+    build:
+      context: ..
+      dockerfile: Sample.ContentPageService/Dockerfile
+    networks: 
+      - backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "127.0.0.1:30801:80"
+
+networks:
+  backend:
+    driver: "bridge"
