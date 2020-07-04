@@ -2,20 +2,12 @@
 using System.Threading.Tasks;
 using Grpc.Net.Client;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.Services
 {
     public class GrpcCallerService : IGrpcCallerService
     {
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-
-        public GrpcCallerService(IServiceScopeFactory serviceScopeFactory)
-        {
-            _serviceScopeFactory = serviceScopeFactory;
-        }
-
-        public async Task<TResponse> CallService<TResponse>(string grpcUrl, Func<GrpcChannel, IServiceProvider, Task<TResponse>> grpcFunc)
+        public async Task<TResponse> CallService<TResponse>(string grpcUrl, Func<GrpcChannel, Task<TResponse>> grpcFunc)
         {
             // Enable http2 without TLS
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -25,8 +17,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services
 
             try
             {
-                using var scope = _serviceScopeFactory.CreateScope();
-                return await grpcFunc(grpcChannel, scope.ServiceProvider);
+                return await grpcFunc(grpcChannel);
             }
             finally
             {

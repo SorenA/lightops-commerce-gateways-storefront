@@ -6,6 +6,7 @@ using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types;
+using LightOps.Mapping.Api.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
@@ -14,16 +15,19 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
     {
         private readonly IContentPageEndpointProvider _contentPageEndpointProvider;
         private readonly INavigationEndpointProvider _navigationEndpointProvider;
-        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly IContentPageService _contentPageService;
+        private readonly INavigationService _navigationService;
 
         public StorefrontGraphQuery(
             IContentPageEndpointProvider contentPageEndpointProvider,
             INavigationEndpointProvider navigationEndpointProvider,
-            IServiceScopeFactory serviceScopeFactory)
+            IContentPageService contentPageService,
+            INavigationService navigationService)
         {
             _contentPageEndpointProvider = contentPageEndpointProvider;
             _navigationEndpointProvider = navigationEndpointProvider;
-            _serviceScopeFactory = serviceScopeFactory;
+            _contentPageService = contentPageService;
+            _navigationService = navigationService;
 
             Name = "Query";
 
@@ -56,17 +60,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                 throw new ExecutionError("Content pages not supported.");
             }
 
-            using var scope = _serviceScopeFactory.CreateScope();
-            var contentPageService = scope.ServiceProvider.GetService<IContentPageService>();
-
             if (context.HasArgument("id"))
             {
-                return contentPageService.GetByIdAsync(context.GetArgument<string>("id"));
+                return _contentPageService.GetByIdAsync(context.GetArgument<string>("id"));
             }
 
             if (context.HasArgument("handle"))
             {
-                return contentPageService.GetByHandleAsync(context.GetArgument<string>("handle"));
+                return _contentPageService.GetByHandleAsync(context.GetArgument<string>("handle"));
             }
 
             return null;
@@ -79,21 +80,18 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                 throw new ExecutionError("Content pages not supported.");
             }
 
-            using var scope = _serviceScopeFactory.CreateScope();
-            var contentPageService = scope.ServiceProvider.GetService<IContentPageService>();
-
             if (context.HasArgument("parentId"))
             {
-                return contentPageService.GetByParentIdAsync(context.GetArgument<string>("parentId"));
+                return _contentPageService.GetByParentIdAsync(context.GetArgument<string>("parentId"));
             }
 
             if (context.HasArgument("searchTerm"))
             {
-                return contentPageService.GetBySearchAsync(context.GetArgument<string>("searchTerm"));
+                return _contentPageService.GetBySearchAsync(context.GetArgument<string>("searchTerm"));
             }
 
             // Fallback to root
-            return contentPageService.GetByRootAsync();
+            return _contentPageService.GetByRootAsync();
         }
         #endregion Content Pages
 
@@ -120,18 +118,15 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
             {
                 throw new ExecutionError("Navigations not supported.");
             }
-
-            using var scope = _serviceScopeFactory.CreateScope();
-            var navigationService = scope.ServiceProvider.GetService<INavigationService>();
-
+            
             if (context.HasArgument("id"))
             {
-                return navigationService.GetByIdAsync(context.GetArgument<string>("id"));
+                return _navigationService.GetByIdAsync(context.GetArgument<string>("id"));
             }
 
             if (context.HasArgument("handle"))
             {
-                return navigationService.GetByHandleAsync(context.GetArgument<string>("handle"));
+                return _navigationService.GetByHandleAsync(context.GetArgument<string>("handle"));
             }
 
             return null;
@@ -144,16 +139,13 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                 throw new ExecutionError("Navigations not supported.");
             }
 
-            using var scope = _serviceScopeFactory.CreateScope();
-            var navigationService = scope.ServiceProvider.GetService<INavigationService>();
-
             if (context.HasArgument("parentId"))
             {
-                return navigationService.GetByParentIdAsync(context.GetArgument<string>("parentId"));
+                return _navigationService.GetByParentIdAsync(context.GetArgument<string>("parentId"));
             }
 
             // Fallback to root
-            return navigationService.GetByRootAsync();
+            return _navigationService.GetByRootAsync();
         }
         #endregion Navigations
     }

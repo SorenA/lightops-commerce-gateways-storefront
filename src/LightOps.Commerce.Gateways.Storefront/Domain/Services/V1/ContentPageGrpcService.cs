@@ -6,7 +6,6 @@ using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
 using LightOps.Commerce.Proto.Services.ContentPage.V1;
 using LightOps.Mapping.Api.Services;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
 {
@@ -14,18 +13,21 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
     {
         private readonly IContentPageEndpointProvider _contentPageEndpointProvider;
         private readonly IGrpcCallerService _grpcCallerService;
+        private readonly IMappingService _mappingService;
 
         public ContentPageGrpcService(
             IContentPageEndpointProvider contentPageEndpointProvider,
-            IGrpcCallerService grpcCallerService)
+            IGrpcCallerService grpcCallerService,
+            IMappingService mappingService)
         {
             _contentPageEndpointProvider = contentPageEndpointProvider;
             _grpcCallerService = grpcCallerService;
+            _mappingService = mappingService;
         }
 
         public async Task<IContentPage> GetByIdAsync(string id)
         {
-            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel, provider) =>
+            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
             {
                 var client = new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
                 var response = await client.GetContentPageAsync(new ProtoGetContentPageRequest
@@ -33,15 +35,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
                     Id = id,
                 });
 
-                var mappingService = provider.GetService<IMappingService>();
-                return mappingService
+                return _mappingService
                     .Map<ProtoContentPage, IContentPage>(response.ContentPage);
             });
         }
 
         public async Task<IContentPage> GetByHandleAsync(string handle)
         {
-            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel, provider) =>
+            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
             {
                 var client = new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
                 var response = await client.GetContentPageAsync(new ProtoGetContentPageRequest
@@ -49,21 +50,19 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
                     Handle = handle,
                 });
 
-                var mappingService = provider.GetService<IMappingService>();
-                return mappingService
+                return _mappingService
                     .Map<ProtoContentPage, IContentPage>(response.ContentPage);
             });
         }
 
         public async Task<IList<IContentPage>> GetByRootAsync()
         {
-            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel, provider) =>
+            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
             {
                 var client = new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
                 var response = await client.GetContentPagesByRootAsync(new ProtoGetContentPagesByRootRequest());
 
-                var mappingService = provider.GetService<IMappingService>();
-                return mappingService
+                return _mappingService
                     .Map<ProtoContentPage, IContentPage>(response.ContentPages)
                     .ToList();
             });
@@ -71,7 +70,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
 
         public async Task<IList<IContentPage>> GetByParentIdAsync(string parentId)
         {
-            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel, provider) =>
+            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
             {
                 var client = new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
                 var response = await client.GetContentPagesByParentIdAsync(new ProtoGetContentPagesByParentIdRequest
@@ -79,8 +78,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
                     ParentId = parentId,
                 });
 
-                var mappingService = provider.GetService<IMappingService>();
-                return mappingService
+                return _mappingService
                     .Map<ProtoContentPage, IContentPage>(response.ContentPages)
                     .ToList();
             });
@@ -88,7 +86,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
 
         public async Task<IList<IContentPage>> GetBySearchAsync(string searchTerm)
         {
-            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel, provider) =>
+            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
             {
                 var client = new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
                 var response = await client.GetContentPagesBySearchAsync(new ProtoGetContentPagesBySearchRequest
@@ -96,8 +94,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
                     SearchTerm = searchTerm,
                 });
 
-                var mappingService = provider.GetService<IMappingService>();
-                return mappingService
+                return _mappingService
                     .Map<ProtoContentPage, IContentPage>(response.ContentPages)
                     .ToList();
             });

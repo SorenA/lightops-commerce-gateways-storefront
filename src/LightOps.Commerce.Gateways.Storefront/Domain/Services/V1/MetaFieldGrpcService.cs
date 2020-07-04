@@ -6,7 +6,6 @@ using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
 using LightOps.Commerce.Proto.Services.MetaField.V1;
 using LightOps.Mapping.Api.Services;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
 {
@@ -14,18 +13,21 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
     {
         private readonly IMetaFieldEndpointProvider _metaFieldEndpointProvider;
         private readonly IGrpcCallerService _grpcCallerService;
+        private readonly IMappingService _mappingService;
 
         public MetaFieldGrpcService(
             IMetaFieldEndpointProvider metaFieldEndpointProvider,
-            IGrpcCallerService grpcCallerService)
+            IGrpcCallerService grpcCallerService,
+            IMappingService mappingService)
         {
             _metaFieldEndpointProvider = metaFieldEndpointProvider;
             _grpcCallerService = grpcCallerService;
+            _mappingService = mappingService;
         }
         
         public async Task<IMetaField> GetByParentAsync(string parentEntityType, string parentEntityId, string name)
         {
-            return await _grpcCallerService.CallService(_metaFieldEndpointProvider.GrpcEndpoint, async (grpcChannel, provider) =>
+            return await _grpcCallerService.CallService(_metaFieldEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
             {
                 var client = new ProtoMetaFieldService.ProtoMetaFieldServiceClient(grpcChannel);
                 var response = await client.GetMetaFieldByParentAsync(new ProtoGetMetaFieldByParentRequest
@@ -35,15 +37,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
                     Name = name,
                 });
 
-                var mappingService = provider.GetService<IMappingService>();
-                return mappingService
+                return _mappingService
                     .Map<ProtoMetaField, IMetaField>(response.MetaField);
             });
         }
 
         public async Task<IList<IMetaField>> GetByParentAsync(string parentEntityType, string parentEntityId)
         {
-            return await _grpcCallerService.CallService(_metaFieldEndpointProvider.GrpcEndpoint, async (grpcChannel, provider) =>
+            return await _grpcCallerService.CallService(_metaFieldEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
             {
                 var client = new ProtoMetaFieldService.ProtoMetaFieldServiceClient(grpcChannel);
                 var response = await client.GetMetaFieldsByParentAsync(new ProtoGetMetaFieldsByParentRequest
@@ -52,8 +53,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
                     ParentEntityId = parentEntityId,
                 });
 
-                var mappingService = provider.GetService<IMappingService>();
-                return mappingService
+                return _mappingService
                     .Map<ProtoMetaField, IMetaField>(response.MetaFields)
                     .ToList();
             });
