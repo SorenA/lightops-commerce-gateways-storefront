@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - CHANGELOG file
 - README file describing project
+- Azure Pipelines based CI/CD setup
 - GraphQL API
 - Navigation models
 - Content Page models
