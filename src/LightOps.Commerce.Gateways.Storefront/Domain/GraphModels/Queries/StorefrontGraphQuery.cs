@@ -38,14 +38,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
         #region Content Pages
         private void AddContentPageFields()
         {
-            Field<ContentPageGraphType>("contentPage",
+            Field<ContentPageGraphType>("ContentPage",
                 arguments: new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "id" },
                     new QueryArgument<StringGraphType> { Name = "handle" }
                 ),
                 resolve: ResolveContentPage);
 
-            Field<ListGraphType<ContentPageGraphType>>("contentPages",
+            Field<ListGraphType<ContentPageGraphType>>("ContentPages",
                 arguments: new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "parentId" },
                     new QueryArgument<StringGraphType> { Name = "searchTerm" }
@@ -98,14 +98,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
         #region Navigations
         private void AddNavigationFields()
         {
-            Field<NavigationGraphType>("navigation",
+            Field<NavigationGraphType>("Navigation",
                 arguments: new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "id" },
                     new QueryArgument<StringGraphType> { Name = "handle" }
                 ),
                 resolve: ResolveNavigation);
 
-            Field<ListGraphType<NavigationGraphType>>("navigations",
+            Field<ListGraphType<NavigationGraphType>>("Navigations",
                 arguments: new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "parentId" }
                 ),

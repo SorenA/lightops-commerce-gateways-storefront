@@ -1,11 +1,17 @@
-﻿using GraphQL.Types;
+﻿using GraphQL;
+using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
+using LightOps.Commerce.Gateways.Storefront.Api.Providers;
+using LightOps.Commerce.Gateways.Storefront.Api.Services;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 {
     public sealed class NavigationGraphType : ObjectGraphType<INavigation>
     {
-        public NavigationGraphType()
+        public NavigationGraphType(
+            IMetaFieldEndpointProvider metaFieldEndpointProvider,
+            IMetaFieldService metaFieldService
+        )
         {
             Name = "Navigation";
 
@@ -14,22 +20,43 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 
             Field(m => m.ParentId, true);
 
-            Field(
-                name: "Header",
-                type: typeof(NavigationLinkGraphType),
+
+            Field<NavigationLinkGraphType>("Header",
                 resolve: context => context.Source.Header
             );
-            Field(
-                name: "Links",
-                type: typeof(ListGraphType<NavigationLinkGraphType>),
+            Field<ListGraphType<NavigationLinkGraphType>>("Links",
                 resolve: context => context.Source.Links
             );
 
-            Field(
-                name: "SubNavigations",
-                type: typeof(ListGraphType<NavigationGraphType>),
+            Field<ListGraphType<NavigationGraphType>>("SubNavigations",
                 resolve: context => context.Source.SubNavigations
             );
+
+            // Meta-fields
+            Field<MetaFieldGraphType>("MetaField",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
+                ),
+                resolve: context =>
+                {
+                    if (!metaFieldEndpointProvider.IsEnabled)
+                    {
+                        throw new ExecutionError("Meta-fields not supported.");
+                    }
+
+                    return metaFieldService.GetByParentAsync("navigation", context.Source.Id,
+                        context.GetArgument<string>("name"));
+                });
+            Field<ListGraphType<MetaFieldGraphType>>("MetaFields",
+                resolve: context =>
+                {
+                    if (!metaFieldEndpointProvider.IsEnabled)
+                    {
+                        throw new ExecutionError("Meta-fields not supported.");
+                    }
+
+                    return metaFieldService.GetByParentAsync("navigation", context.Source.Id);
+                });
         }
     }
 }

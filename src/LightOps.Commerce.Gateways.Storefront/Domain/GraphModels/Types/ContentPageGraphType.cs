@@ -1,11 +1,17 @@
-﻿using GraphQL.Types;
+﻿using GraphQL;
+using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
+using LightOps.Commerce.Gateways.Storefront.Api.Providers;
+using LightOps.Commerce.Gateways.Storefront.Api.Services;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 {
     public sealed class ContentPageGraphType : ObjectGraphType<IContentPage>
     {
-        public ContentPageGraphType()
+        public ContentPageGraphType(
+            IMetaFieldEndpointProvider metaFieldEndpointProvider,
+            IMetaFieldService metaFieldService
+            )
         {
             Name = "ContentPage";
 
@@ -23,6 +29,32 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field(m => m.SeoDescription);
 
             Field(m => m.PrimaryImage);
+
+            // Meta-fields
+            Field<MetaFieldGraphType>("MetaField",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
+                ),
+                resolve: context =>
+                {
+                    if (!metaFieldEndpointProvider.IsEnabled)
+                    {
+                        throw new ExecutionError("Meta-fields not supported.");
+                    }
+
+                    return metaFieldService.GetByParentAsync("content_page", context.Source.Id,
+                        context.GetArgument<string>("name"));
+                });
+            Field<ListGraphType<MetaFieldGraphType>>("MetaFields",
+                resolve: context =>
+                {
+                    if (!metaFieldEndpointProvider.IsEnabled)
+                    {
+                        throw new ExecutionError("Meta-fields not supported.");
+                    }
+
+                    return metaFieldService.GetByParentAsync("content_page", context.Source.Id);
+                });
         }
     }
 }
