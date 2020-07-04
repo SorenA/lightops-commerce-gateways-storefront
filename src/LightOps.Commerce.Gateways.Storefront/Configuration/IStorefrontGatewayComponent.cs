@@ -3,5 +3,6 @@
     public interface IStorefrontGatewayComponent
     {
         IStorefrontGatewayComponent UseContentPages(string grpcEndpoint);
+        IStorefrontGatewayComponent UseNavigations(string grpcEndpoint);
     }
 }

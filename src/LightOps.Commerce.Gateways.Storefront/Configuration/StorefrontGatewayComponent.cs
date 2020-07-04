@@ -36,12 +36,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         {
             GrpcCallerService,
             ContentPageService,
+            NavigationService,
         }
 
         private readonly Dictionary<Services, ServiceRegistration> _services = new Dictionary<Services, ServiceRegistration>
         {
             [Services.GrpcCallerService] = ServiceRegistration.Scoped<IGrpcCallerService, GrpcCallerService>(),
             [Services.ContentPageService] = ServiceRegistration.Scoped<IContentPageService, ContentPageGrpcService>(),
+            [Services.NavigationService] = ServiceRegistration.Scoped<INavigationService, NavigationGrpcService>(),
         };
         #endregion Services
 
@@ -49,30 +51,47 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         internal enum Mappers
         {
             ProtoContentPageMapperV1,
+            ProtoNavigationMapperV1,
+            ProtoNavigationLinkMapperV1,
         }
 
         private readonly Dictionary<Mappers, ServiceRegistration> _mappers = new Dictionary<Mappers, ServiceRegistration>
         {
             [Mappers.ProtoContentPageMapperV1] = ServiceRegistration
                 .Scoped<IMapper<Proto.Services.ContentPage.V1.ProtoContentPage, IContentPage>, ProtoContentPageMapper>(),
+            [Mappers.ProtoNavigationMapperV1] = ServiceRegistration
+                .Scoped<IMapper<Proto.Services.Navigation.V1.ProtoNavigation, INavigation>, ProtoNavigationMapper>(),
+            [Mappers.ProtoNavigationLinkMapperV1] = ServiceRegistration
+                .Scoped<IMapper<Proto.Services.Navigation.V1.ProtoNavigationLink, INavigationLink>, ProtoNavigationLinkMapper>(),
         };
         #endregion Mappers
 
         #region Providers
         internal enum Providers
         {
-            ContentPageProvider,
-            GrpcSecurityProvider,
+            ContentPageEndpointProvider,
+            NavigationEndpointProvider,
         }
 
         private readonly Dictionary<Providers, ServiceRegistration> _providers = new Dictionary<Providers, ServiceRegistration>()
         {
-            [Providers.ContentPageProvider] = ServiceRegistration.Singleton<IContentPageEndpointProvider>(new ContentPageEndpointProvider()),
+            [Providers.ContentPageEndpointProvider] = ServiceRegistration.Singleton<IContentPageEndpointProvider>(new ContentPageEndpointProvider()),
+            [Providers.NavigationEndpointProvider] = ServiceRegistration.Singleton<INavigationEndpointProvider>(new NavigationEndpointProvider()),
         };
 
         public IStorefrontGatewayComponent UseContentPages(string grpcEndpoint)
         {
-            _providers[Providers.ContentPageProvider].ImplementationInstance = new ContentPageEndpointProvider
+            _providers[Providers.ContentPageEndpointProvider].ImplementationInstance = new ContentPageEndpointProvider
+            {
+                IsEnabled = true,
+                GrpcEndpoint = grpcEndpoint,
+            };
+            return this;
+        }
+
+        public IStorefrontGatewayComponent UseNavigations(string grpcEndpoint)
+        {
+            _providers[Providers.NavigationEndpointProvider].ImplementationInstance = new NavigationEndpointProvider
             {
                 IsEnabled = true,
                 GrpcEndpoint = grpcEndpoint,
