@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Grpc.Net.Client;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
@@ -22,12 +21,6 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
         {
             _contentPageEndpointProvider = contentPageEndpointProvider;
             _grpcCallerService = grpcCallerService;
-        }
-
-        private ProtoContentPageService.ProtoContentPageServiceClient GetGrpcClient()
-        {
-            var grpcChannel = GrpcChannel.ForAddress(_contentPageEndpointProvider.GrpcEndpoint);
-            return new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
         }
 
         public async Task<IContentPage> GetByIdAsync(string id)
