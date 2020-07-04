@@ -13,18 +13,22 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
     public class StorefrontGraphQuery : ObjectGraphType
     {
         private readonly IContentPageEndpointProvider _contentPageEndpointProvider;
+        private readonly INavigationEndpointProvider _navigationEndpointProvider;
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
         public StorefrontGraphQuery(
             IContentPageEndpointProvider contentPageEndpointProvider,
+            INavigationEndpointProvider navigationEndpointProvider,
             IServiceScopeFactory serviceScopeFactory)
         {
             _contentPageEndpointProvider = contentPageEndpointProvider;
+            _navigationEndpointProvider = navigationEndpointProvider;
             _serviceScopeFactory = serviceScopeFactory;
 
             Name = "Query";
 
             AddContentPageFields();
+            AddNavigationFields();
         }
 
         #region Content Pages
@@ -77,7 +81,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
 
             using var scope = _serviceScopeFactory.CreateScope();
             var contentPageService = scope.ServiceProvider.GetService<IContentPageService>();
-            
+
             if (context.HasArgument("parentId"))
             {
                 return contentPageService.GetByParentIdAsync(context.GetArgument<string>("parentId"));
@@ -92,5 +96,65 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
             return contentPageService.GetByRootAsync();
         }
         #endregion Content Pages
+
+        #region Navigations
+        private void AddNavigationFields()
+        {
+            Field<NavigationGraphType>("navigation",
+                arguments: new QueryArguments(
+                    new QueryArgument<StringGraphType> { Name = "id" },
+                    new QueryArgument<StringGraphType> { Name = "handle" }
+                ),
+                resolve: ResolveNavigation);
+
+            Field<ListGraphType<NavigationGraphType>>("navigations",
+                arguments: new QueryArguments(
+                    new QueryArgument<StringGraphType> { Name = "parentId" }
+                ),
+                resolve: ResolveNavigations);
+        }
+
+        private Task<INavigation> ResolveNavigation(IResolveFieldContext<object> context)
+        {
+            if (!_navigationEndpointProvider.IsEnabled)
+            {
+                throw new ExecutionError("Navigations not supported.");
+            }
+
+            using var scope = _serviceScopeFactory.CreateScope();
+            var navigationService = scope.ServiceProvider.GetService<INavigationService>();
+
+            if (context.HasArgument("id"))
+            {
+                return navigationService.GetByIdAsync(context.GetArgument<string>("id"));
+            }
+
+            if (context.HasArgument("handle"))
+            {
+                return navigationService.GetByHandleAsync(context.GetArgument<string>("handle"));
+            }
+
+            return null;
+        }
+
+        private Task<IList<INavigation>> ResolveNavigations(IResolveFieldContext<object> context)
+        {
+            if (!_navigationEndpointProvider.IsEnabled)
+            {
+                throw new ExecutionError("Navigations not supported.");
+            }
+
+            using var scope = _serviceScopeFactory.CreateScope();
+            var navigationService = scope.ServiceProvider.GetService<INavigationService>();
+
+            if (context.HasArgument("parentId"))
+            {
+                return navigationService.GetByParentIdAsync(context.GetArgument<string>("parentId"));
+            }
+
+            // Fallback to root
+            return navigationService.GetByRootAsync();
+        }
+        #endregion Navigations
     }
 }

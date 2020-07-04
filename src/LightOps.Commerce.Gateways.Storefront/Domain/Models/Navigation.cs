@@ -14,7 +14,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Models
         public string Id { get; set; }
         public string Handle { get; set; }
 
-        public string ParentNavigationId { get; set; }
+        public string ParentId { get; set; }
 
         public INavigationLink Header { get; set; }
         public IList<INavigationLink> Links { get; set; }

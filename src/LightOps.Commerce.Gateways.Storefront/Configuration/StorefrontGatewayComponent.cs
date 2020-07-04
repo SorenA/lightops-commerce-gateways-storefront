@@ -109,6 +109,8 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             StorefrontGraphQuery,
             // Types
             ContentPageGraphType,
+            NavigationGraphType,
+            NavigationLinkGraphType,
         }
 
         private readonly Dictionary<Graph, ServiceRegistration> _graph = new Dictionary<Graph, ServiceRegistration>
@@ -119,6 +121,8 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             [Graph.StorefrontGraphQuery] = ServiceRegistration.Singleton<StorefrontGraphQuery, StorefrontGraphQuery>(),
             // Types
             [Graph.ContentPageGraphType] = ServiceRegistration.Singleton<ContentPageGraphType, ContentPageGraphType>(),
+            [Graph.NavigationGraphType] = ServiceRegistration.Singleton<NavigationGraphType, NavigationGraphType>(),
+            [Graph.NavigationLinkGraphType] = ServiceRegistration.Singleton<NavigationLinkGraphType, NavigationLinkGraphType>(),
         };
         #endregion GraphQL
     }

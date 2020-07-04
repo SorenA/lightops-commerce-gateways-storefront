@@ -25,7 +25,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Mappers.V1
             dest.Id = source.Id;
             dest.Handle = source.Handle;
 
-            dest.ParentNavigationId = source.ParentNavigationId;
+            dest.ParentId = source.ParentNavigationId;
 
             dest.Header = _mappingService
                 .Map<ProtoNavigationLink, INavigationLink>(source.Header);
