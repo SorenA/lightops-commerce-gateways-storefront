@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
+using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries;
+using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Schemas;
+using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types;
 using LightOps.Commerce.Gateways.Storefront.Domain.Mappers.V1;
 using LightOps.Commerce.Gateways.Storefront.Domain.Providers;
 using LightOps.Commerce.Gateways.Storefront.Domain.Services;
@@ -23,6 +27,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
                 .Union(_services.Values)
                 .Union(_mappers.Values)
                 .Union(_providers.Values)
+                .Union(_graph.Values)
                 .ToList();
         }
 
@@ -75,5 +80,27 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             return this;
         }
         #endregion Providers
+
+        #region GraphQL
+        internal enum Graph
+        {
+            // Schemas
+            Schema,
+            // Queries
+            StorefrontGraphQuery,
+            // Types
+            ContentPageGraphType,
+        }
+
+        private readonly Dictionary<Graph, ServiceRegistration> _graph = new Dictionary<Graph, ServiceRegistration>
+        {
+            // Schemas
+            [Graph.Schema] = ServiceRegistration.Singleton<ISchema, StorefrontGraphSchema>(),
+            // Queries
+            [Graph.StorefrontGraphQuery] = ServiceRegistration.Singleton<StorefrontGraphQuery, StorefrontGraphQuery>(),
+            // Types
+            [Graph.ContentPageGraphType] = ServiceRegistration.Singleton<ContentPageGraphType, ContentPageGraphType>(),
+        };
+        #endregion GraphQL
     }
 }

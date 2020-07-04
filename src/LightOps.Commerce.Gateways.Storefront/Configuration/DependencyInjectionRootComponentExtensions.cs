@@ -5,7 +5,6 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 {
     public static class DependencyInjectionRootComponentExtensions
     {
-
         public static IDependencyInjectionRootComponent AddStorefrontGateway(this IDependencyInjectionRootComponent rootComponent, Action<IStorefrontGatewayComponent> componentConfig = null)
         {
             var component = new StorefrontGatewayComponent();
