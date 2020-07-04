@@ -14,14 +14,6 @@ Provides a GraphQL API for the following services:
 | master | ![Build Status](https://dev.azure.com/sorendev/LightOps%20Commerce/_apis/build/status/SorenA.lightops-commerce-gateways-storefront?branchName=master) |
 | develop | ![Build Status](https://dev.azure.com/sorendev/LightOps%20Commerce/_apis/build/status/SorenA.lightops-commerce-gateways-storefront?branchName=develop) |
 
-## HTTP services
-
-To be implemented.
-
-### Health-check
-
-To be implemented.
-
 ## Samples
 
 A sample application hosting the GraphQL API is available in the `samples/Sample.StorefrontGateway` project.
