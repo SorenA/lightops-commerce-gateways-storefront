@@ -37,6 +37,18 @@ services:
     ports:
       - "127.0.0.1:30802:80"
 
+  sample-meta-field-service:
+    image: sample-meta-field-service
+    build:
+      context: ..
+      dockerfile: Sample.MetaFieldService/Dockerfile
+    networks: 
+      - backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "127.0.0.1:30803:80"
+
 networks:
   backend:
     driver: "bridge"
