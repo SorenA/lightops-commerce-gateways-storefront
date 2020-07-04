@@ -28,6 +28,7 @@ namespace Sample.StorefrontGateway
                         // Configure service connections
                         gateway.UseContentPages("http://sample-content-page-service:80");
                         gateway.UseNavigations("http://sample-navigation-service:80");
+                        gateway.UseMetaFields("http://sample-meta-field-service:80");
                     });
             });
 
