@@ -14,8 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GraphQL API
 - Navigation models
 - Content Page models
+- Meta-field models
 - Navigation gRPC service connection to v1 service definition
 - Content Page gRPC service connection to v1 service definition
+- Meta-field gRPC service connection to v1 service definition
 - Sample applications with mock data and GraphQL API
 
 [unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/master...develop

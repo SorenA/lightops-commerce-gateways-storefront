@@ -4,5 +4,6 @@
     {
         IStorefrontGatewayComponent UseContentPages(string grpcEndpoint);
         IStorefrontGatewayComponent UseNavigations(string grpcEndpoint);
+        IStorefrontGatewayComponent UseMetaFields(string grpcEndpoint);
     }
 }

@@ -37,6 +37,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             GrpcCallerService,
             ContentPageService,
             NavigationService,
+            MetaFieldService,
         }
 
         private readonly Dictionary<Services, ServiceRegistration> _services = new Dictionary<Services, ServiceRegistration>
@@ -44,6 +45,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             [Services.GrpcCallerService] = ServiceRegistration.Scoped<IGrpcCallerService, GrpcCallerService>(),
             [Services.ContentPageService] = ServiceRegistration.Scoped<IContentPageService, ContentPageGrpcService>(),
             [Services.NavigationService] = ServiceRegistration.Scoped<INavigationService, NavigationGrpcService>(),
+            [Services.MetaFieldService] = ServiceRegistration.Scoped<IMetaFieldService, MetaFieldGrpcService>(),
         };
         #endregion Services
 
@@ -53,6 +55,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             ProtoContentPageMapperV1,
             ProtoNavigationMapperV1,
             ProtoNavigationLinkMapperV1,
+            ProtoMetaFieldMapperV1,
         }
 
         private readonly Dictionary<Mappers, ServiceRegistration> _mappers = new Dictionary<Mappers, ServiceRegistration>
@@ -63,6 +66,8 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
                 .Scoped<IMapper<Proto.Services.Navigation.V1.ProtoNavigation, INavigation>, ProtoNavigationMapper>(),
             [Mappers.ProtoNavigationLinkMapperV1] = ServiceRegistration
                 .Scoped<IMapper<Proto.Services.Navigation.V1.ProtoNavigationLink, INavigationLink>, ProtoNavigationLinkMapper>(),
+            [Mappers.ProtoMetaFieldMapperV1] = ServiceRegistration
+                .Scoped<IMapper<Proto.Services.MetaField.V1.ProtoMetaField, IMetaField>, ProtoMetaFieldMapper>(),
         };
         #endregion Mappers
 
@@ -71,12 +76,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         {
             ContentPageEndpointProvider,
             NavigationEndpointProvider,
+            MetaFieldEndpointProvider,
         }
 
         private readonly Dictionary<Providers, ServiceRegistration> _providers = new Dictionary<Providers, ServiceRegistration>()
         {
             [Providers.ContentPageEndpointProvider] = ServiceRegistration.Singleton<IContentPageEndpointProvider>(new ContentPageEndpointProvider()),
             [Providers.NavigationEndpointProvider] = ServiceRegistration.Singleton<INavigationEndpointProvider>(new NavigationEndpointProvider()),
+            [Providers.MetaFieldEndpointProvider] = ServiceRegistration.Singleton<IMetaFieldEndpointProvider>(new MetaFieldEndpointProvider()),
         };
 
         public IStorefrontGatewayComponent UseContentPages(string grpcEndpoint)
@@ -92,6 +99,16 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         public IStorefrontGatewayComponent UseNavigations(string grpcEndpoint)
         {
             _providers[Providers.NavigationEndpointProvider].ImplementationInstance = new NavigationEndpointProvider
+            {
+                IsEnabled = true,
+                GrpcEndpoint = grpcEndpoint,
+            };
+            return this;
+        }
+
+        public IStorefrontGatewayComponent UseMetaFields(string grpcEndpoint)
+        {
+            _providers[Providers.MetaFieldEndpointProvider].ImplementationInstance = new MetaFieldEndpointProvider
             {
                 IsEnabled = true,
                 GrpcEndpoint = grpcEndpoint,
