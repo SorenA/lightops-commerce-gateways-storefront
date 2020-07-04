@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package service.navigation.v1;
+
+option csharp_namespace = "LightOps.Commerce.Proto.Services.Navigation.V1";
+
+import "google/protobuf/wrappers.proto";
+
+/*************
+ * Models
+ *************/
+message ProtoNavigationLink {
+	string url = 1;
+	string title = 2;
+	string target = 3;
+}
+
+message ProtoNavigation {
+	string id = 1;
+	string handle = 2;
+
+	google.protobuf.StringValue parent_navigation_id = 3;
+
+	ProtoNavigationLink header = 4;
+	repeated ProtoNavigationLink links = 5;
+
+	repeated ProtoNavigation sub_navigations = 6;
+}
+
+/*************
+ * Services
+ *************/
+service ProtoNavigationService {
+	rpc GetNavigation(ProtoGetNavigationRequest) returns (ProtoGetNavigationResponse) {}
+	rpc GetNavigationsByRoot(ProtoGetNavigationsByRootRequest) returns (ProtoGetNavigationsByRootResponse) {}
+	rpc GetNavigationsByParentId(ProtoGetNavigationsByParentIdRequest) returns (ProtoGetNavigationsByParentIdResponse) {}
+}
+
+/*************
+ * Service Models
+ *************/
+// GetNavigation
+message ProtoGetNavigationRequest {
+	oneof identifier {
+		string id = 1;
+		string handle = 2;
+	}
+}
+
+message ProtoGetNavigationResponse {
+	ProtoNavigation navigation = 1;
+}
+
+// GetNavigationsByRoot
+message ProtoGetNavigationsByRootRequest {
+
+}
+
+message ProtoGetNavigationsByRootResponse {
+	repeated ProtoNavigation navigations = 1;
+}
+
+// GetNavigationsByParendId
+message ProtoGetNavigationsByParentIdRequest {
+	string parent_id = 1;
+}
+
+message ProtoGetNavigationsByParentIdResponse {
+	repeated ProtoNavigation navigations = 1;
+}
