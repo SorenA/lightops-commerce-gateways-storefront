@@ -13,8 +13,8 @@ Provides a GraphQL API for the following services:
 
 | Branch | CI |
 | --- | --- |
-| master | ![Build Status](https://dev.azure.com/sorendev/LightOps%20Commerce/_apis/build/status/SorenA.lightops-commerce-gateways-storefront?branchName=master) |
-| develop | ![Build Status](https://dev.azure.com/sorendev/LightOps%20Commerce/_apis/build/status/SorenA.lightops-commerce-gateways-storefront?branchName=develop) |
+| master | ![Build Status](https://dev.azure.com/sorendev/LightOps%20Commerce/_apis/build/status/LightOps.Commerce.Gateways.Storefront?branchName=master) |
+| develop | ![Build Status](https://dev.azure.com/sorendev/LightOps%20Commerce/_apis/build/status/LightOps.Commerce.Gateways.Storefront?branchName=develop) |
 
 ## Samples
 
