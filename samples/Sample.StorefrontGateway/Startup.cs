@@ -29,6 +29,8 @@ namespace Sample.StorefrontGateway
                         gateway.UseContentPages("http://sample-content-page-service:80");
                         gateway.UseNavigations("http://sample-navigation-service:80");
                         gateway.UseMetaFields("http://sample-meta-field-service:80");
+                        gateway.UseCategories("http://sample-category-service:80");
+                        gateway.UseProducts("http://sample-product-service:80");
                     });
             });
 
