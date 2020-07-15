@@ -6,5 +6,6 @@
         IStorefrontGatewayComponent UseNavigations(string grpcEndpoint);
         IStorefrontGatewayComponent UseMetaFields(string grpcEndpoint);
         IStorefrontGatewayComponent UseCategories(string grpcEndpoint);
+        IStorefrontGatewayComponent UseProducts(string grpcEndpoint);
     }
 }

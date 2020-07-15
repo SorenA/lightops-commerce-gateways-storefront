@@ -14,6 +14,7 @@ using LightOps.Commerce.Gateways.Storefront.Domain.Services.V1;
 using LightOps.DependencyInjection.Api.Configuration;
 using LightOps.DependencyInjection.Domain.Configuration;
 using LightOps.Mapping.Api.Mappers;
+using NodaMoney;
 
 namespace LightOps.Commerce.Gateways.Storefront.Configuration
 {
@@ -39,6 +40,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             NavigationService,
             MetaFieldService,
             CategoryService,
+            ProductService,
         }
 
         private readonly Dictionary<Services, ServiceRegistration> _services = new Dictionary<Services, ServiceRegistration>
@@ -48,6 +50,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             [Services.NavigationService] = ServiceRegistration.Transient<INavigationService, NavigationGrpcService>(),
             [Services.MetaFieldService] = ServiceRegistration.Transient<IMetaFieldService, MetaFieldGrpcService>(),
             [Services.CategoryService] = ServiceRegistration.Transient<ICategoryService, CategoryGrpcService>(),
+            [Services.ProductService] = ServiceRegistration.Transient<IProductService, ProductGrpcService>(),
         };
         #endregion Services
 
@@ -59,6 +62,9 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             ProtoNavigationLinkMapperV1,
             ProtoMetaFieldMapperV1,
             ProtoCategoryMapperV1,
+            ProtoMoneyMapperV1,
+            ProtoProductMapperV1,
+            ProtoProductVariantMapperV1,
         }
 
         private readonly Dictionary<Mappers, ServiceRegistration> _mappers = new Dictionary<Mappers, ServiceRegistration>
@@ -73,6 +79,12 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
                 .Transient<IMapper<Proto.Services.MetaField.V1.ProtoMetaField, IMetaField>, ProtoMetaFieldMapper>(),
             [Mappers.ProtoCategoryMapperV1] = ServiceRegistration
                 .Transient<IMapper<Proto.Services.Category.V1.ProtoCategory, ICategory>, ProtoCategoryMapper>(),
+            [Mappers.ProtoMoneyMapperV1] = ServiceRegistration
+                .Transient<IMapper<Proto.Services.Product.V1.ProtoMoney, Money>, ProtoMoneyMapper>(),
+            [Mappers.ProtoProductMapperV1] = ServiceRegistration
+                .Transient<IMapper<Proto.Services.Product.V1.ProtoProduct, IProduct>, ProtoProductMapper>(),
+            [Mappers.ProtoProductVariantMapperV1] = ServiceRegistration
+                .Transient<IMapper<Proto.Services.Product.V1.ProtoProductVariant, IProductVariant>, ProtoProductVariantMapper>(),
         };
         #endregion Mappers
 
@@ -83,6 +95,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             NavigationEndpointProvider,
             MetaFieldEndpointProvider,
             CategoryEndpointProvider,
+            ProductEndpointProvider,
         }
 
         private readonly Dictionary<Providers, ServiceRegistration> _providers = new Dictionary<Providers, ServiceRegistration>()
@@ -91,6 +104,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             [Providers.NavigationEndpointProvider] = ServiceRegistration.Singleton<INavigationEndpointProvider>(new NavigationEndpointProvider()),
             [Providers.MetaFieldEndpointProvider] = ServiceRegistration.Singleton<IMetaFieldEndpointProvider>(new MetaFieldEndpointProvider()),
             [Providers.CategoryEndpointProvider] = ServiceRegistration.Singleton<ICategoryEndpointProvider>(new CategoryEndpointProvider()),
+            [Providers.ProductEndpointProvider] = ServiceRegistration.Singleton<IProductEndpointProvider>(new ProductEndpointProvider()),
         };
 
         public IStorefrontGatewayComponent UseContentPages(string grpcEndpoint)
@@ -126,6 +140,16 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         public IStorefrontGatewayComponent UseCategories(string grpcEndpoint)
         {
             _providers[Providers.CategoryEndpointProvider].ImplementationInstance = new CategoryEndpointProvider
+            {
+                IsEnabled = true,
+                GrpcEndpoint = grpcEndpoint,
+            };
+            return this;
+        }
+
+        public IStorefrontGatewayComponent UseProducts(string grpcEndpoint)
+        {
+            _providers[Providers.ProductEndpointProvider].ImplementationInstance = new ProductEndpointProvider
             {
                 IsEnabled = true,
                 GrpcEndpoint = grpcEndpoint,
