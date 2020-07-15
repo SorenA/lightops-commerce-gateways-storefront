@@ -15,24 +15,38 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
     {
         private readonly IContentPageEndpointProvider _contentPageEndpointProvider;
         private readonly INavigationEndpointProvider _navigationEndpointProvider;
+        private readonly ICategoryEndpointProvider _categoryEndpointProvider;
+        private readonly IProductEndpointProvider _productEndpointProvider;
         private readonly IContentPageService _contentPageService;
         private readonly INavigationService _navigationService;
+        private readonly ICategoryService _categoryService;
+        private readonly IProductService _productService;
 
         public StorefrontGraphQuery(
             IContentPageEndpointProvider contentPageEndpointProvider,
             INavigationEndpointProvider navigationEndpointProvider,
+            ICategoryEndpointProvider categoryEndpointProvider,
+            IProductEndpointProvider productEndpointProvider,
             IContentPageService contentPageService,
-            INavigationService navigationService)
+            INavigationService navigationService,
+            ICategoryService categoryService,
+            IProductService productService)
         {
             _contentPageEndpointProvider = contentPageEndpointProvider;
             _navigationEndpointProvider = navigationEndpointProvider;
+            _categoryEndpointProvider = categoryEndpointProvider;
+            _productEndpointProvider = productEndpointProvider;
             _contentPageService = contentPageService;
             _navigationService = navigationService;
+            _categoryService = categoryService;
+            _productService = productService;
 
             Name = "Query";
 
             AddContentPageFields();
             AddNavigationFields();
+            AddCategoryFields();
+            AddProductFields();
         }
 
         #region Content Pages
@@ -148,5 +162,124 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
             return _navigationService.GetByRootAsync();
         }
         #endregion Navigations
+
+        #region Categories
+        private void AddCategoryFields()
+        {
+            Field<CategoryGraphType>("Category",
+                arguments: new QueryArguments(
+                    new QueryArgument<StringGraphType> { Name = "id" },
+                    new QueryArgument<StringGraphType> { Name = "handle" }
+                ),
+                resolve: ResolveCategory);
+
+            Field<ListGraphType<CategoryGraphType>>("Categories",
+                arguments: new QueryArguments(
+                    new QueryArgument<StringGraphType> { Name = "parentId" },
+                    new QueryArgument<StringGraphType> { Name = "searchTerm" }
+                ),
+                resolve: ResolveCategories);
+        }
+
+        private Task<ICategory> ResolveCategory(IResolveFieldContext<object> context)
+        {
+            if (!_categoryEndpointProvider.IsEnabled)
+            {
+                throw new ExecutionError("Categories not supported.");
+            }
+
+            if (context.HasArgument("id"))
+            {
+                return _categoryService.GetByIdAsync(context.GetArgument<string>("id"));
+            }
+
+            if (context.HasArgument("handle"))
+            {
+                return _categoryService.GetByHandleAsync(context.GetArgument<string>("handle"));
+            }
+
+            return null;
+        }
+
+        private Task<IList<ICategory>> ResolveCategories(IResolveFieldContext<object> context)
+        {
+            if (!_categoryEndpointProvider.IsEnabled)
+            {
+                throw new ExecutionError("Categories not supported.");
+            }
+
+            if (context.HasArgument("parentId"))
+            {
+                return _categoryService.GetByParentIdAsync(context.GetArgument<string>("parentId"));
+            }
+
+            if (context.HasArgument("searchTerm"))
+            {
+                return _categoryService.GetBySearchAsync(context.GetArgument<string>("searchTerm"));
+            }
+
+            // Fallback to root
+            return _categoryService.GetByRootAsync();
+        }
+        #endregion Categories
+
+        #region Products
+        private void AddProductFields()
+        {
+            Field<ProductGraphType>("Product",
+                arguments: new QueryArguments(
+                    new QueryArgument<StringGraphType> { Name = "id" },
+                    new QueryArgument<StringGraphType> { Name = "handle" }
+                ),
+                resolve: ResolveProduct);
+
+            Field<ListGraphType<ProductGraphType>>("Products",
+                arguments: new QueryArguments(
+                    new QueryArgument<StringGraphType> { Name = "categoryId" },
+                    new QueryArgument<StringGraphType> { Name = "searchTerm" }
+                ),
+                resolve: ResolveProducts);
+        }
+
+        private Task<IProduct> ResolveProduct(IResolveFieldContext<object> context)
+        {
+            if (!_productEndpointProvider.IsEnabled)
+            {
+                throw new ExecutionError("Products not supported.");
+            }
+
+            if (context.HasArgument("id"))
+            {
+                return _productService.GetByIdAsync(context.GetArgument<string>("id"));
+            }
+
+            if (context.HasArgument("handle"))
+            {
+                return _productService.GetByHandleAsync(context.GetArgument<string>("handle"));
+            }
+
+            return null;
+        }
+
+        private Task<IList<IProduct>> ResolveProducts(IResolveFieldContext<object> context)
+        {
+            if (!_productEndpointProvider.IsEnabled)
+            {
+                throw new ExecutionError("Products not supported.");
+            }
+
+            if (context.HasArgument("categoryId"))
+            {
+                return _productService.GetByCategoryIdAsync(context.GetArgument<string>("categoryId"));
+            }
+
+            if (context.HasArgument("searchTerm"))
+            {
+                return _productService.GetBySearchAsync(context.GetArgument<string>("searchTerm"));
+            }
+
+            return null;
+        }
+        #endregion Products
     }
 }
