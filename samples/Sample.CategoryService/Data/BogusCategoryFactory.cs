@@ -11,8 +11,8 @@ namespace Sample.CategoryService.Data
     {
         public int? Seed { get; set; }
 
-        public int RootCategories { get; set; } = 2;
-        public int CategoriesPerRootCategory { get; set; } = 3;
+        public int RootCategories { get; set; } = 3;
+        public int CategoriesPerRootCategory { get; set; } = 10;
 
         public IList<ICategory> Categories { get; internal set; } = new List<ICategory>();
 
