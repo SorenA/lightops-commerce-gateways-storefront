@@ -49,6 +49,30 @@ services:
     ports:
       - "127.0.0.1:30803:80"
 
+  sample-category-service:
+    image: sample-category-service
+    build:
+      context: ..
+      dockerfile: Sample.CategoryService/Dockerfile
+    networks: 
+      - backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "127.0.0.1:30804:80"
+
+  sample-product-service:
+    image: sample-product-service
+    build:
+      context: ..
+      dockerfile: Sample.ProductService/Dockerfile
+    networks: 
+      - backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "127.0.0.1:30805:80"
+
 networks:
   backend:
     driver: "bridge"
