@@ -64,6 +64,8 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             // Category hierarchy
             Field<CategoryGraphType>("PrimaryCategory",
                 resolve: context => categoryService.GetByIdAsync(context.Source.PrimaryCategoryId));
+            Field<ListGraphType<CategoryGraphType>>("Categories",
+                resolve: context => categoryService.GetByIdAsync(context.Source.CategoryIds));
         }
     }
 }
