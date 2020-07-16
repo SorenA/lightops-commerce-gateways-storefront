@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Grpc.Core;
 using Grpc.Net.Client;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
 
@@ -13,18 +14,12 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", true);
 
-            var grpcChannel = GrpcChannel.ForAddress(grpcUrl);
+            var grpcChannel = GrpcChannel.ForAddress(grpcUrl, new GrpcChannelOptions
+            {
+                Credentials = ChannelCredentials.Insecure
+            });
 
-            try
-            {
-                return await grpcFunc(grpcChannel);
-            }
-            finally
-            {
-                // Disable http2 without TLS
-                AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", false);
-                AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2Support", false);
-            }
+            return await grpcFunc(grpcChannel);
         }
     }
 }
