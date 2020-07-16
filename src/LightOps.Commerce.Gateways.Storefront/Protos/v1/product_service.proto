@@ -37,7 +37,7 @@ message ProtoProductVariant {
 
   string title = 3;
   string sku = 4;
-  
+
   ProtoMoney price = 5;
 }
 
@@ -58,6 +58,8 @@ message ProtoMoney {
  *************/
 service ProtoProductService {
   rpc GetProduct(ProtoGetProductRequest) returns (ProtoGetProductResponse) {}
+  rpc GetProductsById(GetProductsByIdRequest) returns (GetProductsByIdResponse) {}
+  rpc GetProductsByHandle(GetProductsByHandleRequest) returns (GetProductsByHandleResponse) {}
   rpc GetProductsByCategoryId(ProtoGetProductsByCategoryIdRequest) returns (ProtoGetProductsByCategoryIdResponse) {}
   rpc GetProductsBySearch(ProtoGetProductsBySearchRequest) returns (ProtoGetProductsBySearchResponse) {}
 }
@@ -75,6 +77,24 @@ message ProtoGetProductRequest {
 
 message ProtoGetProductResponse {
   ProtoProduct product = 1;
+}
+
+// GetProductsById
+message GetProductsByIdRequest {
+  repeated string ids = 1;
+}
+
+message GetProductsByIdResponse {
+  repeated ProtoProduct products = 1;
+}
+
+// GetProductsByHandle
+message GetProductsByHandleRequest {
+  repeated string handles = 1;
+}
+
+message GetProductsByHandleResponse {
+  repeated ProtoProduct products = 1;
 }
 
 // GetProductsByCategoryId

@@ -10,30 +10,32 @@ import "google/protobuf/wrappers.proto";
  * Models
  *************/
 message ProtoContentPage {
-	string id = 1;
-	string handle = 2;
-	string url = 3;
+  string id = 1;
+  string handle = 2;
+  string url = 3;
 
-	google.protobuf.StringValue parent_content_page_id = 4;
+  google.protobuf.StringValue parent_content_page_id = 4;
 
-	string title = 5;
-	string type = 6;
-	string description = 7;
+  string title = 5;
+  string type = 6;
+  string description = 7;
 
-	string seo_title = 8;
-	string seo_description = 9;
+  string seo_title = 8;
+  string seo_description = 9;
 
-	string primary_image = 10;
+  string primary_image = 10;
 }
 
 /*************
  * Services
  *************/
 service ProtoContentPageService {
-	rpc GetContentPage(ProtoGetContentPageRequest) returns (ProtoGetContentPageResponse) {}
-	rpc GetContentPagesByRoot(ProtoGetContentPagesByRootRequest) returns (ProtoGetContentPagesByRootResponse) {}
-	rpc GetContentPagesByParentId(ProtoGetContentPagesByParentIdRequest) returns (ProtoGetContentPagesByParentIdResponse) {}
-	rpc GetContentPagesBySearch(ProtoGetContentPagesBySearchRequest) returns (ProtoGetContentPagesBySearchResponse) {}
+  rpc GetContentPage(ProtoGetContentPageRequest) returns (ProtoGetContentPageResponse) {}
+  rpc GetContentPagesById(GetContentPagesByIdRequest) returns (GetContentPagesByIdResponse) {}
+  rpc GetContentPagesByHandle(GetContentPagesByHandleRequest) returns (GetContentPagesByHandleResponse) {}
+  rpc GetContentPagesByRoot(ProtoGetContentPagesByRootRequest) returns (ProtoGetContentPagesByRootResponse) {}
+  rpc GetContentPagesByParentId(ProtoGetContentPagesByParentIdRequest) returns (ProtoGetContentPagesByParentIdResponse) {}
+  rpc GetContentPagesBySearch(ProtoGetContentPagesBySearchRequest) returns (ProtoGetContentPagesBySearchResponse) {}
 }
 
 /*************
@@ -41,14 +43,32 @@ service ProtoContentPageService {
  *************/
 // GetContentPage
 message ProtoGetContentPageRequest {
-	oneof identifier {
-		string id = 1;
-		string handle = 2;
-	}
+  oneof identifier {
+    string id = 1;
+    string handle = 2;
+  }
 }
 
 message ProtoGetContentPageResponse {
-	ProtoContentPage content_page = 1;
+  ProtoContentPage content_page = 1;
+}
+
+// GetContentPagesById
+message GetContentPagesByIdRequest {
+  repeated string ids = 1;
+}
+
+message GetContentPagesByIdResponse {
+  repeated ProtoContentPage content_pages = 1;
+}
+
+// GetContentPagesByHandle
+message GetContentPagesByHandleRequest {
+  repeated string handles = 1;
+}
+
+message GetContentPagesByHandleResponse {
+  repeated ProtoContentPage content_pages = 1;
 }
 
 // GetContentPagesByRoot
@@ -57,23 +77,23 @@ message ProtoGetContentPagesByRootRequest {
 }
 
 message ProtoGetContentPagesByRootResponse {
-	repeated ProtoContentPage content_pages = 1;
+  repeated ProtoContentPage content_pages = 1;
 }
 
-// GetContentPagesByParendId
+// GetContentPagesByParentId
 message ProtoGetContentPagesByParentIdRequest {
-	string parent_id = 1;
+  string parent_id = 1;
 }
 
 message ProtoGetContentPagesByParentIdResponse {
-	repeated ProtoContentPage content_pages = 1;
+  repeated ProtoContentPage content_pages = 1;
 }
 
 // GetContentPagesBySearch
 message ProtoGetContentPagesBySearchRequest {
-	string search_term = 1;
+  string search_term = 1;
 }
 
 message ProtoGetContentPagesBySearchResponse {
-	repeated ProtoContentPage content_pages = 1;
+  repeated ProtoContentPage content_pages = 1;
 }

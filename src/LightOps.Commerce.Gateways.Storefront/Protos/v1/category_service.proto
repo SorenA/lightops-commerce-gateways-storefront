@@ -31,6 +31,8 @@ message ProtoCategory {
  *************/
 service ProtoCategoryService {
   rpc GetCategory(ProtoGetCategoryRequest) returns (ProtoGetCategoryResponse) {}
+  rpc GetCategoriesById(GetCategoriesByIdRequest) returns (GetCategoriesByIdResponse) {}
+  rpc GetCategoriesByHandle(GetCategoriesByHandleRequest) returns (GetCategoriesByHandleResponse) {}
   rpc GetCategoriesByRoot(ProtoGetCategoriesByRootRequest) returns (ProtoGetCategoriesByRootResponse) {}
   rpc GetCategoriesByParentId(ProtoGetCategoriesByParentIdRequest) returns (ProtoGetCategoriesByParentIdResponse) {}
   rpc GetCategoriesBySearch(ProtoGetCategoriesBySearchRequest) returns (ProtoGetCategoriesBySearchResponse) {}
@@ -49,6 +51,24 @@ message ProtoGetCategoryRequest {
 
 message ProtoGetCategoryResponse {
   ProtoCategory category = 1;
+}
+
+// GetCategoriesById
+message GetCategoriesByIdRequest {
+  repeated string ids = 1;
+}
+
+message GetCategoriesByIdResponse {
+  repeated ProtoCategory categories = 1;
+}
+
+// GetCategoriesByHandle
+message GetCategoriesByHandleRequest {
+  repeated string handles = 1;
+}
+
+message GetCategoriesByHandleResponse {
+  repeated ProtoCategory categories = 1;
 }
 
 // GetCategoriesByRoot
