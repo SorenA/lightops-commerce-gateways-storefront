@@ -52,6 +52,7 @@ namespace Sample.CategoryService.Data
                 .RuleFor(x => x.Handle, (f, x) => $"category-{x.Id}")
                 .RuleFor(x => x.Url, f => f.Internet.UrlRootedPath())
                 .RuleFor(x => x.Title, f => f.Commerce.Categories(1).First())
+                .RuleFor(x => x.Type, f => "category")
                 .RuleFor(x => x.Description, (f, x) => $"{x.Title} - Description")
                 .RuleFor(x => x.SeoTitle, (f, x) => $"{x.Title}")
                 .RuleFor(x => x.SeoDescription, (f, x) => $"{x.Description}")
