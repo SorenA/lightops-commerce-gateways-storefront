@@ -25,6 +25,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field(m => m.ParentId, true);
 
             Field(m => m.Title);
+            Field(m => m.Type);
             Field(m => m.Description);
 
             Field(m => m.SeoTitle);

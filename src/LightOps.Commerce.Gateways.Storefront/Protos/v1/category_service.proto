@@ -17,6 +17,7 @@ message ProtoCategory {
   google.protobuf.StringValue parent_category_id = 4;
 
   string title = 5;
+  string type = 10;
   string description = 6;
 
   string seo_title = 7;

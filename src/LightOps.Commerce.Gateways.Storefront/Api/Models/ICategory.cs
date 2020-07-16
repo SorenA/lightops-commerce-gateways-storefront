@@ -9,6 +9,7 @@
         string ParentId { get; set; }
 
         string Title { get; set; }
+        string Type { get; set; }
         string Description { get; set; }
 
         string SeoTitle { get; set; }
