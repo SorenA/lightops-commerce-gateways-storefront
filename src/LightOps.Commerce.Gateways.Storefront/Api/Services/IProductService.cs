@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 
@@ -14,5 +15,8 @@ namespace LightOps.Commerce.Gateways.Storefront.Api.Services
 
         Task<IList<IProduct>> GetByCategoryIdAsync(string categoryId);
         Task<IList<IProduct>> GetBySearchAsync(string searchTerm);
+
+        Task<ILookup<string, IProduct>> LookupByIdAsync(IEnumerable<string> ids);
+        Task<ILookup<string, IProduct>> LookupByHandleAsync(IEnumerable<string> handles);
     }
 }

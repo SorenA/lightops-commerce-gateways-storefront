@@ -118,5 +118,17 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
                     .ToList();
             });
         }
+
+        public async Task<ILookup<string, IProduct>> LookupByIdAsync(IEnumerable<string> ids)
+        {
+            var result = await GetByIdAsync(ids.ToList());
+            return result.ToLookup(x => x.Id);
+        }
+
+        public async Task<ILookup<string, IProduct>> LookupByHandleAsync(IEnumerable<string> handles)
+        {
+            var result = await GetByIdAsync(handles.ToList());
+            return result.ToLookup(x => x.Id);
+        }
     }
 }
