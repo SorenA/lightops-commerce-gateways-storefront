@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Category models
+- Product models
+- Money models
+- Category gRPC service connection to v1 service definition
+- Product gRPC service connection to v1 service definition
+- Sample applications with mock data for categories and products
+
 ## [0.1.0] - 2020-07-04
 
 ### Added
