@@ -5,7 +5,6 @@ using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
 using LightOps.Commerce.Proto.Services.Category.V1;
-using LightOps.Commerce.Proto.Services.ContentPage.V1;
 using LightOps.Mapping.Api.Services;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
@@ -53,6 +52,38 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
 
                 return _mappingService
                     .Map<ProtoCategory, ICategory>(response.Category);
+            });
+        }
+
+        public async Task<IList<ICategory>> GetByIdAsync(IList<string> ids)
+        {
+            return await _grpcCallerService.CallService(_categoryEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoCategoryService.ProtoCategoryServiceClient(grpcChannel);
+                var request = new GetCategoriesByIdRequest();
+                request.Ids.AddRange(ids);
+
+                var response = await client.GetCategoriesByIdAsync(request);
+
+                return _mappingService
+                    .Map<ProtoCategory, ICategory>(response.Categories)
+                    .ToList();
+            });
+        }
+
+        public async Task<IList<ICategory>> GetByHandleAsync(IList<string> handles)
+        {
+            return await _grpcCallerService.CallService(_categoryEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoCategoryService.ProtoCategoryServiceClient(grpcChannel);
+                var request = new GetCategoriesByHandleRequest();
+                request.Handles.AddRange(handles);
+
+                var response = await client.GetCategoriesByHandleAsync(request);
+
+                return _mappingService
+                    .Map<ProtoCategory, ICategory>(response.Categories)
+                    .ToList();
             });
         }
 

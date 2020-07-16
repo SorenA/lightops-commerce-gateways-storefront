@@ -55,6 +55,38 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
             });
         }
 
+        public async Task<IList<IContentPage>> GetByIdAsync(IList<string> ids)
+        {
+            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
+                var request = new GetContentPagesByIdRequest();
+                request.Ids.AddRange(ids);
+
+                var response = await client.GetContentPagesByIdAsync(request);
+
+                return _mappingService
+                    .Map<ProtoContentPage, IContentPage>(response.ContentPages)
+                    .ToList();
+            });
+        }
+
+        public async Task<IList<IContentPage>> GetByHandleAsync(IList<string> handles)
+        {
+            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
+                var request = new GetContentPagesByHandleRequest();
+                request.Handles.AddRange(handles);
+
+                var response = await client.GetContentPagesByHandleAsync(request);
+
+                return _mappingService
+                    .Map<ProtoContentPage, IContentPage>(response.ContentPages)
+                    .ToList();
+            });
+        }
+
         public async Task<IList<IContentPage>> GetByRootAsync()
         {
             return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>

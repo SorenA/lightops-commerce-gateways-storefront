@@ -55,6 +55,38 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
             });
         }
 
+        public async Task<IList<INavigation>> GetByIdAsync(IList<string> ids)
+        {
+            return await _grpcCallerService.CallService(_navigationEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoNavigationService.ProtoNavigationServiceClient(grpcChannel);
+                var request = new GetNavigationsByIdRequest();
+                request.Ids.AddRange(ids);
+
+                var response = await client.GetNavigationsByIdAsync(request);
+
+                return _mappingService
+                    .Map<ProtoNavigation, INavigation>(response.Navigations)
+                    .ToList();
+            });
+        }
+
+        public async Task<IList<INavigation>> GetByHandleAsync(IList<string> handles)
+        {
+            return await _grpcCallerService.CallService(_navigationEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoNavigationService.ProtoNavigationServiceClient(grpcChannel);
+                var request = new GetNavigationsByHandleRequest();
+                request.Handles.AddRange(handles);
+
+                var response = await client.GetNavigationsByHandleAsync(request);
+
+                return _mappingService
+                    .Map<ProtoNavigation, INavigation>(response.Navigations)
+                    .ToList();
+            });
+        }
+
         public async Task<IList<INavigation>> GetByRootAsync()
         {
             return await _grpcCallerService.CallService(_navigationEndpointProvider.GrpcEndpoint, async (grpcChannel) =>

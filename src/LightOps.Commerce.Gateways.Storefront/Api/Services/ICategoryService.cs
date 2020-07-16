@@ -9,6 +9,9 @@ namespace LightOps.Commerce.Gateways.Storefront.Api.Services
         Task<ICategory> GetByIdAsync(string id);
         Task<ICategory> GetByHandleAsync(string handle);
 
+        Task<IList<ICategory>> GetByIdAsync(IList<string> ids);
+        Task<IList<ICategory>> GetByHandleAsync(IList<string> handles);
+
         Task<IList<ICategory>> GetByRootAsync();
         Task<IList<ICategory>> GetByParentIdAsync(string parentId);
         Task<IList<ICategory>> GetBySearchAsync(string searchTerm);

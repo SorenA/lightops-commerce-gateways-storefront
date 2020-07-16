@@ -55,6 +55,38 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
             });
         }
 
+        public async Task<IList<IProduct>> GetByIdAsync(IList<string> ids)
+        {
+            return await _grpcCallerService.CallService(_productEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoProductService.ProtoProductServiceClient(grpcChannel);
+                var request = new GetProductsByIdRequest();
+                request.Ids.AddRange(ids);
+
+                var response = await client.GetProductsByIdAsync(request);
+
+                return _mappingService
+                    .Map<ProtoProduct, IProduct>(response.Products)
+                    .ToList();
+            });
+        }
+
+        public async Task<IList<IProduct>> GetByHandleAsync(IList<string> handles)
+        {
+            return await _grpcCallerService.CallService(_productEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoProductService.ProtoProductServiceClient(grpcChannel);
+                var request = new GetProductsByHandleRequest();
+                request.Handles.AddRange(handles);
+
+                var response = await client.GetProductsByHandleAsync(request);
+
+                return _mappingService
+                    .Map<ProtoProduct, IProduct>(response.Products)
+                    .ToList();
+            });
+        }
+
         public async Task<IList<IProduct>> GetByCategoryIdAsync(string categoryId)
         {
             return await _grpcCallerService.CallService(_productEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
