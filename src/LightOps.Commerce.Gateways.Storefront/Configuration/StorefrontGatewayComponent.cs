@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
@@ -161,6 +162,9 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         #region GraphQL
         internal enum Graph
         {
+            // Data loaders
+            DataLoaderContextAccessor,
+            DataLoaderDocumentListener,
             // Schemas
             Schema,
             // Queries
@@ -178,6 +182,9 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 
         private readonly Dictionary<Graph, ServiceRegistration> _graph = new Dictionary<Graph, ServiceRegistration>
         {
+            // Data loaders
+            [Graph.DataLoaderContextAccessor] = ServiceRegistration.Singleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>(),
+            [Graph.DataLoaderDocumentListener] = ServiceRegistration.Singleton<DataLoaderDocumentListener, DataLoaderDocumentListener>(),
             // Schemas
             [Graph.Schema] = ServiceRegistration.Singleton<ISchema, StorefrontGraphSchema>(),
             // Queries

@@ -45,6 +45,7 @@ namespace Sample.StorefrontGateway
                     options.UnhandledExceptionDelegate = ctx =>
                         logger.LogError("{Error} occured", ctx.OriginalException.Message);
                 })
+                .AddDataLoader()
                 .AddSystemTextJson(deserializerSettings => { }, serializerSettings => { });
         }
 

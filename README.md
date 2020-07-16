@@ -69,6 +69,7 @@ services
         // Configure GraphQL
         // ...
     })
+    .AddDataLoader()
     .AddSystemTextJson(deserializerSettings => { }, serializerSettings => { });
 ```
 
