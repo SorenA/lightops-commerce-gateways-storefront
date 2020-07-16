@@ -1,4 +1,7 @@
-﻿using GraphQL;
+﻿using System.Collections.Generic;
+using System.Linq;
+using GraphQL;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
@@ -9,6 +12,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
     public sealed class CategoryGraphType : ObjectGraphType<ICategory>
     {
         public CategoryGraphType(
+            IDataLoaderContextAccessor dataLoaderContextAccessor,
             IMetaFieldEndpointProvider metaFieldEndpointProvider,
             IMetaFieldService metaFieldService,
             IProductEndpointProvider productEndpointProvider,
@@ -72,10 +76,21 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 });
 
             // Category hierarchy
-            Field<CategoryGraphType>("Parent",
-                resolve: context => !string.IsNullOrEmpty(context.Source.ParentId)
-                    ? categoryService.GetByIdAsync(context.Source.ParentId)
-                    : null);
+            Field<CategoryGraphType, ICategory>()
+                .Name("Parent")
+                .ResolveAsync(async ctx =>
+                {
+                    if (string.IsNullOrEmpty(ctx.Source.ParentId))
+                    {
+                        return null;
+                    }
+
+                    var loader = dataLoaderContextAccessor.Context
+                        .GetOrAddCollectionBatchLoader<string, ICategory>("GetByIdAsync", categoryService.LookupByIdAsync);
+                    var result = await loader.LoadAsync(ctx.Source.ParentId);
+                    return result
+                        .FirstOrDefault();
+                });
             Field<ListGraphType<CategoryGraphType>>("Children",
                 resolve: context => categoryService.GetByParentIdAsync(context.Source.Id));
         }
