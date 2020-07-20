@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using GraphQL;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
@@ -10,8 +12,10 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
     public sealed class ContentPageGraphType : ObjectGraphType<IContentPage>
     {
         public ContentPageGraphType(
+            IDataLoaderContextAccessor dataLoaderContextAccessor,
             IMetaFieldEndpointProvider metaFieldEndpointProvider,
-            IMetaFieldService metaFieldService
+            IMetaFieldService metaFieldService,
+            IContentPageService contentPageService
             )
         {
             Name = "ContentPage";
@@ -56,6 +60,26 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 
                     return await metaFieldService.GetByParentAsync("content_page", ctx.Source.Id);
                 });
+
+            // Hierarchy
+            Field<ContentPageGraphType, IContentPage>()
+                .Name("Parent")
+                .ResolveAsync(async ctx =>
+                {
+                    if (string.IsNullOrEmpty(ctx.Source.ParentId))
+                    {
+                        return null;
+                    }
+
+                    var loader = dataLoaderContextAccessor.Context
+                        .GetOrAddCollectionBatchLoader<string, IContentPage>("ContentPageService.LookupByIdAsync", contentPageService.LookupByIdAsync);
+                    var result = await loader.LoadAsync(ctx.Source.ParentId);
+                    return result
+                        .FirstOrDefault();
+                });
+            Field<ListGraphType<ContentPageGraphType>, IList<IContentPage>>()
+                .Name("Children")
+                .ResolveAsync(async ctx => await contentPageService.GetByParentIdAsync(ctx.Source.Id));
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using GraphQL;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
@@ -10,8 +12,10 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
     public sealed class NavigationGraphType : ObjectGraphType<INavigation>
     {
         public NavigationGraphType(
+            IDataLoaderContextAccessor dataLoaderContextAccessor,
             IMetaFieldEndpointProvider metaFieldEndpointProvider,
-            IMetaFieldService metaFieldService
+            IMetaFieldService metaFieldService,
+            INavigationService navigationService
         )
         {
             Name = "Navigation";
@@ -57,6 +61,26 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 
                     return await metaFieldService.GetByParentAsync("navigation", ctx.Source.Id);
                 });
+
+            // Hierarchy
+            Field<NavigationGraphType, INavigation>()
+                .Name("Parent")
+                .ResolveAsync(async ctx =>
+                {
+                    if (string.IsNullOrEmpty(ctx.Source.ParentId))
+                    {
+                        return null;
+                    }
+
+                    var loader = dataLoaderContextAccessor.Context
+                        .GetOrAddCollectionBatchLoader<string, INavigation>("NavigationService.LookupByIdAsync", navigationService.LookupByIdAsync);
+                    var result = await loader.LoadAsync(ctx.Source.ParentId);
+                    return result
+                        .FirstOrDefault();
+                });
+            Field<ListGraphType<NavigationGraphType>, IList<INavigation>>()
+                .Name("Children")
+                .ResolveAsync(async ctx => await navigationService.GetByParentIdAsync(ctx.Source.Id));
         }
     }
 }

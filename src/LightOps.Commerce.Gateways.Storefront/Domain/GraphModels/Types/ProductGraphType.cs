@@ -67,13 +67,13 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                     return await metaFieldService.GetByParentAsync("product", ctx.Source.Id);
                 });
 
-            // Category hierarchy
+            // Categories
             Field<CategoryGraphType, ICategory>()
                 .Name("PrimaryCategory")
                 .ResolveAsync(async ctx =>
                 {
                     var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddCollectionBatchLoader<string, ICategory>("GetByIdAsync", categoryService.LookupByIdAsync);
+                        .GetOrAddCollectionBatchLoader<string, ICategory>("CategoryService.LookupByIdAsync", categoryService.LookupByIdAsync);
                     var result = await loader.LoadAsync(ctx.Source.PrimaryCategoryId);
                     return result
                         .FirstOrDefault();
@@ -83,7 +83,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 .ResolveAsync(async ctx =>
                 {
                     var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddCollectionBatchLoader<string, ICategory>("GetByIdAsync", categoryService.LookupByIdAsync);
+                        .GetOrAddCollectionBatchLoader<string, ICategory>("CategoryService.LookupByIdAsync", categoryService.LookupByIdAsync);
                     var result = await loader.LoadAsync(ctx.Source.CategoryIds);
                     return result
                         .SelectMany(x => x.ToList())

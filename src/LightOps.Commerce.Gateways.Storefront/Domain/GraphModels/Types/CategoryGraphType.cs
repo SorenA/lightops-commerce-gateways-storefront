@@ -76,7 +76,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                     return await productService.GetByCategoryIdAsync(ctx.Source.Id);
                 });
 
-            // Category hierarchy
+            // Hierarchy
             Field<CategoryGraphType, ICategory>()
                 .Name("Parent")
                 .ResolveAsync(async ctx =>
@@ -87,7 +87,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                     }
 
                     var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddCollectionBatchLoader<string, ICategory>("GetByIdAsync", categoryService.LookupByIdAsync);
+                        .GetOrAddCollectionBatchLoader<string, ICategory>("CategoryService.LookupByIdAsync", categoryService.LookupByIdAsync);
                     var result = await loader.LoadAsync(ctx.Source.ParentId);
                     return result
                         .FirstOrDefault();
