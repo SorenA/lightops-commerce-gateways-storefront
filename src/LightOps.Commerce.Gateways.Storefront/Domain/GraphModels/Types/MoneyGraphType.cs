@@ -1,27 +1,32 @@
 ﻿using GraphQL.Types;
-using LightOps.Commerce.Gateways.Storefront.Api.Providers;
-using LightOps.Commerce.Gateways.Storefront.Api.Services;
 using NodaMoney;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 {
     public sealed class MoneyGraphType : ObjectGraphType<Money>
     {
-        public MoneyGraphType(
-            IMetaFieldEndpointProvider metaFieldEndpointProvider,
-            IMetaFieldService metaFieldService,
-            ICategoryService categoryService
-            )
+        public MoneyGraphType()
         {
             Name = "Money";
 
             Field(m => m.Amount);
-            Field<StringGraphType>("Currency", resolve: context => context.Source.Currency.Code);
-            Field<StringGraphType>("Symbol", resolve: context => context.Source.Currency.Symbol);
-            Field<StringGraphType>("IsoNumber", resolve: context => context.Source.Currency.Number);
-            Field<StringGraphType>("EnglishName", resolve: context => context.Source.Currency.EnglishName);
 
-            Field<StringGraphType>("DisplayValue", resolve: context => context.Source.ToString("C2"));
+            Field<StringGraphType, string>()
+                .Name("Currency")
+                .Resolve(ctx => ctx.Source.Currency.Code);
+            Field<StringGraphType, string>()
+                .Name("Symbol")
+                .Resolve(ctx => ctx.Source.Currency.Symbol);
+            Field<StringGraphType, string>()
+                .Name("IsoNumber")
+                .Resolve(ctx => ctx.Source.Currency.Number);
+            Field<StringGraphType, string>()
+                .Name("EnglishName")
+                .Resolve(ctx => ctx.Source.Currency.EnglishName);
+
+            Field<StringGraphType, string>()
+                .Name("DisplayValue")
+                .Resolve(ctx => ctx.Source.ToString("C2"));
         }
     }
 }

@@ -38,41 +38,42 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field(m => m.PrimaryImage);
 
             // Meta-fields
-            Field<MetaFieldGraphType>("MetaField",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
-                ),
-                resolve: context =>
+            Field<MetaFieldGraphType, IMetaField>()
+                .Name("MetaField")
+                .Argument<NonNullGraphType<StringGraphType>>("name")
+                .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
                     {
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return metaFieldService.GetByParentAsync("category", context.Source.Id,
-                        context.GetArgument<string>("name"));
+                    return await metaFieldService.GetByParentAsync("category", ctx.Source.Id,
+                        ctx.GetArgument<string>("name"));
                 });
-            Field<ListGraphType<MetaFieldGraphType>>("MetaFields",
-                resolve: context =>
+            Field<ListGraphType<MetaFieldGraphType>, IList<IMetaField>>()
+                .Name("MetaFields")
+                .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
                     {
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return metaFieldService.GetByParentAsync("category", context.Source.Id);
+                    return await metaFieldService.GetByParentAsync("category", ctx.Source.Id);
                 });
 
             // Products
-            Field<ListGraphType<ProductGraphType>>("Products",
-                resolve: context =>
+            Field<ListGraphType<ProductGraphType>, IList<IProduct>>()
+                .Name("Products")
+                .ResolveAsync(async ctx =>
                 {
                     if (!productEndpointProvider.IsEnabled)
                     {
                         throw new ExecutionError("Products not supported.");
                     }
 
-                    return productService.GetByCategoryIdAsync(context.Source.Id);
+                    return await productService.GetByCategoryIdAsync(ctx.Source.Id);
                 });
 
             // Category hierarchy
@@ -91,8 +92,9 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                     return result
                         .FirstOrDefault();
                 });
-            Field<ListGraphType<CategoryGraphType>>("Children",
-                resolve: context => categoryService.GetByParentIdAsync(context.Source.Id));
+            Field<ListGraphType<CategoryGraphType>, IList<ICategory>>()
+                .Name("Children")
+                .ResolveAsync(async ctx => await categoryService.GetByParentIdAsync(ctx.Source.Id));
         }
     }
 }

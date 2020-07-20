@@ -34,35 +34,37 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field(m => m.PrimaryCategoryId);
             Field(m => m.CategoryIds);
 
-            Field<ListGraphType<ProductVariantGraphType>>("Variants", resolve: context => context.Source.Variants);
+            Field<ListGraphType<ProductVariantGraphType>, IList<IProductVariant>>()
+                .Name("Variants")
+                .Resolve(ctx => ctx.Source.Variants);
 
             Field(m => m.PrimaryImage);
             Field(m => m.Images);
 
             // Meta-fields
-            Field<MetaFieldGraphType>("MetaField",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
-                ),
-                resolve: context =>
+            Field<MetaFieldGraphType, IMetaField>()
+                .Name("MetaField")
+                .Argument<NonNullGraphType<StringGraphType>>("name")
+                .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
                     {
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return metaFieldService.GetByParentAsync("product", context.Source.Id,
-                        context.GetArgument<string>("name"));
+                    return await metaFieldService.GetByParentAsync("product", ctx.Source.Id,
+                        ctx.GetArgument<string>("name"));
                 });
-            Field<ListGraphType<MetaFieldGraphType>>("MetaFields",
-                resolve: context =>
+            Field<ListGraphType<MetaFieldGraphType>, IList<IMetaField>>()
+                .Name("MetaFields")
+                .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
                     {
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return metaFieldService.GetByParentAsync("product", context.Source.Id);
+                    return await metaFieldService.GetByParentAsync("product", ctx.Source.Id);
                 });
 
             // Category hierarchy

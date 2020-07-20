@@ -1,4 +1,5 @@
-﻿using GraphQL;
+﻿using System.Collections.Generic;
+using GraphQL;
 using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
@@ -21,41 +22,40 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field(m => m.ParentId, true);
 
 
-            Field<NavigationLinkGraphType>("Header",
-                resolve: context => context.Source.Header
-            );
-            Field<ListGraphType<NavigationLinkGraphType>>("Links",
-                resolve: context => context.Source.Links
-            );
-
-            Field<ListGraphType<NavigationGraphType>>("SubNavigations",
-                resolve: context => context.Source.SubNavigations
-            );
+            Field<NavigationLinkGraphType, INavigationLink>()
+                .Name("Header")
+                .Resolve(ctx => ctx.Source.Header);
+            Field<ListGraphType<NavigationLinkGraphType>, IList<INavigationLink>>()
+                .Name("Links")
+                .Resolve(ctx => ctx.Source.Links);
+            Field<ListGraphType<NavigationGraphType>, IList<INavigation>>()
+                .Name("SubNavigations")
+                .Resolve(ctx => ctx.Source.SubNavigations);
 
             // Meta-fields
-            Field<MetaFieldGraphType>("MetaField",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
-                ),
-                resolve: context =>
+            Field<MetaFieldGraphType, IMetaField>()
+                .Name("MetaField")
+                .Argument<NonNullGraphType<StringGraphType>>("name")
+                .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
                     {
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return metaFieldService.GetByParentAsync("navigation", context.Source.Id,
-                        context.GetArgument<string>("name"));
+                    return await metaFieldService.GetByParentAsync("navigation", ctx.Source.Id,
+                        ctx.GetArgument<string>("name"));
                 });
-            Field<ListGraphType<MetaFieldGraphType>>("MetaFields",
-                resolve: context =>
+            Field<ListGraphType<MetaFieldGraphType>, IList<IMetaField>>()
+                .Name("MetaFields")
+                .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
                     {
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return metaFieldService.GetByParentAsync("navigation", context.Source.Id);
+                    return await metaFieldService.GetByParentAsync("navigation", ctx.Source.Id);
                 });
         }
     }

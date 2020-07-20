@@ -1,4 +1,5 @@
-﻿using GraphQL;
+﻿using System.Collections.Generic;
+using GraphQL;
 using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
@@ -31,29 +32,29 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field(m => m.PrimaryImage);
 
             // Meta-fields
-            Field<MetaFieldGraphType>("MetaField",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
-                ),
-                resolve: context =>
+            Field<MetaFieldGraphType, IMetaField>()
+                .Name("MetaField")
+                .Argument<NonNullGraphType<StringGraphType>>("name")
+                .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
                     {
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return metaFieldService.GetByParentAsync("content_page", context.Source.Id,
-                        context.GetArgument<string>("name"));
+                    return await metaFieldService.GetByParentAsync("content_page", ctx.Source.Id,
+                        ctx.GetArgument<string>("name"));
                 });
-            Field<ListGraphType<MetaFieldGraphType>>("MetaFields",
-                resolve: context =>
+            Field<ListGraphType<MetaFieldGraphType>, IList<IMetaField>>()
+                .Name("MetaFields")
+                .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
                     {
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return metaFieldService.GetByParentAsync("content_page", context.Source.Id);
+                    return await metaFieldService.GetByParentAsync("content_page", ctx.Source.Id);
                 });
         }
     }

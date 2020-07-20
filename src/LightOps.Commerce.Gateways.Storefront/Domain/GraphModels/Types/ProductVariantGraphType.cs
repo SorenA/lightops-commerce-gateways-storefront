@@ -1,8 +1,10 @@
-﻿using GraphQL;
+﻿using System.Collections.Generic;
+using GraphQL;
 using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
+using NodaMoney;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 {
@@ -22,32 +24,34 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field(m => m.Title);
             Field(m => m.Sku);
 
-            Field<MoneyGraphType>("Price", resolve: context => context.Source.Price);
+            Field<MoneyGraphType, Money>()
+                .Name("Price")
+                .Resolve(ctx => ctx.Source.Price);
 
             // Meta-fields
-            Field<MetaFieldGraphType>("MetaField",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
-                ),
-                resolve: context =>
+            Field<MetaFieldGraphType, IMetaField>()
+                .Name("MetaField")
+                .Argument<NonNullGraphType<StringGraphType>>("name")
+                .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
                     {
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return metaFieldService.GetByParentAsync("product_variant", context.Source.Id,
-                        context.GetArgument<string>("name"));
+                    return await metaFieldService.GetByParentAsync("product_variant", ctx.Source.Id,
+                        ctx.GetArgument<string>("name"));
                 });
-            Field<ListGraphType<MetaFieldGraphType>>("MetaFields",
-                resolve: context =>
+            Field<ListGraphType<MetaFieldGraphType>, IList<IMetaField>>()
+                .Name("MetaFields")
+                .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
                     {
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return metaFieldService.GetByParentAsync("product_variant", context.Source.Id);
+                    return await metaFieldService.GetByParentAsync("product_variant", ctx.Source.Id);
                 });
         }
     }
