@@ -17,7 +17,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             IMetaFieldService metaFieldService,
             IProductEndpointProvider productEndpointProvider,
             IProductService productService,
-            ICategoryService categoryService
+            ICategoryLookupService categoryLookupService
             )
         {
             Name = "Category";
@@ -87,14 +87,17 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                     }
 
                     var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddCollectionBatchLoader<string, ICategory>("CategoryService.LookupByIdAsync", categoryService.LookupByIdAsync);
-                    var result = await loader.LoadAsync(ctx.Source.ParentId);
-                    return result
-                        .FirstOrDefault();
+                        .GetOrAddBatchLoader<string, ICategory>("Category.LookupByIdAsync", categoryLookupService.LookupByIdAsync);
+                    return await loader.LoadAsync(ctx.Source.ParentId);
                 });
             Field<ListGraphType<CategoryGraphType>, IList<ICategory>>()
                 .Name("Children")
-                .ResolveAsync(async ctx => await categoryService.GetByParentIdAsync(ctx.Source.Id));
+                .ResolveAsync(async ctx =>
+                {
+                    var loader = dataLoaderContextAccessor.Context
+                        .GetOrAddBatchLoader<string, IList<ICategory>>("Category.LookupByParentIdAsync", categoryLookupService.LookupByParentIdAsync);
+                    return await loader.LoadAsync(ctx.Source.Id);
+                });
         }
     }
 }

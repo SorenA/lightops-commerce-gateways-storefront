@@ -46,6 +46,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 
             ContentPageLookupService,
             NavigationLookupService,
+            CategoryLookupService,
         }
 
         private readonly Dictionary<Services, ServiceRegistration> _services = new Dictionary<Services, ServiceRegistration>
@@ -60,6 +61,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 
             [Services.ContentPageLookupService] = ServiceRegistration.Transient<IContentPageLookupService, ContentPageLookupService>(),
             [Services.NavigationLookupService] = ServiceRegistration.Transient<INavigationLookupService, NavigationLookupService>(),
+            [Services.CategoryLookupService] = ServiceRegistration.Transient<ICategoryLookupService, CategoryLookupService>(),
         };
         #endregion Services
 

@@ -31,10 +31,13 @@ message ProtoCategory {
  *************/
 service ProtoCategoryService {
   rpc GetCategory(ProtoGetCategoryRequest) returns (ProtoGetCategoryResponse) {}
-  rpc GetCategoriesById(GetCategoriesByIdRequest) returns (GetCategoriesByIdResponse) {}
-  rpc GetCategoriesByHandle(GetCategoriesByHandleRequest) returns (GetCategoriesByHandleResponse) {}
-  rpc GetCategoriesByRoot(ProtoGetCategoriesByRootRequest) returns (ProtoGetCategoriesByRootResponse) {}
+  rpc GetCategoriesByIds(GetCategoriesByIdsRequest) returns (GetCategoriesByIdsResponse) {}
+  rpc GetCategoriesByHandles(GetCategoriesByHandlesRequest) returns (GetCategoriesByHandlesResponse) {}
+
   rpc GetCategoriesByParentId(ProtoGetCategoriesByParentIdRequest) returns (ProtoGetCategoriesByParentIdResponse) {}
+  rpc GetCategoriesByParentIds(ProtoGetCategoriesByParentIdsRequest) returns (ProtoGetCategoriesByParentIdsResponse) {}
+
+  rpc GetCategoriesByRoot(ProtoGetCategoriesByRootRequest) returns (ProtoGetCategoriesByRootResponse) {}
   rpc GetCategoriesBySearch(ProtoGetCategoriesBySearchRequest) returns (ProtoGetCategoriesBySearchResponse) {}
 }
 
@@ -53,30 +56,21 @@ message ProtoGetCategoryResponse {
   ProtoCategory category = 1;
 }
 
-// GetCategoriesById
-message GetCategoriesByIdRequest {
+// GetCategoriesByIds
+message GetCategoriesByIdsRequest {
   repeated string ids = 1;
 }
 
-message GetCategoriesByIdResponse {
+message GetCategoriesByIdsResponse {
   repeated ProtoCategory categories = 1;
 }
 
-// GetCategoriesByHandle
-message GetCategoriesByHandleRequest {
+// GetCategoriesByHandles
+message GetCategoriesByHandlesRequest {
   repeated string handles = 1;
 }
 
-message GetCategoriesByHandleResponse {
-  repeated ProtoCategory categories = 1;
-}
-
-// GetCategoriesByRoot
-message ProtoGetCategoriesByRootRequest {
-
-}
-
-message ProtoGetCategoriesByRootResponse {
+message GetCategoriesByHandlesResponse {
   repeated ProtoCategory categories = 1;
 }
 
@@ -86,6 +80,24 @@ message ProtoGetCategoriesByParentIdRequest {
 }
 
 message ProtoGetCategoriesByParentIdResponse {
+  repeated ProtoCategory categories = 1;
+}
+
+// GetCategoriesByParentIds
+message ProtoGetCategoriesByParentIdsRequest {
+  repeated string parent_ids = 1;
+}
+
+message ProtoGetCategoriesByParentIdsResponse {
+  repeated ProtoCategory categories = 1;
+}
+
+// GetCategoriesByRoot
+message ProtoGetCategoriesByRootRequest {
+
+}
+
+message ProtoGetCategoriesByRootResponse {
   repeated ProtoCategory categories = 1;
 }
 
