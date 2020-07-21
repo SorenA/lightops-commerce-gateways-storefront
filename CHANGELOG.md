@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Category gRPC service connection to v1 service definition
 - Product gRPC service connection to v1 service definition
 - Sample applications with mock data for categories and products
+- Data loader for loading categories by id, handle or parent id in bulk
+- Data loader for loading navigations by id, handle or parent id in bulk
+- Data loader for loading content pages by id, handle or parent id in bulk
+- Data loader for loading products by id, handle or category id in bulk
 
 ## [0.1.0] - 2020-07-04
 
