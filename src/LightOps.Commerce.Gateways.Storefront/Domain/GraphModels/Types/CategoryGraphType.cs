@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
@@ -16,9 +15,9 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             IMetaFieldEndpointProvider metaFieldEndpointProvider,
             IMetaFieldService metaFieldService,
             IProductEndpointProvider productEndpointProvider,
-            IProductService productService,
+            IProductLookupService productLookupService,
             ICategoryLookupService categoryLookupService
-            )
+        )
         {
             Name = "Category";
 
@@ -73,7 +72,9 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                         throw new ExecutionError("Products not supported.");
                     }
 
-                    return await productService.GetByCategoryIdAsync(ctx.Source.Id);
+                    var loader = dataLoaderContextAccessor.Context
+                        .GetOrAddBatchLoader<string, IList<IProduct>>("Product.LookupByCategoryIdAsync", productLookupService.LookupByCategoryIdAsync);
+                    return await loader.LoadAsync(ctx.Source.Id);
                 });
 
             // Hierarchy

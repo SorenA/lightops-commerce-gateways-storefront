@@ -5,7 +5,6 @@ using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 {
@@ -15,7 +14,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             IDataLoaderContextAccessor dataLoaderContextAccessor,
             IMetaFieldEndpointProvider metaFieldEndpointProvider,
             IMetaFieldService metaFieldService,
-            ICategoryService categoryService
+            ICategoryLookupService categoryLookupService
             )
         {
             Name = "Product";
@@ -73,21 +72,16 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 .ResolveAsync(async ctx =>
                 {
                     var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddCollectionBatchLoader<string, ICategory>("CategoryService.LookupByIdAsync", categoryService.LookupByIdAsync);
-                    var result = await loader.LoadAsync(ctx.Source.PrimaryCategoryId);
-                    return result
-                        .FirstOrDefault();
+                        .GetOrAddBatchLoader<string, ICategory>("Category.LookupByIdAsync", categoryLookupService.LookupByIdAsync);
+                    return await loader.LoadAsync(ctx.Source.PrimaryCategoryId);
                 });
             Field<ListGraphType<CategoryGraphType>, IList<ICategory>>()
                 .Name("Categories")
                 .ResolveAsync(async ctx =>
                 {
                     var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddCollectionBatchLoader<string, ICategory>("CategoryService.LookupByIdAsync", categoryService.LookupByIdAsync);
-                    var result = await loader.LoadAsync(ctx.Source.CategoryIds);
-                    return result
-                        .SelectMany(x => x.ToList())
-                        .ToList();
+                        .GetOrAddBatchLoader<string, ICategory>("Category.LookupByIdAsync", categoryLookupService.LookupByIdAsync);
+                    return await loader.LoadAsync(ctx.Source.CategoryIds);
                 });
         }
     }
