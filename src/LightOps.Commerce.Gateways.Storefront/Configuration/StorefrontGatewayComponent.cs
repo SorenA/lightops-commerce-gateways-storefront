@@ -37,21 +37,27 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         internal enum Services
         {
             GrpcCallerService,
+
             ContentPageService,
             NavigationService,
             MetaFieldService,
             CategoryService,
             ProductService,
+
+            NavigationLookupService,
         }
 
         private readonly Dictionary<Services, ServiceRegistration> _services = new Dictionary<Services, ServiceRegistration>
         {
             [Services.GrpcCallerService] = ServiceRegistration.Transient<IGrpcCallerService, GrpcCallerService>(),
+
             [Services.ContentPageService] = ServiceRegistration.Transient<IContentPageService, ContentPageGrpcService>(),
             [Services.NavigationService] = ServiceRegistration.Transient<INavigationService, NavigationGrpcService>(),
             [Services.MetaFieldService] = ServiceRegistration.Transient<IMetaFieldService, MetaFieldGrpcService>(),
             [Services.CategoryService] = ServiceRegistration.Transient<ICategoryService, CategoryGrpcService>(),
             [Services.ProductService] = ServiceRegistration.Transient<IProductService, ProductGrpcService>(),
+
+            [Services.NavigationLookupService] = ServiceRegistration.Transient<INavigationLookupService, NavigationLookupService>(),
         };
         #endregion Services
 

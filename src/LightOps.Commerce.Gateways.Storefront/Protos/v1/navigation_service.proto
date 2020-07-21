@@ -32,10 +32,13 @@ message ProtoNavigation {
  *************/
 service ProtoNavigationService {
   rpc GetNavigation(ProtoGetNavigationRequest) returns (ProtoGetNavigationResponse) {}
-  rpc GetNavigationsById(GetNavigationsByIdRequest) returns (GetNavigationsByIdResponse) {}
-  rpc GetNavigationsByHandle(GetNavigationsByHandleRequest) returns (GetNavigationsByHandleResponse) {}
-  rpc GetNavigationsByRoot(ProtoGetNavigationsByRootRequest) returns (ProtoGetNavigationsByRootResponse) {}
+  rpc GetNavigationsByIds(GetNavigationsByIdsRequest) returns (GetNavigationsByIdsResponse) {}
+  rpc GetNavigationsByHandles(GetNavigationsByHandlesRequest) returns (GetNavigationsByHandlesResponse) {}
+
   rpc GetNavigationsByParentId(ProtoGetNavigationsByParentIdRequest) returns (ProtoGetNavigationsByParentIdResponse) {}
+  rpc GetNavigationsByParentIds(ProtoGetNavigationsByParentIdsRequest) returns (ProtoGetNavigationsByParentIdsResponse) {}
+
+  rpc GetNavigationsByRoot(ProtoGetNavigationsByRootRequest) returns (ProtoGetNavigationsByRootResponse) {}
 }
 
 /*************
@@ -53,30 +56,21 @@ message ProtoGetNavigationResponse {
   ProtoNavigation navigation = 1;
 }
 
-// GetNavigationsById
-message GetNavigationsByIdRequest {
+// GetNavigationsByIds
+message GetNavigationsByIdsRequest {
   repeated string ids = 1;
 }
 
-message GetNavigationsByIdResponse {
+message GetNavigationsByIdsResponse {
   repeated ProtoNavigation navigations = 1;
 }
 
-// GetNavigationsByHandle
-message GetNavigationsByHandleRequest {
+// GetNavigationsByHandles
+message GetNavigationsByHandlesRequest {
   repeated string handles = 1;
 }
 
-message GetNavigationsByHandleResponse {
-  repeated ProtoNavigation navigations = 1;
-}
-
-// GetNavigationsByRoot
-message ProtoGetNavigationsByRootRequest {
-
-}
-
-message ProtoGetNavigationsByRootResponse {
+message GetNavigationsByHandlesResponse {
   repeated ProtoNavigation navigations = 1;
 }
 
@@ -86,5 +80,23 @@ message ProtoGetNavigationsByParentIdRequest {
 }
 
 message ProtoGetNavigationsByParentIdResponse {
+  repeated ProtoNavigation navigations = 1;
+}
+
+// GetNavigationsByParentIds
+message ProtoGetNavigationsByParentIdsRequest {
+  repeated string parent_ids = 1;
+}
+
+message ProtoGetNavigationsByParentIdsResponse {
+  repeated ProtoNavigation navigations = 1;
+}
+
+// GetNavigationsByRoot
+message ProtoGetNavigationsByRootRequest {
+
+}
+
+message ProtoGetNavigationsByRootResponse {
   repeated ProtoNavigation navigations = 1;
 }

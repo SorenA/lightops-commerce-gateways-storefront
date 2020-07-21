@@ -40,6 +40,22 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
             });
         }
 
+        public async Task<IList<INavigation>> GetByIdAsync(IList<string> ids)
+        {
+            return await _grpcCallerService.CallService(_navigationEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoNavigationService.ProtoNavigationServiceClient(grpcChannel);
+                var request = new GetNavigationsByIdsRequest();
+                request.Ids.AddRange(ids);
+
+                var response = await client.GetNavigationsByIdsAsync(request);
+
+                return _mappingService
+                    .Map<ProtoNavigation, INavigation>(response.Navigations)
+                    .ToList();
+            });
+        }
+
         public async Task<INavigation> GetByHandleAsync(string handle)
         {
             return await _grpcCallerService.CallService(_navigationEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
@@ -55,44 +71,15 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
             });
         }
 
-        public async Task<IList<INavigation>> GetByIdAsync(IList<string> ids)
-        {
-            return await _grpcCallerService.CallService(_navigationEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
-            {
-                var client = new ProtoNavigationService.ProtoNavigationServiceClient(grpcChannel);
-                var request = new GetNavigationsByIdRequest();
-                request.Ids.AddRange(ids);
-
-                var response = await client.GetNavigationsByIdAsync(request);
-
-                return _mappingService
-                    .Map<ProtoNavigation, INavigation>(response.Navigations)
-                    .ToList();
-            });
-        }
-
         public async Task<IList<INavigation>> GetByHandleAsync(IList<string> handles)
         {
             return await _grpcCallerService.CallService(_navigationEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
             {
                 var client = new ProtoNavigationService.ProtoNavigationServiceClient(grpcChannel);
-                var request = new GetNavigationsByHandleRequest();
+                var request = new GetNavigationsByHandlesRequest();
                 request.Handles.AddRange(handles);
 
-                var response = await client.GetNavigationsByHandleAsync(request);
-
-                return _mappingService
-                    .Map<ProtoNavigation, INavigation>(response.Navigations)
-                    .ToList();
-            });
-        }
-
-        public async Task<IList<INavigation>> GetByRootAsync()
-        {
-            return await _grpcCallerService.CallService(_navigationEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
-            {
-                var client = new ProtoNavigationService.ProtoNavigationServiceClient(grpcChannel);
-                var response = await client.GetNavigationsByRootAsync(new ProtoGetNavigationsByRootRequest());
+                var response = await client.GetNavigationsByHandlesAsync(request);
 
                 return _mappingService
                     .Map<ProtoNavigation, INavigation>(response.Navigations)
@@ -116,16 +103,33 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
             });
         }
 
-        public async Task<ILookup<string, INavigation>> LookupByIdAsync(IEnumerable<string> ids)
+        public async Task<IList<INavigation>> GetByParentIdAsync(IList<string> parentIds)
         {
-            var result = await GetByIdAsync(ids.ToList());
-            return result.ToLookup(x => x.Id);
+            return await _grpcCallerService.CallService(_navigationEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoNavigationService.ProtoNavigationServiceClient(grpcChannel);
+                var request = new ProtoGetNavigationsByParentIdsRequest();
+                request.ParentIds.AddRange(parentIds);
+
+                var response = await client.GetNavigationsByParentIdsAsync(request);
+
+                return _mappingService
+                    .Map<ProtoNavigation, INavigation>(response.Navigations)
+                    .ToList();
+            });
         }
 
-        public async Task<ILookup<string, INavigation>> LookupByHandleAsync(IEnumerable<string> handles)
+        public async Task<IList<INavigation>> GetByRootAsync()
         {
-            var result = await GetByIdAsync(handles.ToList());
-            return result.ToLookup(x => x.Id);
+            return await _grpcCallerService.CallService(_navigationEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoNavigationService.ProtoNavigationServiceClient(grpcChannel);
+                var response = await client.GetNavigationsByRootAsync(new ProtoGetNavigationsByRootRequest());
+
+                return _mappingService
+                    .Map<ProtoNavigation, INavigation>(response.Navigations)
+                    .ToList();
+            });
         }
     }
 }

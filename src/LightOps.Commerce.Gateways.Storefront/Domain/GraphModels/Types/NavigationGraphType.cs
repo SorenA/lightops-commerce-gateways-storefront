@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
@@ -15,7 +14,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             IDataLoaderContextAccessor dataLoaderContextAccessor,
             IMetaFieldEndpointProvider metaFieldEndpointProvider,
             IMetaFieldService metaFieldService,
-            INavigationService navigationService
+            INavigationLookupService navigationLookupService
         )
         {
             Name = "Navigation";
@@ -73,14 +72,17 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                     }
 
                     var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddCollectionBatchLoader<string, INavigation>("NavigationService.LookupByIdAsync", navigationService.LookupByIdAsync);
-                    var result = await loader.LoadAsync(ctx.Source.ParentId);
-                    return result
-                        .FirstOrDefault();
+                        .GetOrAddBatchLoader<string, INavigation>("Navigation.LookupByIdAsync", navigationLookupService.LookupByIdAsync);
+                    return await loader.LoadAsync(ctx.Source.ParentId);
                 });
             Field<ListGraphType<NavigationGraphType>, IList<INavigation>>()
                 .Name("Children")
-                .ResolveAsync(async ctx => await navigationService.GetByParentIdAsync(ctx.Source.Id));
+                .ResolveAsync(async ctx =>
+                {
+                    var loader = dataLoaderContextAccessor.Context
+                        .GetOrAddBatchLoader<string, IList<INavigation>>("Navigation.LookupByParentIdAsync", navigationLookupService.LookupByParentIdAsync);
+                    return await loader.LoadAsync(ctx.Source.Id);
+                });
         }
     }
 }
