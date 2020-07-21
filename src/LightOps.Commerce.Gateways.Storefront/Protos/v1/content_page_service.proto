@@ -31,10 +31,13 @@ message ProtoContentPage {
  *************/
 service ProtoContentPageService {
   rpc GetContentPage(ProtoGetContentPageRequest) returns (ProtoGetContentPageResponse) {}
-  rpc GetContentPagesById(GetContentPagesByIdRequest) returns (GetContentPagesByIdResponse) {}
-  rpc GetContentPagesByHandle(GetContentPagesByHandleRequest) returns (GetContentPagesByHandleResponse) {}
-  rpc GetContentPagesByRoot(ProtoGetContentPagesByRootRequest) returns (ProtoGetContentPagesByRootResponse) {}
+  rpc GetContentPagesByIds(GetContentPagesByIdsRequest) returns (GetContentPagesByIdsResponse) {}
+  rpc GetContentPagesByHandles(GetContentPagesByHandlesRequest) returns (GetContentPagesByHandlesResponse) {}
+
   rpc GetContentPagesByParentId(ProtoGetContentPagesByParentIdRequest) returns (ProtoGetContentPagesByParentIdResponse) {}
+  rpc GetContentPagesByParentIds(ProtoGetContentPagesByParentIdsRequest) returns (ProtoGetContentPagesByParentIdsResponse) {}
+
+  rpc GetContentPagesByRoot(ProtoGetContentPagesByRootRequest) returns (ProtoGetContentPagesByRootResponse) {}
   rpc GetContentPagesBySearch(ProtoGetContentPagesBySearchRequest) returns (ProtoGetContentPagesBySearchResponse) {}
 }
 
@@ -53,30 +56,21 @@ message ProtoGetContentPageResponse {
   ProtoContentPage content_page = 1;
 }
 
-// GetContentPagesById
-message GetContentPagesByIdRequest {
+// GetContentPagesByIds
+message GetContentPagesByIdsRequest {
   repeated string ids = 1;
 }
 
-message GetContentPagesByIdResponse {
+message GetContentPagesByIdsResponse {
   repeated ProtoContentPage content_pages = 1;
 }
 
-// GetContentPagesByHandle
-message GetContentPagesByHandleRequest {
+// GetContentPagesByHandles
+message GetContentPagesByHandlesRequest {
   repeated string handles = 1;
 }
 
-message GetContentPagesByHandleResponse {
-  repeated ProtoContentPage content_pages = 1;
-}
-
-// GetContentPagesByRoot
-message ProtoGetContentPagesByRootRequest {
-
-}
-
-message ProtoGetContentPagesByRootResponse {
+message GetContentPagesByHandlesResponse {
   repeated ProtoContentPage content_pages = 1;
 }
 
@@ -86,6 +80,24 @@ message ProtoGetContentPagesByParentIdRequest {
 }
 
 message ProtoGetContentPagesByParentIdResponse {
+  repeated ProtoContentPage content_pages = 1;
+}
+
+// GetContentPagesByParentIds
+message ProtoGetContentPagesByParentIdsRequest {
+  repeated string parent_ids = 1;
+}
+
+message ProtoGetContentPagesByParentIdsResponse {
+  repeated ProtoContentPage content_pages = 1;
+}
+
+// GetContentPagesByRoot
+message ProtoGetContentPagesByRootRequest {
+
+}
+
+message ProtoGetContentPagesByRootResponse {
   repeated ProtoContentPage content_pages = 1;
 }
 

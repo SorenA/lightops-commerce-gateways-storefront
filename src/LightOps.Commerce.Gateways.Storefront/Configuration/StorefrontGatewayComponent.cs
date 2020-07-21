@@ -44,6 +44,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             CategoryService,
             ProductService,
 
+            ContentPageLookupService,
             NavigationLookupService,
         }
 
@@ -57,6 +58,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             [Services.CategoryService] = ServiceRegistration.Transient<ICategoryService, CategoryGrpcService>(),
             [Services.ProductService] = ServiceRegistration.Transient<IProductService, ProductGrpcService>(),
 
+            [Services.ContentPageLookupService] = ServiceRegistration.Transient<IContentPageLookupService, ContentPageLookupService>(),
             [Services.NavigationLookupService] = ServiceRegistration.Transient<INavigationLookupService, NavigationLookupService>(),
         };
         #endregion Services

@@ -40,6 +40,22 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
             });
         }
 
+        public async Task<IList<IContentPage>> GetByIdAsync(IList<string> ids)
+        {
+            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
+                var request = new GetContentPagesByIdsRequest();
+                request.Ids.AddRange(ids);
+
+                var response = await client.GetContentPagesByIdsAsync(request);
+
+                return _mappingService
+                    .Map<ProtoContentPage, IContentPage>(response.ContentPages)
+                    .ToList();
+            });
+        }
+
         public async Task<IContentPage> GetByHandleAsync(string handle)
         {
             return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
@@ -55,44 +71,15 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
             });
         }
 
-        public async Task<IList<IContentPage>> GetByIdAsync(IList<string> ids)
-        {
-            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
-            {
-                var client = new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
-                var request = new GetContentPagesByIdRequest();
-                request.Ids.AddRange(ids);
-
-                var response = await client.GetContentPagesByIdAsync(request);
-
-                return _mappingService
-                    .Map<ProtoContentPage, IContentPage>(response.ContentPages)
-                    .ToList();
-            });
-        }
-
         public async Task<IList<IContentPage>> GetByHandleAsync(IList<string> handles)
         {
             return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
             {
                 var client = new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
-                var request = new GetContentPagesByHandleRequest();
+                var request = new GetContentPagesByHandlesRequest();
                 request.Handles.AddRange(handles);
 
-                var response = await client.GetContentPagesByHandleAsync(request);
-
-                return _mappingService
-                    .Map<ProtoContentPage, IContentPage>(response.ContentPages)
-                    .ToList();
-            });
-        }
-
-        public async Task<IList<IContentPage>> GetByRootAsync()
-        {
-            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
-            {
-                var client = new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
-                var response = await client.GetContentPagesByRootAsync(new ProtoGetContentPagesByRootRequest());
+                var response = await client.GetContentPagesByHandlesAsync(request);
 
                 return _mappingService
                     .Map<ProtoContentPage, IContentPage>(response.ContentPages)
@@ -116,6 +103,35 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
             });
         }
 
+        public async Task<IList<IContentPage>> GetByParentIdAsync(IList<string> parentIds)
+        {
+            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
+                var request = new ProtoGetContentPagesByParentIdsRequest();
+                request.ParentIds.AddRange(parentIds);
+
+                var response = await client.GetContentPagesByParentIdsAsync(request);
+
+                return _mappingService
+                    .Map<ProtoContentPage, IContentPage>(response.ContentPages)
+                    .ToList();
+            });
+        }
+
+        public async Task<IList<IContentPage>> GetByRootAsync()
+        {
+            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            {
+                var client = new ProtoContentPageService.ProtoContentPageServiceClient(grpcChannel);
+                var response = await client.GetContentPagesByRootAsync(new ProtoGetContentPagesByRootRequest());
+
+                return _mappingService
+                    .Map<ProtoContentPage, IContentPage>(response.ContentPages)
+                    .ToList();
+            });
+        }
+
         public async Task<IList<IContentPage>> GetBySearchAsync(string searchTerm)
         {
             return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
@@ -130,18 +146,6 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.V1
                     .Map<ProtoContentPage, IContentPage>(response.ContentPages)
                     .ToList();
             });
-        }
-
-        public async Task<ILookup<string, IContentPage>> LookupByIdAsync(IEnumerable<string> ids)
-        {
-            var result = await GetByIdAsync(ids.ToList());
-            return result.ToLookup(x => x.Id);
-        }
-
-        public async Task<ILookup<string, IContentPage>> LookupByHandleAsync(IEnumerable<string> handles)
-        {
-            var result = await GetByIdAsync(handles.ToList());
-            return result.ToLookup(x => x.Id);
         }
     }
 }

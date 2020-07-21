@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
@@ -15,7 +14,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             IDataLoaderContextAccessor dataLoaderContextAccessor,
             IMetaFieldEndpointProvider metaFieldEndpointProvider,
             IMetaFieldService metaFieldService,
-            IContentPageService contentPageService
+            IContentPageLookupService contentPageLookupService
             )
         {
             Name = "ContentPage";
@@ -72,14 +71,17 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                     }
 
                     var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddCollectionBatchLoader<string, IContentPage>("ContentPageService.LookupByIdAsync", contentPageService.LookupByIdAsync);
-                    var result = await loader.LoadAsync(ctx.Source.ParentId);
-                    return result
-                        .FirstOrDefault();
+                        .GetOrAddBatchLoader<string, IContentPage>("ContentPage.LookupByIdAsync", contentPageLookupService.LookupByIdAsync);
+                    return await loader.LoadAsync(ctx.Source.ParentId);
                 });
             Field<ListGraphType<ContentPageGraphType>, IList<IContentPage>>()
                 .Name("Children")
-                .ResolveAsync(async ctx => await contentPageService.GetByParentIdAsync(ctx.Source.Id));
+                .ResolveAsync(async ctx =>
+                {
+                    var loader = dataLoaderContextAccessor.Context
+                        .GetOrAddBatchLoader<string, IList<IContentPage>>("ContentPage.LookupByParentIdAsync", contentPageLookupService.LookupByParentIdAsync);
+                    return await loader.LoadAsync(ctx.Source.Id);
+                });
         }
     }
 }
