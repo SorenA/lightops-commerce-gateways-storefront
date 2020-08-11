@@ -1,6 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using LightOps.Commerce.Services.MetaField.Backends.InMemory.Configuration;
 using LightOps.Commerce.Services.MetaField.Configuration;
-using LightOps.Commerce.Services.MetaField.Domain.Services.V1;
+using LightOps.Commerce.Services.MetaField.Domain.Services.Grpc;
 using LightOps.CQRS.Configuration;
 using LightOps.DependencyInjection.Configuration;
 using LightOps.Mapping.Configuration;
@@ -28,7 +32,7 @@ namespace Sample.MetaFieldService
                     {
                         service.UseInMemoryBackend(root, backend =>
                         {
-                            var factory = new BogusMetaFieldFactory
+                            var factory = new MockDataFactory
                             {
                                 Seed = 123,
                             };

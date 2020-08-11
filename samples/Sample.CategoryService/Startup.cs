@@ -1,6 +1,6 @@
 using LightOps.Commerce.Services.Category.Backends.InMemory.Configuration;
 using LightOps.Commerce.Services.Category.Configuration;
-using LightOps.Commerce.Services.Category.Domain.Services.V1;
+using LightOps.Commerce.Services.Category.Domain.Services.Grpc;
 using LightOps.CQRS.Configuration;
 using LightOps.DependencyInjection.Configuration;
 using LightOps.Mapping.Configuration;
@@ -28,7 +28,7 @@ namespace Sample.CategoryService
                     {
                         service.UseInMemoryBackend(root, backend =>
                         {
-                            var factory = new BogusCategoryFactory
+                            var factory = new MockDataFactory
                             {
                                 Seed = 123,
                             };

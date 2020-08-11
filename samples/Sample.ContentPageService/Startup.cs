@@ -1,11 +1,12 @@
 using LightOps.Commerce.Services.ContentPage.Backends.InMemory.Configuration;
 using LightOps.Commerce.Services.ContentPage.Configuration;
-using LightOps.Commerce.Services.ContentPage.Domain.Services.V1;
+using LightOps.Commerce.Services.ContentPage.Domain.Services.Grpc;
 using LightOps.CQRS.Configuration;
 using LightOps.DependencyInjection.Configuration;
 using LightOps.Mapping.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sample.ContentPageService.Data;
@@ -27,7 +28,7 @@ namespace Sample.ContentPageService
                     {
                         service.UseInMemoryBackend(root, backend =>
                         {
-                            var factory = new BogusContentFactory
+                            var factory = new MockDataFactory
                             {
                                 Seed = 123,
                             };
@@ -56,6 +57,11 @@ namespace Sample.ContentPageService
             {
                 endpoints.MapGrpcService<HealthGrpcService>();
                 endpoints.MapGrpcService<ContentPageGrpcService>();
+
+                endpoints.MapGet("/", async context =>
+                {
+                    await context.Response.WriteAsync("Sample ContentPageService. Communication must be made through a gRPC client.");
+                });
             });
         }
     }
