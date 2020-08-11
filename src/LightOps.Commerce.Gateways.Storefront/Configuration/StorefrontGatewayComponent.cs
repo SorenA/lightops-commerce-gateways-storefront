@@ -5,6 +5,7 @@ using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
+using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Enum;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Schemas;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types;
@@ -186,10 +187,18 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             // Data loaders
             DataLoaderContextAccessor,
             DataLoaderDocumentListener,
+
             // Schemas
             Schema,
+
             // Queries
             StorefrontGraphQuery,
+
+            // Enums
+            ContentPageSortKeyGraphType,
+            CategorySortKeyGraphType,
+            ProductSortKeyGraphType,
+
             // Types
             ImageGraphType,
             MoneyGraphType,
@@ -213,10 +222,18 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             // Data loaders
             [Graph.DataLoaderContextAccessor] = ServiceRegistration.Singleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>(),
             [Graph.DataLoaderDocumentListener] = ServiceRegistration.Singleton<DataLoaderDocumentListener, DataLoaderDocumentListener>(),
+
             // Schemas
             [Graph.Schema] = ServiceRegistration.Singleton<ISchema, StorefrontGraphSchema>(),
+
             // Queries
             [Graph.StorefrontGraphQuery] = ServiceRegistration.Singleton<StorefrontGraphQuery, StorefrontGraphQuery>(),
+
+            // Enums
+            [Graph.ContentPageSortKeyGraphType] = ServiceRegistration.Singleton<ContentPageSortKeyGraphType, ContentPageSortKeyGraphType>(),
+            [Graph.CategorySortKeyGraphType] = ServiceRegistration.Singleton<CategorySortKeyGraphType, CategorySortKeyGraphType>(),
+            [Graph.ProductSortKeyGraphType] = ServiceRegistration.Singleton<ProductSortKeyGraphType, ProductSortKeyGraphType>(),
+
             // Types
             [Graph.ImageGraphType] = ServiceRegistration.Singleton<ImageGraphType, ImageGraphType>(),
             [Graph.MoneyGraphType] = ServiceRegistration.Singleton<MoneyGraphType, MoneyGraphType>(),
