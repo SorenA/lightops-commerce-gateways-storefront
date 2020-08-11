@@ -13,9 +13,11 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
     public sealed class ProductVariantGraphType : ObjectGraphType<IProductVariant>
     {
         public ProductVariantGraphType(
+            IDataLoaderContextAccessor dataLoaderContextAccessor,
             IMetaFieldEndpointProvider metaFieldEndpointProvider,
-            IMetaFieldService metaFieldService
-            )
+            IMetaFieldService metaFieldService,
+            IMetaFieldLookupService metaFieldLookupService
+        )
         {
             Name = "ProductVariant";
 
@@ -49,10 +51,13 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 .Description("The images of the product variant")
                 .Resolve(ctx => ctx.Source.Images);
 
-            // Meta-fields
+            #region Meta-fields
+
             Field<MetaFieldGraphType, IMetaField>()
                 .Name("MetaField")
-                .Argument<NonNullGraphType<StringGraphType>>("name")
+                .Description("Connection to a specific meta-field")
+                .Argument<NonNullGraphType<StringGraphType>>("namespace", "Namespace of the meta-field")
+                .Argument<NonNullGraphType<StringGraphType>>("name", "Name of the meta-field")
                 .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
@@ -60,11 +65,17 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return await metaFieldService.GetByParentAsync("product_variant", ctx.Source.Id,
+                    var result = await metaFieldService.GetBySearchAsync(
+                        ctx.Source.Id,
+                        ctx.GetArgument<string>("namespace"),
                         ctx.GetArgument<string>("name"));
+
+                    return result.FirstOrDefault();
                 });
+
             Field<ListGraphType<MetaFieldGraphType>, IList<IMetaField>>()
                 .Name("MetaFields")
+                .Description("Connection to a all meta-fields")
                 .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
@@ -72,8 +83,12 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return await metaFieldService.GetByParentAsync("product_variant", ctx.Source.Id);
+                    var loader = dataLoaderContextAccessor.Context
+                        .GetOrAddBatchLoader<string, IList<IMetaField>>("MetaField.LookupByParentIdsAsync", metaFieldLookupService.LookupByParentIdsAsync);
+                    return await loader.LoadAsync(ctx.Source.Id);
                 });
+
+            #endregion Meta-fields
         }
     }
 }

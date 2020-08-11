@@ -4,9 +4,11 @@ using System.Linq;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
+using LightOps.Commerce.Gateways.Storefront.Api.Enums;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
+using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Enum;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 {
@@ -16,8 +18,10 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             IDataLoaderContextAccessor dataLoaderContextAccessor,
             IMetaFieldEndpointProvider metaFieldEndpointProvider,
             IMetaFieldService metaFieldService,
+            IMetaFieldLookupService metaFieldLookupService,
             IProductEndpointProvider productEndpointProvider,
-            IProductLookupService productLookupService,
+            IProductService productService,
+            ICategoryService categoryService,
             ICategoryLookupService categoryLookupService
         )
         {
@@ -73,10 +77,13 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 .Description("The primary image of the category")
                 .Resolve(ctx => ctx.Source.PrimaryImage);
 
-            // Meta-fields
+            #region Meta-fields
+
             Field<MetaFieldGraphType, IMetaField>()
                 .Name("MetaField")
-                .Argument<NonNullGraphType<StringGraphType>>("name")
+                .Description("Connection to a specific meta-field")
+                .Argument<NonNullGraphType<StringGraphType>>("namespace", "Namespace of the meta-field")
+                .Argument<NonNullGraphType<StringGraphType>>("name", "Name of the meta-field")
                 .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
@@ -84,37 +91,33 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return await metaFieldService.GetByParentAsync("category", ctx.Source.Id,
+                    var result = await metaFieldService.GetBySearchAsync(
+                        ctx.Source.Id,
+                        ctx.GetArgument<string>("namespace"),
                         ctx.GetArgument<string>("name"));
+
+                    return result.FirstOrDefault();
                 });
+
             Field<ListGraphType<MetaFieldGraphType>, IList<IMetaField>>()
                 .Name("MetaFields")
+                .Description("Connection to a all meta-fields")
                 .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
                     {
                         throw new ExecutionError("Meta-fields not supported.");
-                    }
-
-                    return await metaFieldService.GetByParentAsync("category", ctx.Source.Id);
-                });
-
-            // Products
-            Field<ListGraphType<ProductGraphType>, IList<IProduct>>()
-                .Name("Products")
-                .ResolveAsync(async ctx =>
-                {
-                    if (!productEndpointProvider.IsEnabled)
-                    {
-                        throw new ExecutionError("Products not supported.");
                     }
 
                     var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddBatchLoader<string, IList<IProduct>>("Product.LookupByCategoryIdAsync", productLookupService.LookupByCategoryIdAsync);
+                        .GetOrAddBatchLoader<string, IList<IMetaField>>("MetaField.LookupByParentIdsAsync", metaFieldLookupService.LookupByParentIdsAsync);
                     return await loader.LoadAsync(ctx.Source.Id);
                 });
 
-            // Hierarchy
+            #endregion
+
+            #region Categories
+
             Field<CategoryGraphType, ICategory>()
                 .Name("Parent")
                 .ResolveAsync(async ctx =>
@@ -128,14 +131,55 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                         .GetOrAddBatchLoader<string, ICategory>("Category.LookupByIdAsync", categoryLookupService.LookupByIdAsync);
                     return await loader.LoadAsync(ctx.Source.ParentId);
                 });
-            Field<ListGraphType<CategoryGraphType>, IList<ICategory>>()
+
+            Connection<CategoryGraphType>()
                 .Name("Children")
+                .Unidirectional()
+                .Argument<StringGraphType>("query", "The search query to filter children by")
+                .Argument<CategorySortKeyGraphType>("sortKey", "The key to sort the underlying list by")
+                .Argument<StringGraphType>("reverse", "Reverse the order of the underlying list")
                 .ResolveAsync(async ctx =>
                 {
-                    var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddBatchLoader<string, IList<ICategory>>("Category.LookupByParentIdAsync", categoryLookupService.LookupByParentIdAsync);
-                    return await loader.LoadAsync(ctx.Source.Id);
+                    var result = await categoryService.GetBySearchAsync(
+                        ctx.GetArgument<string>("query"),
+                        ctx.Source.Id,
+                        ctx.GetArgument<string>("after"),
+                        ctx.GetArgument<int>("first", 24),
+                        ctx.GetArgument<CategorySortKey>("sortKey"),
+                        ctx.GetArgument<bool>("reverse"));
+
+                    return result.ToGraphConnection();
                 });
+
+            #endregion Categories
+
+            #region Products
+
+            Connection<ProductGraphType>()
+                .Name("Products")
+                .Unidirectional()
+                .Argument<StringGraphType>("query", "The search query to filter products by")
+                .Argument<ProductSortKeyGraphType>("sortKey", "The key to sort the underlying list by")
+                .Argument<StringGraphType>("reverse", "Reverse the order of the underlying list")
+                .ResolveAsync(async ctx =>
+                {
+                    if (!productEndpointProvider.IsEnabled)
+                    {
+                        throw new ExecutionError("Products not supported.");
+                    }
+
+                    var result = await productService.GetBySearchAsync(
+                        ctx.GetArgument<string>("query"),
+                        ctx.Source.Id,
+                        ctx.GetArgument<string>("after"),
+                        ctx.GetArgument<int>("first", 24),
+                        ctx.GetArgument<ProductSortKey>("sortKey"),
+                        ctx.GetArgument<bool>("reverse"));
+
+                    return result.ToGraphConnection();
+                });
+
+            #endregion Products
         }
     }
 }

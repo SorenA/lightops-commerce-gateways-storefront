@@ -17,6 +17,8 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             IDataLoaderContextAccessor dataLoaderContextAccessor,
             IMetaFieldEndpointProvider metaFieldEndpointProvider,
             IMetaFieldService metaFieldService,
+            IMetaFieldLookupService metaFieldLookupService,
+            ICategoryEndpointProvider categoryEndpointProvider,
             ICategoryLookupService categoryLookupService
             )
         {
@@ -92,10 +94,13 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 .Description("The unit price of the cheapest variant")
                 .Resolve(ctx => ctx.Source.Variants.Min(x => x.UnitPrice));
 
-            // Meta-fields
+            #region Meta-fields
+
             Field<MetaFieldGraphType, IMetaField>()
                 .Name("MetaField")
-                .Argument<NonNullGraphType<StringGraphType>>("name")
+                .Description("Connection to a specific meta-field")
+                .Argument<NonNullGraphType<StringGraphType>>("namespace", "Namespace of the meta-field")
+                .Argument<NonNullGraphType<StringGraphType>>("name", "Name of the meta-field")
                 .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
@@ -103,11 +108,17 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return await metaFieldService.GetByParentAsync("product", ctx.Source.Id,
+                    var result = await metaFieldService.GetBySearchAsync(
+                        ctx.Source.Id,
+                        ctx.GetArgument<string>("namespace"),
                         ctx.GetArgument<string>("name"));
+
+                    return result.FirstOrDefault();
                 });
+
             Field<ListGraphType<MetaFieldGraphType>, IList<IMetaField>>()
                 .Name("MetaFields")
+                .Description("Connection to a all meta-fields")
                 .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
@@ -115,26 +126,44 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return await metaFieldService.GetByParentAsync("product", ctx.Source.Id);
+                    var loader = dataLoaderContextAccessor.Context
+                        .GetOrAddBatchLoader<string, IList<IMetaField>>("MetaField.LookupByParentIdsAsync", metaFieldLookupService.LookupByParentIdsAsync);
+                    return await loader.LoadAsync(ctx.Source.Id);
                 });
 
-            // Categories
+            #endregion Meta-fields
+
+            #region Categories
+
             Field<CategoryGraphType, ICategory>()
                 .Name("PrimaryCategory")
                 .ResolveAsync(async ctx =>
                 {
+                    if (!categoryEndpointProvider.IsEnabled)
+                    {
+                        throw new ExecutionError("Categories not supported.");
+                    }
+
                     var loader = dataLoaderContextAccessor.Context
                         .GetOrAddBatchLoader<string, ICategory>("Category.LookupByIdAsync", categoryLookupService.LookupByIdAsync);
                     return await loader.LoadAsync(ctx.Source.PrimaryCategoryId);
                 });
-            Field<ListGraphType<CategoryGraphType>, IList<ICategory>>()
+
+            Field<CategoryGraphType, IList<ICategory>>()
                 .Name("Categories")
                 .ResolveAsync(async ctx =>
                 {
+                    if (!categoryEndpointProvider.IsEnabled)
+                    {
+                        throw new ExecutionError("Categories not supported.");
+                    }
+
                     var loader = dataLoaderContextAccessor.Context
                         .GetOrAddBatchLoader<string, ICategory>("Category.LookupByIdAsync", categoryLookupService.LookupByIdAsync);
                     return await loader.LoadAsync(ctx.Source.CategoryIds);
                 });
+
+            #endregion Categories
         }
     }
 }

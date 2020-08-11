@@ -4,9 +4,11 @@ using System.Linq;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
+using LightOps.Commerce.Gateways.Storefront.Api.Enums;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
+using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Enum;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 {
@@ -16,8 +18,10 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             IDataLoaderContextAccessor dataLoaderContextAccessor,
             IMetaFieldEndpointProvider metaFieldEndpointProvider,
             IMetaFieldService metaFieldService,
+            IMetaFieldLookupService metaFieldLookupService,
+            IContentPageService contentPageService,
             IContentPageLookupService contentPageLookupService
-            )
+        )
         {
             Name = "ContentPage";
 
@@ -71,10 +75,13 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 .Description("The primary image of the content page")
                 .Resolve(ctx => ctx.Source.PrimaryImage);
 
-            // Meta-fields
+            #region Meta-fields
+
             Field<MetaFieldGraphType, IMetaField>()
                 .Name("MetaField")
-                .Argument<NonNullGraphType<StringGraphType>>("name")
+                .Description("Connection to a specific meta-field")
+                .Argument<NonNullGraphType<StringGraphType>>("namespace", "Namespace of the meta-field")
+                .Argument<NonNullGraphType<StringGraphType>>("name", "Name of the meta-field")
                 .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
@@ -82,11 +89,17 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return await metaFieldService.GetByParentAsync("content_page", ctx.Source.Id,
+                    var result = await metaFieldService.GetBySearchAsync(
+                        ctx.Source.Id,
+                        ctx.GetArgument<string>("namespace"),
                         ctx.GetArgument<string>("name"));
+
+                    return result.FirstOrDefault();
                 });
+
             Field<ListGraphType<MetaFieldGraphType>, IList<IMetaField>>()
                 .Name("MetaFields")
+                .Description("Connection to a all meta-fields")
                 .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
@@ -94,10 +107,15 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return await metaFieldService.GetByParentAsync("content_page", ctx.Source.Id);
+                    var loader = dataLoaderContextAccessor.Context
+                        .GetOrAddBatchLoader<string, IList<IMetaField>>("MetaField.LookupByParentIdsAsync", metaFieldLookupService.LookupByParentIdsAsync);
+                    return await loader.LoadAsync(ctx.Source.Id);
                 });
 
-            // Hierarchy
+            #endregion Meta-fields
+
+            #region Content pages
+
             Field<ContentPageGraphType, IContentPage>()
                 .Name("Parent")
                 .ResolveAsync(async ctx =>
@@ -111,14 +129,26 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                         .GetOrAddBatchLoader<string, IContentPage>("ContentPage.LookupByIdAsync", contentPageLookupService.LookupByIdAsync);
                     return await loader.LoadAsync(ctx.Source.ParentId);
                 });
-            Field<ListGraphType<ContentPageGraphType>, IList<IContentPage>>()
+            Connection<ContentPageGraphType>()
                 .Name("Children")
+                .Unidirectional()
+                .Argument<StringGraphType>("query", "The search query to filter children by")
+                .Argument<ContentPageSortKeyGraphType>("sortKey", "The key to sort the underlying list by")
+                .Argument<StringGraphType>("reverse", "Reverse the order of the underlying list")
                 .ResolveAsync(async ctx =>
                 {
-                    var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddBatchLoader<string, IList<IContentPage>>("ContentPage.LookupByParentIdAsync", contentPageLookupService.LookupByParentIdAsync);
-                    return await loader.LoadAsync(ctx.Source.Id);
+                    var result = await contentPageService.GetBySearchAsync(
+                        ctx.GetArgument<string>("query"),
+                        ctx.Source.Id,
+                        ctx.GetArgument<string>("after"),
+                        ctx.GetArgument<int>("first", 24),
+                        ctx.GetArgument<ContentPageSortKey>("sortKey"),
+                        ctx.GetArgument<bool>("reverse"));
+
+                    return result.ToGraphConnection();
                 });
+
+            #endregion Content pages
         }
     }
 }

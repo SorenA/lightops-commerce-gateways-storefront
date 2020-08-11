@@ -16,6 +16,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             IDataLoaderContextAccessor dataLoaderContextAccessor,
             IMetaFieldEndpointProvider metaFieldEndpointProvider,
             IMetaFieldService metaFieldService,
+            IMetaFieldLookupService metaFieldLookupService,
             INavigationLookupService navigationLookupService
         )
         {
@@ -66,10 +67,13 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 .Description("The embedded sub-navigations")
                 .Resolve(ctx => ctx.Source.SubNavigations);
 
-            // Meta-fields
+            #region Meta-fields
+
             Field<MetaFieldGraphType, IMetaField>()
                 .Name("MetaField")
-                .Argument<NonNullGraphType<StringGraphType>>("name")
+                .Description("Connection to a specific meta-field")
+                .Argument<NonNullGraphType<StringGraphType>>("namespace", "Namespace of the meta-field")
+                .Argument<NonNullGraphType<StringGraphType>>("name", "Name of the meta-field")
                 .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
@@ -77,11 +81,17 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return await metaFieldService.GetByParentAsync("navigation", ctx.Source.Id,
+                    var result = await metaFieldService.GetBySearchAsync(
+                        ctx.Source.Id,
+                        ctx.GetArgument<string>("namespace"),
                         ctx.GetArgument<string>("name"));
+
+                    return result.FirstOrDefault();
                 });
+
             Field<ListGraphType<MetaFieldGraphType>, IList<IMetaField>>()
                 .Name("MetaFields")
+                .Description("Connection to a all meta-fields")
                 .ResolveAsync(async ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
@@ -89,31 +99,12 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
-                    return await metaFieldService.GetByParentAsync("navigation", ctx.Source.Id);
-                });
-
-            // Hierarchy
-            Field<NavigationGraphType, INavigation>()
-                .Name("Parent")
-                .ResolveAsync(async ctx =>
-                {
-                    if (string.IsNullOrEmpty(ctx.Source.ParentId))
-                    {
-                        return null;
-                    }
-
                     var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddBatchLoader<string, INavigation>("Navigation.LookupByIdAsync", navigationLookupService.LookupByIdAsync);
-                    return await loader.LoadAsync(ctx.Source.ParentId);
-                });
-            Field<ListGraphType<NavigationGraphType>, IList<INavigation>>()
-                .Name("Children")
-                .ResolveAsync(async ctx =>
-                {
-                    var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddBatchLoader<string, IList<INavigation>>("Navigation.LookupByParentIdAsync", navigationLookupService.LookupByParentIdAsync);
+                        .GetOrAddBatchLoader<string, IList<IMetaField>>("MetaField.LookupByParentIdsAsync", metaFieldLookupService.LookupByParentIdsAsync);
                     return await loader.LoadAsync(ctx.Source.Id);
                 });
+
+            #endregion Meta-fields
         }
     }
 }

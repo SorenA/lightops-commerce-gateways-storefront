@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using GraphQL.Types.Relay.DataObjects;
 
 namespace LightOps.Commerce.Gateways.Storefront.Api.QueryResults
 {
@@ -28,5 +30,25 @@ namespace LightOps.Commerce.Gateways.Storefront.Api.QueryResults
         /// The total amount of results available
         /// </summary>
         public int TotalResults { get; set; }
+
+        public Connection<T> ToGraphConnection()
+        {
+            return new Connection<T>
+            {
+                TotalCount = TotalResults,
+                PageInfo = new PageInfo
+                {
+                    HasNextPage = HasNextPage,
+                    EndCursor = NextPageCursor,
+                },
+                Edges = Results
+                    .Select(x => new Edge<T>
+                    {
+                        Cursor = null,
+                        Node = x,
+                    })
+                    .ToList(),
+            };
+        }
     }
 }
