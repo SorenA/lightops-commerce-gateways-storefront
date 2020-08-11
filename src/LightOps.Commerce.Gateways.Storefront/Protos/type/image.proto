@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package lightops.type;
+
+option csharp_namespace = "LightOps.Commerce.Proto.Types";
+
+message ImageProto {
+  // Globally unique identifier, eg: gid://Image/1000
+  string id = 1;
+
+  // The url where the image may be accessed
+  string url = 2;
+
+  // The alt text of the image
+  string alt_text = 3;
+}

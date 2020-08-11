@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package lightops.type;
+
+option csharp_namespace = "LightOps.Commerce.Proto.Types";
+
+message MoneyProto {
+  // ISO 4217 3-letter currency code
+  string currency_code = 1;
+
+  // Whole units part of the amount
+  int64 units = 2;
+
+  // Nano units of the amount (10^-9)
+  // Must be same sign as units
+  int32 nanos = 3;
+}

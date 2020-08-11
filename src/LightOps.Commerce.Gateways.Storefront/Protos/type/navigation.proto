@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package lightops.type;
+
+option csharp_namespace = "LightOps.Commerce.Proto.Types";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+message NavigationProto {
+  // Globally unique identifier, eg: gid://Navigation/1000
+  string id = 1;
+
+  // Globally unique identifier of parent, 'gid://' if none
+  string parent_id = 2;
+
+  // A human-friendly unique string for the navigation
+  string handle = 3;
+
+  // The type of the navigation
+  string type = 4;
+
+  // The timestamp of navigation creation
+  google.protobuf.Timestamp created_at = 5;
+
+  // The timestamp of the latest navigation update
+  google.protobuf.Timestamp updated_at = 6;
+
+  // The header link of the navigation
+  NavigationLinkProto header = 7;
+
+  // The links in the navigation
+  repeated NavigationLinkProto links = 8;
+
+  // The embedded sub-navigations
+  repeated SubNavigationProto sub_navigations = 9;
+}
+
+message SubNavigationProto {
+  // The header link of the sub-navigation
+  NavigationLinkProto header = 1;
+
+  // The links in the sub-navigation
+  repeated NavigationLinkProto links = 2;
+
+  // The embedded sub-navigations
+  repeated SubNavigationProto sub_navigations = 3;
+}
+
+message NavigationLinkProto {
+  // The title of the link
+  string title = 1;
+
+  // The url of the link, if any
+  google.protobuf.StringValue url = 2;
+
+  // The target of the link, if any
+  google.protobuf.StringValue target = 3;
+}

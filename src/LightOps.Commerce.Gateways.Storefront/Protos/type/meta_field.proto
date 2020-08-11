@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package lightops.type;
+
+option csharp_namespace = "LightOps.Commerce.Proto.Types";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+message MetaFieldProto {
+  // Globally unique identifier, eg: gid://MetaField/1000
+  string id = 1;
+
+  // Globally unique identifier of parent, 'gid://' if none
+  string parent_id = 2;
+
+  // The namespace of the meta-field
+  string namespace = 3;
+
+  // The name of the meta-field
+  string name = 4;
+
+  // The type of the meta-field
+  string type = 5;
+
+  // The value of the meta-field
+  string value = 6;
+
+  // The timestamp of meta-field creation
+  google.protobuf.Timestamp created_at = 7;
+
+  // The timestamp of the latest meta-field update
+  google.protobuf.Timestamp updated_at = 8;
+}

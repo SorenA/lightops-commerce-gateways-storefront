@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package lightops.service;
+
+option csharp_namespace = "LightOps.Commerce.Proto.Services";
+
+import "google/protobuf/wrappers.proto";
+import "Protos/type/content_page.proto";
+
+enum ContentPageSortKeyProto {
+  DEFAULT = 0;
+  TITLE = 1;
+  CREATED_AT = 2;
+  UPDATED_AT = 3;
+}
+
+service ContentPageProtoService {
+  // Gets a list of content pages by handle
+  rpc GetContentPagesByHandles(GetContentPagesByHandlesProtoRequest) returns (GetContentPagesByHandlesProtoResponse) {}
+
+  // Gets a list of content pages by ids
+  rpc GetContentPagesByIds(GetContentPagesByIdsProtoRequest) returns (GetContentPagesByIdsProtoResponse) {}
+
+  // Gets a list of paginated content pages by search
+  rpc GetContentPagesBySearch(GetContentPagesBySearchProtoRequest) returns (GetContentPagesBySearchProtoResponse) {}
+}
+
+// GetContentPagesByHandles request model
+message GetContentPagesByHandlesProtoRequest {
+  // The handles of the content page requested
+  repeated string handles = 1;
+}
+
+// GetContentPagesByHandles response model
+message GetContentPagesByHandlesProtoResponse {
+  // The content pages found, if any
+  repeated lightops.type.ContentPageProto content_pages = 1;
+}
+
+// GetContentPagesByIds request model
+message GetContentPagesByIdsProtoRequest {
+  // The ids of the content pages requested
+  repeated string ids = 1;
+}
+
+// GetContentPagesByIds response model
+message GetContentPagesByIdsProtoResponse {
+  // The content pages found, if any
+  repeated lightops.type.ContentPageProto content_pages = 1;
+}
+
+// GetContentPagesBySearch, request model
+message GetContentPagesBySearchProtoRequest {
+  // The term to search for
+  string search_term = 1;
+
+  // Search only in children with a specific parent id, if any specified. For no parent: 'gid://'
+  google.protobuf.StringValue parent_id = 2;
+
+  // The page cursor to use
+  google.protobuf.StringValue page_cursor = 3;
+
+  // The page size to use
+  google.protobuf.Int32Value page_size = 4;
+
+  // Sort the underlying list by the given key
+  ContentPageSortKeyProto sort_key = 5;
+
+  // Whether to reverse the order of the underlying list
+  google.protobuf.BoolValue reverse = 6;
+}
+
+// GetContentPagesBySearch, response model
+message GetContentPagesBySearchProtoResponse {
+  // The content pages found, if any
+  repeated lightops.type.ContentPageProto results = 1;
+
+  // The cursor of the next page
+  string next_page_cursor = 2;
+
+  // Whether another page can be fetched
+  bool has_next_page = 3;
+
+  // The total amount of results available
+  int32 total_results = 4;
+}

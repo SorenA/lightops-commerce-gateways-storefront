@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package lightops.type;
+
+option csharp_namespace = "LightOps.Commerce.Proto.Types";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+import "Protos/type/money.proto";
+import "Protos/type/image.proto";
+
+message ProductProto {
+  // Globally unique identifier, eg: gid://Product/1000
+  string id = 1;
+
+  // Globally unique identifier of parent, 'gid://' if none
+  string parent_id = 2;
+
+  // A human-friendly unique string for the product
+  string handle = 3;
+
+  // The title of the product
+  string title = 4;
+
+  // The url of the product
+  string url = 5;
+
+  // The type of the product
+  string type = 6;
+
+  // The description of the product
+  string description = 7;
+
+  // The timestamp of product creation
+  google.protobuf.Timestamp created_at = 8;
+
+  // The timestamp of the latest product update
+  google.protobuf.Timestamp updated_at = 9;
+
+  // Globally unique identifier of the primary category the product belong to
+  string primary_category_id = 10;
+
+  // Globally unique identifiers of categories the product belong to
+  repeated string category_ids = 11;
+
+  // The variants of the product
+  repeated ProductVariantProto variants = 12;
+
+  // The images of the product
+  repeated lightops.type.ImageProto images = 13;
+}
+
+message ProductVariantProto {
+  // Globally unique identifier, eg: gid://ProductVariant/1000
+  string id = 1;
+
+  // Globally unique identifier of the parent product
+  string product_id = 2;
+
+  // The title of the product variant
+  string title = 3;
+
+  // The stock keeping unit of the product variant
+  string sku = 4;
+
+  // The unit price of the product variant
+  lightops.type.MoneyProto unit_price = 5;
+
+  // The images of the product variant
+  repeated lightops.type.ImageProto images = 6;
+}

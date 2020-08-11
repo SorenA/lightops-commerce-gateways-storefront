@@ -8,10 +8,11 @@ using LightOps.Commerce.Gateways.Storefront.Api.Services;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Schemas;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types;
-using LightOps.Commerce.Gateways.Storefront.Domain.Mappers.V1;
+using LightOps.Commerce.Gateways.Storefront.Domain.Mappers;
 using LightOps.Commerce.Gateways.Storefront.Domain.Providers;
 using LightOps.Commerce.Gateways.Storefront.Domain.Services;
-using LightOps.Commerce.Gateways.Storefront.Domain.Services.V1;
+using LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc;
+using LightOps.Commerce.Proto.Types;
 using LightOps.DependencyInjection.Api.Configuration;
 using LightOps.DependencyInjection.Domain.Configuration;
 using LightOps.Mapping.Api.Mappers;
@@ -70,34 +71,40 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         #region Mappers
         internal enum Mappers
         {
-            ProtoContentPageMapperV1,
-            ProtoNavigationMapperV1,
-            ProtoNavigationLinkMapperV1,
-            ProtoMetaFieldMapperV1,
-            ProtoCategoryMapperV1,
-            ProtoMoneyMapperV1,
-            ProtoProductMapperV1,
-            ProtoProductVariantMapperV1,
+            ImageProtoMapper,
+            MoneyProtoMapper,
+
+            ContentPageProtoMapper,
+
+            NavigationProtoMapper,
+            SubNavigationProtoMapper,
+            NavigationLinkProtoMapper,
+
+            MetaFieldProtoMapper,
+
+            CategoryProtoMapper,
+
+            ProductProtoMapper,
+            ProductVariantProtoMapper,
         }
 
         private readonly Dictionary<Mappers, ServiceRegistration> _mappers = new Dictionary<Mappers, ServiceRegistration>
         {
-            [Mappers.ProtoContentPageMapperV1] = ServiceRegistration
-                .Transient<IMapper<Proto.Services.ContentPage.V1.ProtoContentPage, IContentPage>, ProtoContentPageMapper>(),
-            [Mappers.ProtoNavigationMapperV1] = ServiceRegistration
-                .Transient<IMapper<Proto.Services.Navigation.V1.ProtoNavigation, INavigation>, ProtoNavigationMapper>(),
-            [Mappers.ProtoNavigationLinkMapperV1] = ServiceRegistration
-                .Transient<IMapper<Proto.Services.Navigation.V1.ProtoNavigationLink, INavigationLink>, ProtoNavigationLinkMapper>(),
-            [Mappers.ProtoMetaFieldMapperV1] = ServiceRegistration
-                .Transient<IMapper<Proto.Services.MetaField.V1.ProtoMetaField, IMetaField>, ProtoMetaFieldMapper>(),
-            [Mappers.ProtoCategoryMapperV1] = ServiceRegistration
-                .Transient<IMapper<Proto.Services.Category.V1.ProtoCategory, ICategory>, ProtoCategoryMapper>(),
-            [Mappers.ProtoMoneyMapperV1] = ServiceRegistration
-                .Transient<IMapper<Proto.Services.Product.V1.ProtoMoney, Money>, ProtoMoneyMapper>(),
-            [Mappers.ProtoProductMapperV1] = ServiceRegistration
-                .Transient<IMapper<Proto.Services.Product.V1.ProtoProduct, IProduct>, ProtoProductMapper>(),
-            [Mappers.ProtoProductVariantMapperV1] = ServiceRegistration
-                .Transient<IMapper<Proto.Services.Product.V1.ProtoProductVariant, IProductVariant>, ProtoProductVariantMapper>(),
+            [Mappers.ImageProtoMapper] = ServiceRegistration.Transient<IMapper<ImageProto, IImage>, ImageProtoMapper>(),
+            [Mappers.MoneyProtoMapper] = ServiceRegistration.Transient<IMapper<MoneyProto, Money>, MoneyProtoMapper>(),
+
+            [Mappers.ContentPageProtoMapper] = ServiceRegistration.Transient<IMapper<ContentPageProto, IContentPage>, ContentPageProtoMapper>(),
+
+            [Mappers.NavigationProtoMapper] = ServiceRegistration.Transient<IMapper<NavigationProto, INavigation>, NavigationProtoMapper>(),
+            [Mappers.SubNavigationProtoMapper] = ServiceRegistration.Transient<IMapper<SubNavigationProto, ISubNavigation>, SubNavigationProtoMapper>(),
+            [Mappers.NavigationLinkProtoMapper] = ServiceRegistration.Transient<IMapper<NavigationLinkProto, INavigationLink>, NavigationLinkProtoMapper>(),
+
+            [Mappers.MetaFieldProtoMapper] = ServiceRegistration.Transient<IMapper<MetaFieldProto, IMetaField>, MetaFieldProtoMapper>(),
+
+            [Mappers.CategoryProtoMapper] = ServiceRegistration.Transient<IMapper<CategoryProto, ICategory>, CategoryProtoMapper>(),
+
+            [Mappers.ProductProtoMapper] = ServiceRegistration.Transient<IMapper<ProductProto, IProduct>, ProductProtoMapper>(),
+            [Mappers.ProductVariantProtoMapper] = ServiceRegistration.Transient<IMapper<ProductVariantProto, IProductVariant>, ProductVariantProtoMapper>(),
         };
         #endregion Mappers
 

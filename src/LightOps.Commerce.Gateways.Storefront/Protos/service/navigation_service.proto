@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package lightops.service;
+
+option csharp_namespace = "LightOps.Commerce.Proto.Services";
+
+import "google/protobuf/wrappers.proto";
+import "Protos/type/navigation.proto";
+
+service NavigationProtoService {
+  // Gets a list of navigations by handle
+  rpc GetNavigationsByHandles(GetNavigationsByHandlesProtoRequest) returns (GetNavigationsByHandlesProtoResponse) {}
+
+  // Gets a list of navigations by ids
+  rpc GetNavigationsByIds(GetNavigationsByIdsProtoRequest) returns (GetNavigationsByIdsProtoResponse) {}
+}
+
+// GetNavigationsByHandles request model
+message GetNavigationsByHandlesProtoRequest {
+  // The handles of the navigations requested
+  repeated string handles = 1;
+}
+
+// GetNavigationsByHandles response model
+message GetNavigationsByHandlesProtoResponse {
+  // The navigations found, if any
+  repeated lightops.type.NavigationProto navigations = 1;
+}
+
+// GetNavigationsByIds request model
+message GetNavigationsByIdsProtoRequest {
+  // The ids of the navigations requested
+  repeated string ids = 1;
+}
+
+// GetNavigationsByIds response model
+message GetNavigationsByIdsProtoResponse {
+  // The navigations found, if any
+  repeated lightops.type.NavigationProto navigations = 1;
+}

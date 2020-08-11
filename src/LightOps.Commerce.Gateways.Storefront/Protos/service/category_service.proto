@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package lightops.service;
+
+option csharp_namespace = "LightOps.Commerce.Proto.Services";
+
+import "google/protobuf/wrappers.proto";
+import "Protos/type/category.proto";
+
+enum CategorySortKeyProto {
+  DEFAULT = 0;
+  TITLE = 1;
+  CREATED_AT = 2;
+  UPDATED_AT = 3;
+}
+
+service CategoryProtoService {
+  // Gets a list of categories by handle
+  rpc GetCategoriesByHandles(GetCategoriesByHandlesProtoRequest) returns (GetCategoriesByHandlesProtoResponse) {}
+
+  // Gets a list of categories by ids
+  rpc GetCategoriesByIds(GetCategoriesByIdsProtoRequest) returns (GetCategoriesByIdsProtoResponse) {}
+
+  // Gets a list of paginated categories by search
+  rpc GetCategoriesBySearch(GetCategoriesBySearchProtoRequest) returns (GetCategoriesBySearchProtoResponse) {}
+}
+
+// GetCategoriesByHandles request model
+message GetCategoriesByHandlesProtoRequest {
+  // The handles of the categories requested
+  repeated string handles = 1;
+}
+
+// GetCategoriesByHandles response model
+message GetCategoriesByHandlesProtoResponse {
+  // The categories found, if any
+  repeated lightops.type.CategoryProto categories = 1;
+}
+
+// GetCategoriesByIds request model
+message GetCategoriesByIdsProtoRequest {
+  // The ids of the categories requested
+  repeated string ids = 1;
+}
+
+// GetCategoriesByIds response model
+message GetCategoriesByIdsProtoResponse {
+  // The categories found, if any
+  repeated lightops.type.CategoryProto categories = 1;
+}
+
+// GetCategoriesBySearch, request model
+message GetCategoriesBySearchProtoRequest {
+  // The term to search for
+  string search_term = 1;
+
+  // Search only in children with a specific parent id, if any specified. For no parent: 'gid://'
+  google.protobuf.StringValue parent_id = 2;
+
+  // The page cursor to use
+  google.protobuf.StringValue page_cursor = 3;
+
+  // The page size to use
+  google.protobuf.Int32Value page_size = 4;
+
+  // Sort the underlying list by the given key
+  CategorySortKeyProto sort_key = 5;
+
+  // Whether to reverse the order of the underlying list
+  google.protobuf.BoolValue reverse = 6;
+}
+
+// GetCategoriesBySearch, response model
+message GetCategoriesBySearchProtoResponse {
+  // The categories found, if any
+  repeated lightops.type.CategoryProto results = 1;
+
+  // The cursor of the next page
+  string next_page_cursor = 2;
+
+  // Whether another page can be fetched
+  bool has_next_page = 3;
+
+  // The total amount of results available
+  int32 total_results = 4;
+}

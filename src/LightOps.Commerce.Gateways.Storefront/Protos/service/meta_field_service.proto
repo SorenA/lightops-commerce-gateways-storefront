@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package lightops.service;
+
+option csharp_namespace = "LightOps.Commerce.Proto.Services";
+
+import "google/protobuf/wrappers.proto";
+import "Protos/type/meta_field.proto";
+
+service MetaFieldProtoService {
+  // Gets a list of meta-field by ids
+  rpc GetMetaFieldsByIds(GetMetaFieldsByIdsProtoRequest) returns (GetMetaFieldsByIdsProtoResponse) {}
+
+  // Gets a map with lists of meta-field by parent ids
+  rpc GetMetaFieldsByParentIds(GetMetaFieldsByParentIdsProtoRequest) returns (GetMetaFieldsByParentIdsProtoResponse) {}
+
+  // Gets a list of paginated meta-field by search
+  rpc GetMetaFieldsBySearch(GetMetaFieldsBySearchProtoRequest) returns (GetMetaFieldsBySearchProtoResponse) {}
+}
+
+// GetMetaFieldsByIds request model
+message GetMetaFieldsByIdsProtoRequest {
+  // The ids of the meta-fields requested
+  repeated string ids = 1;
+}
+
+// GetMetaFieldsByIds response model
+message GetMetaFieldsByIdsProtoResponse {
+  // The  meta-fields found, if any
+  repeated lightops.type.MetaFieldProto meta_fields = 1;
+}
+
+// GetMetaFieldsByParentIds request model
+message GetMetaFieldsByParentIdsProtoRequest {
+  // The parent ids of the meta-fields requested
+  repeated string parent_ids = 1;
+}
+
+// GetMetaFieldsByParentIds response model
+message GetMetaFieldsByParentIdsProtoResponse {
+  message MetaFieldList {
+    // The meta-fields found, if any
+    repeated lightops.type.MetaFieldProto meta_fields = 1;
+  }
+
+  // Map of meta-field found, grouped by parent id
+  map<string, MetaFieldList> meta_fields = 1;
+}
+
+// GetMetaFieldsBySearch, request model
+message GetMetaFieldsBySearchProtoRequest {
+  // Globally unique identifier of parent to search in meta-fields of
+  string parent_id = 1;
+
+  // Search only in meta-fields with a specific namespace, if any specified
+  google.protobuf.StringValue namespace = 2;
+
+  // Search only in meta-fields with a specific name, if any specified
+  google.protobuf.StringValue name = 3;
+}
+
+// GetMetaFieldsBySearch, response model
+message GetMetaFieldsBySearchProtoResponse {
+  // The meta-fields found, if any
+  repeated lightops.type.MetaFieldProto results = 1;
+}

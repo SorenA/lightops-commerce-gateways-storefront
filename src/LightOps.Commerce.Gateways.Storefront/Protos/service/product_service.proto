@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package lightops.service;
+
+option csharp_namespace = "LightOps.Commerce.Proto.Services";
+
+import "google/protobuf/wrappers.proto";
+import "Protos/type/product.proto";
+
+enum ProductSortKeyProto {
+  DEFAULT = 0;
+  TITLE = 1;
+  CREATED_AT = 2;
+  UPDATED_AT = 3;
+  UNIT_PRICE = 4;
+}
+
+service ProductProtoService {
+  // Gets a list of products by handle
+  rpc GetProductsByHandles(GetProductsByHandlesProtoRequest) returns (GetProductsByHandlesProtoResponse) {}
+
+  // Gets a list of products by ids
+  rpc GetProductsByIds(GetProductsByIdsProtoRequest) returns (GetProductsByIdsProtoResponse) {}
+
+  // Gets a list of paginated products by search
+  rpc GetProductsBySearch(GetProductsBySearchProtoRequest) returns (GetProductsBySearchProtoResponse) {}
+}
+
+// GetProductsByHandles request model
+message GetProductsByHandlesProtoRequest {
+  // The handles of the products requested
+  repeated string handles = 1;
+}
+
+// GetProductsByHandles response model
+message GetProductsByHandlesProtoResponse {
+  // The products found, if any
+  repeated lightops.type.ProductProto products = 1;
+}
+
+// GetProductsByIds request model
+message GetProductsByIdsProtoRequest {
+  // The ids of the products requested
+  repeated string ids = 1;
+}
+
+// GetProductsByIds response model
+message GetProductsByIdsProtoResponse {
+  // The products found, if any
+  repeated lightops.type.ProductProto products = 1;
+}
+
+// GetProductsBySearch, request model
+message GetProductsBySearchProtoRequest {
+  // The term to search for
+  string search_term = 1;
+
+  // Search only in children with a specific category id, if any specified
+  google.protobuf.StringValue category_id = 2;
+
+  // The page cursor to use
+  google.protobuf.StringValue page_cursor = 3;
+
+  // The page size to use
+  google.protobuf.Int32Value page_size = 4;
+
+  // Sort the underlying list by the given key
+  ProductSortKeyProto sort_key = 5;
+
+  // Whether to reverse the order of the underlying list
+  google.protobuf.BoolValue reverse = 6;
+}
+
+// GetProductsBySearch, response model
+message GetProductsBySearchProtoResponse {
+  // The products found, if any
+  repeated lightops.type.ProductProto results = 1;
+
+  // The cursor of the next page
+  string next_page_cursor = 2;
+
+  // Whether another page can be fetched
+  bool has_next_page = 3;
+
+  // The total amount of results available
+  int32 total_results = 4;
+}

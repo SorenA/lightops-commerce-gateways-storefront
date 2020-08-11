@@ -6,15 +6,18 @@ namespace LightOps.Commerce.Gateways.Storefront.Api.Services
 {
     public interface INavigationService
     {
-        Task<INavigation> GetByIdAsync(string id);
-        Task<IList<INavigation>> GetByIdAsync(IList<string> ids);
-
-        Task<INavigation> GetByHandleAsync(string handle);
+        /// <summary>
+        /// Gets a list of navigations by handle
+        /// </summary>
+        /// <param name="handles">The handles of the navigations</param>
+        /// <returns>List of navigations, if any</returns>
         Task<IList<INavigation>> GetByHandleAsync(IList<string> handles);
 
-        Task<IList<INavigation>> GetByParentIdAsync(string parentId);
-        Task<IList<INavigation>> GetByParentIdAsync(IList<string> parentIds);
-
-        Task<IList<INavigation>> GetByRootAsync();
+        /// <summary>
+        /// Gets a list of navigations by ids
+        /// </summary>
+        /// <param name="ids">The ids of the navigations</param>
+        /// <returns>List of navigations, if any</returns>
+        Task<IList<INavigation>> GetByIdAsync(IList<string> ids);
     }
 }
