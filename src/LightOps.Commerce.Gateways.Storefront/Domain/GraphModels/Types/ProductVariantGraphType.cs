@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using GraphQL;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
@@ -17,16 +19,35 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
         {
             Name = "ProductVariant";
 
-            Field(m => m.Id);
+            Field<StringGraphType, string>()
+                .Name("Id")
+                .Description("Globally unique identifier, eg: gid://ProductVariant/1000")
+                .Resolve(ctx => ctx.Source.Id);
 
-            Field(m => m.ProductId);
+            Field<StringGraphType, string>()
+                .Name("ParentId")
+                .Description("Globally unique identifier of the parent product")
+                .Resolve(ctx => ctx.Source.ProductId);
 
-            Field(m => m.Title);
-            Field(m => m.Sku);
+            Field<StringGraphType, string>()
+                .Name("Title")
+                .Description("The title of the product variant")
+                .Resolve(ctx => ctx.Source.Title);
+
+            Field<StringGraphType, string>()
+                .Name("Sku")
+                .Description("The stock keeping unit of the product variant")
+                .Resolve(ctx => ctx.Source.Sku);
 
             Field<MoneyGraphType, Money>()
-                .Name("Price")
-                .Resolve(ctx => ctx.Source.Price);
+                .Name("UnitPrice")
+                .Description("The unit price of the product variant")
+                .Resolve(ctx => ctx.Source.UnitPrice);
+
+            Field<ListGraphType<ImageGraphType>, IList<IImage>>()
+                .Name("Images")
+                .Description("The images of the product variant")
+                .Resolve(ctx => ctx.Source.Images);
 
             // Meta-fields
             Field<MetaFieldGraphType, IMetaField>()

@@ -191,14 +191,21 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             // Queries
             StorefrontGraphQuery,
             // Types
+            ImageGraphType,
+            MoneyGraphType,
+
             ContentPageGraphType,
+
             NavigationGraphType,
+            SubNavigationGraphType,
             NavigationLinkGraphType,
+
             MetaFieldGraphType,
+
             CategoryGraphType,
+
             ProductGraphType,
             ProductVariantGraphType,
-            MoneyGraphType,
         }
 
         private readonly Dictionary<Graph, ServiceRegistration> _graph = new Dictionary<Graph, ServiceRegistration>
@@ -211,14 +218,21 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             // Queries
             [Graph.StorefrontGraphQuery] = ServiceRegistration.Singleton<StorefrontGraphQuery, StorefrontGraphQuery>(),
             // Types
+            [Graph.ImageGraphType] = ServiceRegistration.Singleton<ImageGraphType, ImageGraphType>(),
+            [Graph.MoneyGraphType] = ServiceRegistration.Singleton<MoneyGraphType, MoneyGraphType>(),
+
             [Graph.ContentPageGraphType] = ServiceRegistration.Singleton<ContentPageGraphType, ContentPageGraphType>(),
+
             [Graph.NavigationGraphType] = ServiceRegistration.Singleton<NavigationGraphType, NavigationGraphType>(),
+            [Graph.SubNavigationGraphType] = ServiceRegistration.Singleton<SubNavigationGraphType, SubNavigationGraphType>(),
             [Graph.NavigationLinkGraphType] = ServiceRegistration.Singleton<NavigationLinkGraphType, NavigationLinkGraphType>(),
+
             [Graph.MetaFieldGraphType] = ServiceRegistration.Singleton<MetaFieldGraphType, MetaFieldGraphType>(),
+
             [Graph.CategoryGraphType] = ServiceRegistration.Singleton<CategoryGraphType, CategoryGraphType>(),
+
             [Graph.ProductGraphType] = ServiceRegistration.Singleton<ProductGraphType, ProductGraphType>(),
             [Graph.ProductVariantGraphType] = ServiceRegistration.Singleton<ProductVariantGraphType, ProductVariantGraphType>(),
-            [Graph.MoneyGraphType] = ServiceRegistration.Singleton<MoneyGraphType, MoneyGraphType>(),
         };
         #endregion GraphQL
     }

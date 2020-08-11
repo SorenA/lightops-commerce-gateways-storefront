@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
@@ -19,20 +21,49 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
         {
             Name = "Navigation";
 
-            Field(m => m.Id);
-            Field(m => m.Handle);
+            Field<StringGraphType, string>()
+                .Name("Id")
+                .Description("Globally unique identifier, eg: gid://Navigation/1000")
+                .Resolve(ctx => ctx.Source.Id);
 
-            Field(m => m.ParentId, true);
+            Field<StringGraphType, string>()
+                .Name("ParentId")
+                .Description("Globally unique identifier of parent, 'gid://' if none")
+                .Resolve(ctx => ctx.Source.ParentId);
 
+            Field<StringGraphType, string>()
+                .Name("Handle")
+                .Description("A human-friendly unique string for the navigation")
+                .Resolve(ctx => ctx.Source.Handle);
+
+            Field<StringGraphType, string>()
+                .Name("Type")
+                .Description("The type of the navigation")
+                .Resolve(ctx => ctx.Source.Type);
+
+            Field<DateTimeGraphType, DateTime>()
+                .Name("CreatedAt")
+                .Description("The timestamp of navigation creation")
+                .Resolve(ctx => ctx.Source.CreatedAt);
+
+            Field<DateTimeGraphType, DateTime>()
+                .Name("UpdatedAt")
+                .Description("The timestamp of the latest navigation update")
+                .Resolve(ctx => ctx.Source.UpdatedAt);
 
             Field<NavigationLinkGraphType, INavigationLink>()
                 .Name("Header")
+                .Description("The header link of the navigation")
                 .Resolve(ctx => ctx.Source.Header);
+
             Field<ListGraphType<NavigationLinkGraphType>, IList<INavigationLink>>()
                 .Name("Links")
+                .Description("The links in the navigation")
                 .Resolve(ctx => ctx.Source.Links);
-            Field<ListGraphType<NavigationGraphType>, IList<INavigation>>()
+
+            Field<ListGraphType<SubNavigationGraphType>, IList<ISubNavigation>>()
                 .Name("SubNavigations")
+                .Description("The embedded sub-navigations")
                 .Resolve(ctx => ctx.Source.SubNavigations);
 
             // Meta-fields

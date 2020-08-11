@@ -9,9 +9,20 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
         {
             Name = "NavigationLink";
 
-            Field(m => m.Title);
-            Field(m => m.Url);
-            Field(m => m.Target);
+            Field<StringGraphType, string>()
+                .Name("Title")
+                .Description("The title of the link")
+                .Resolve(ctx => ctx.Source.Title);
+
+            Field<StringGraphType, string>()
+                .Name("Url")
+                .Description("The url of the link, if any")
+                .Resolve(ctx => ctx.Source.Url);
+
+            Field<StringGraphType, string>()
+                .Name("Target")
+                .Description("The target of the link, if any")
+                .Resolve(ctx => ctx.Source.Target);
         }
     }
 }

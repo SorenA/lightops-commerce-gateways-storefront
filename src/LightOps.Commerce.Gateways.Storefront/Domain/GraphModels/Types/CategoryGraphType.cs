@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
@@ -21,20 +23,55 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
         {
             Name = "Category";
 
-            Field(m => m.Id);
-            Field(m => m.Handle);
-            Field(m => m.Url);
+            Field<StringGraphType, string>()
+                .Name("Id")
+                .Description("Globally unique identifier, eg: gid://Category/1000")
+                .Resolve(ctx => ctx.Source.Id);
 
-            Field(m => m.ParentId, true);
+            Field<StringGraphType, string>()
+                .Name("ParentId")
+                .Description("Globally unique identifier of parent, 'gid://' if none")
+                .Resolve(ctx => ctx.Source.ParentId);
 
-            Field(m => m.Title);
-            Field(m => m.Type);
-            Field(m => m.Description);
+            Field<StringGraphType, string>()
+                .Name("Handle")
+                .Description("A human-friendly unique string for the category")
+                .Resolve(ctx => ctx.Source.Handle);
 
-            Field(m => m.SeoTitle);
-            Field(m => m.SeoDescription);
+            Field<StringGraphType, string>()
+                .Name("Title")
+                .Description("The title of the category")
+                .Resolve(ctx => ctx.Source.Title);
 
-            Field(m => m.PrimaryImage);
+            Field<StringGraphType, string>()
+                .Name("Url")
+                .Description("The url of the category")
+                .Resolve(ctx => ctx.Source.Url);
+
+            Field<StringGraphType, string>()
+                .Name("Type")
+                .Description("The type of the category")
+                .Resolve(ctx => ctx.Source.Type);
+
+            Field<StringGraphType, string>()
+                .Name("Description")
+                .Description("The description of the category")
+                .Resolve(ctx => ctx.Source.Description);
+
+            Field<DateTimeGraphType, DateTime>()
+                .Name("CreatedAt")
+                .Description("The timestamp of category creation")
+                .Resolve(ctx => ctx.Source.CreatedAt);
+
+            Field<DateTimeGraphType, DateTime>()
+                .Name("UpdatedAt")
+                .Description("The timestamp of the latest category update")
+                .Resolve(ctx => ctx.Source.UpdatedAt);
+
+            Field<ImageGraphType, IImage>()
+                .Name("PrimaryImage")
+                .Description("The primary image of the category")
+                .Resolve(ctx => ctx.Source.PrimaryImage);
 
             // Meta-fields
             Field<MetaFieldGraphType, IMetaField>()
