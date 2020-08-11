@@ -15,27 +15,17 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services
         {
             _navigationService = navigationService;
         }
-        
-        public async Task<IDictionary<string, INavigation>> LookupByIdAsync(IEnumerable<string> ids)
-        {
-            var result = await _navigationService.GetByIdAsync(ids.ToList());
-            return result.ToDictionary(x => x.Id);
-        }
 
         public async Task<IDictionary<string, INavigation>> LookupByHandleAsync(IEnumerable<string> handles)
         {
             var result = await _navigationService.GetByHandleAsync(handles.ToList());
-            return result.ToDictionary(x => x.Id);
+            return result.ToDictionary(x => x.Handle);
         }
 
-        public async Task<IDictionary<string, IList<INavigation>>> LookupByParentIdAsync(IEnumerable<string> parentIds)
+        public async Task<IDictionary<string, INavigation>> LookupByIdAsync(IEnumerable<string> ids)
         {
-            var result = await _navigationService.GetByParentIdAsync(parentIds.ToList());
-            return result
-                .GroupBy(x => x.ParentId)
-                .ToDictionary(
-                    x => x.Key, 
-                    x => (IList<INavigation>)x.ToList());
+            var result = await _navigationService.GetByIdAsync(ids.ToList());
+            return result.ToDictionary(x => x.Id);
         }
     }
 }

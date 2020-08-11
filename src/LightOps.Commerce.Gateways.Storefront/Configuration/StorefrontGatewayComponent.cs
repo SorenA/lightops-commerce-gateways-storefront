@@ -47,6 +47,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 
             ContentPageLookupService,
             NavigationLookupService,
+            MetaFieldLookupService,
             CategoryLookupService,
             ProductLookupService,
         }
@@ -63,6 +64,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 
             [Services.ContentPageLookupService] = ServiceRegistration.Transient<IContentPageLookupService, ContentPageLookupService>(),
             [Services.NavigationLookupService] = ServiceRegistration.Transient<INavigationLookupService, NavigationLookupService>(),
+            [Services.MetaFieldLookupService] = ServiceRegistration.Transient<IMetaFieldLookupService, MetaFieldLookupService>(),
             [Services.CategoryLookupService] = ServiceRegistration.Transient<ICategoryLookupService, CategoryLookupService>(),
             [Services.ProductLookupService] = ServiceRegistration.Transient<IProductLookupService, ProductLookupService>(),
         };

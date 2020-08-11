@@ -15,23 +15,17 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services
         {
             _productService = productService;
         }
-        
-        public async Task<IDictionary<string, IProduct>> LookupByIdAsync(IEnumerable<string> ids)
-        {
-            var result = await _productService.GetByIdAsync(ids.ToList());
-            return result.ToDictionary(x => x.Id);
-        }
 
         public async Task<IDictionary<string, IProduct>> LookupByHandleAsync(IEnumerable<string> handles)
         {
             var result = await _productService.GetByHandleAsync(handles.ToList());
-            return result.ToDictionary(x => x.Id);
+            return result.ToDictionary(x => x.Handle);
         }
 
-        public async Task<IDictionary<string, IList<IProduct>>> LookupByCategoryIdAsync(IEnumerable<string> categoryIds)
+        public async Task<IDictionary<string, IProduct>> LookupByIdAsync(IEnumerable<string> ids)
         {
-            var result = await _productService.GetByCategoryIdAsync(categoryIds.ToList());
-            return result;
+            var result = await _productService.GetByIdAsync(ids.ToList());
+            return result.ToDictionary(x => x.Id);
         }
     }
 }
