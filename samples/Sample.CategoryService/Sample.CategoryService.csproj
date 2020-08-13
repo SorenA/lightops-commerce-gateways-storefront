@@ -12,8 +12,8 @@
   <ItemGroup>
     <PackageReference Include="Bogus" Version="29.0.2" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.29.0" />
-    <PackageReference Include="LightOps.Commerce.Services.Category" Version="0.3.0" />
-    <PackageReference Include="LightOps.Commerce.Services.Category.Backends.InMemory" Version="0.3.0" />
+    <PackageReference Include="LightOps.Commerce.Services.Category" Version="0.4.0" />
+    <PackageReference Include="LightOps.Commerce.Services.Category.Backends.InMemory" Version="0.4.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.5" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.8" />
   </ItemGroup>

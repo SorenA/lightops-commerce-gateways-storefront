@@ -28,7 +28,13 @@ namespace Sample.ProductService.Data
             for (var categoryId = 0; categoryId < 30; categoryId++)
             {
                 // Add products
-                var products = GetProductFaker(categoryId.ToString(), new[] { "0", "1", "2" }).Generate(ProductsPerCategory);
+                var products = GetProductFaker($"gid://Category/{categoryId}", new[]
+                    {
+                        "gid://Category/0",
+                        "gid://Category/1",
+                        "gid://Category/2",
+                    })
+                    .Generate(ProductsPerCategory);
 
                 foreach (var product in products)
                 {
