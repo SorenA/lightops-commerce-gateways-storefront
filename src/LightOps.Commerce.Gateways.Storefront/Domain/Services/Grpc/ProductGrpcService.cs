@@ -81,12 +81,23 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
                     Reverse = reverse,
                 });
 
+                var results = response
+                    .Results
+                    .Select(x => new CursorNodeResult<IProduct>
+                    {
+                        Cursor = x.Cursor,
+                        Node = _mappingService.Map<ProductProto, IProduct>(x.Node),
+                    })
+                    .ToList();
+
                 return new SearchResult<IProduct>
                 {
                     HasNextPage = response.HasNextPage,
-                    NextPageCursor = response.NextPageCursor,
+                    HasPreviousPage = response.HasPreviousPage,
+                    StartCursor = response.StartCursor,
+                    EndCursor = response.EndCursor,
                     TotalResults = response.TotalResults,
-                    Results = _mappingService.Map<ProductProto, IProduct>(response.Results).ToList()
+                    Results = results,
                 };
             });
         }

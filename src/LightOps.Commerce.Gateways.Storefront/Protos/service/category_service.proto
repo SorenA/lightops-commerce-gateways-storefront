@@ -51,8 +51,10 @@ message GetCategoriesByIdsProtoResponse {
 
 // GetCategoriesBySearch, request model
 message GetCategoriesBySearchProtoRequest {
-  // The term to search for
-  string search_term = 1;
+  reserved 1;
+
+  // The term to search for, if any
+  google.protobuf.StringValue search_term = 7;
 
   // Search only in children with a specific parent id, if any specified. For no parent: 'gid://'
   google.protobuf.StringValue parent_id = 2;
@@ -72,15 +74,31 @@ message GetCategoriesBySearchProtoRequest {
 
 // GetCategoriesBySearch, response model
 message GetCategoriesBySearchProtoResponse {
-  // The categories found, if any
-  repeated lightops.type.CategoryProto results = 1;
+  reserved 1, 2;
 
-  // The cursor of the next page
-  string next_page_cursor = 2;
+  message CategoryResult {
+    // The cursor of the result
+    string cursor = 1;
+
+    // The result node
+    lightops.type.CategoryProto node = 2;
+  }
+
+  // The total amount of results available
+  int32 total_results = 4;
 
   // Whether another page can be fetched
   bool has_next_page = 3;
 
-  // The total amount of results available
-  int32 total_results = 4;
+  // Whether a previous page can be fetched
+  bool has_previous_page = 5;
+
+  // The cursor of the first result
+  string start_cursor = 6;
+
+  // The cursor of the last result
+  string end_cursor = 7;
+
+  // The categories found, if any
+  repeated CategoryResult results = 8;
 }
