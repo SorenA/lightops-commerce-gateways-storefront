@@ -149,7 +149,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                     return await loader.LoadAsync(ctx.Source.PrimaryCategoryId);
                 });
 
-            Field<CategoryGraphType, IList<ICategory>>()
+            Field<ListGraphType<CategoryGraphType>, IList<ICategory>>()
                 .Name("Categories")
                 .ResolveAsync(async ctx =>
                 {
