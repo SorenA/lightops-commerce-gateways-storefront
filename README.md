@@ -4,11 +4,11 @@ GraphQL based Storefront API gateway for LightOps Commerce services.
 
 Provides a GraphQL API for the following services:
 
-- Content Page V1
-- Navigation V1
-- MetaField V1
-- Category V1
-- Product V1
+- Content Page
+- Navigation
+- MetaField
+- Category
+- Product
 
 ![Nuget](https://img.shields.io/nuget/v/LightOps.Commerce.Gateways.Storefront)
 

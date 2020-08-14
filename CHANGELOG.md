@@ -7,18 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2020-08-14
+
 ### Added
 
 - Category models
 - Product models
 - Money models
-- Category gRPC service connection to v1 service definition
-- Product gRPC service connection to v1 service definition
+- Image models
+- Category gRPC service connection
+- Product gRPC service connection
 - Sample applications with mock data for categories and products
-- Data loader for loading categories by id, handle or parent id in bulk
-- Data loader for loading navigations by id, handle or parent id in bulk
-- Data loader for loading content pages by id, handle or parent id in bulk
-- Data loader for loading products by id, handle or category id in bulk
+- Data loader for loading categories by id or handle in bulk
+- Data loader for loading navigations by id or handle in bulk
+- Data loader for loading content pages by id or handle in bulk
+- Data loader for loading products by id or handle in bulk
+- Data loader for loading meta-fields by id or parent id in bulk
+
+### Changed
+
+- **Breaking** - Updated refactored service definition for Navigation gRPC service
+- **Breaking** - Updated refactored service definition for Content Page gRPC service
+- **Breaking** - Updated refactored service definition for Meta-field gRPC service
 
 ## [0.1.0] - 2020-07-04
 
@@ -31,10 +41,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Navigation models
 - Content Page models
 - Meta-field models
-- Navigation gRPC service connection to v1 service definition
-- Content Page gRPC service connection to v1 service definition
-- Meta-field gRPC service connection to v1 service definition
+- Navigation gRPC service connection
+- Content Page gRPC service connection
+- Meta-field gRPC service connection
 - Sample applications with mock data and GraphQL API
 
-[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.1.0...develop
+[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.2.0...develop
+[0.2.0]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.0
 [0.1.0]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.1.0
