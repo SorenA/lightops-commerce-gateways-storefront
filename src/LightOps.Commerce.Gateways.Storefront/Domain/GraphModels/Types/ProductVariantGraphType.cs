@@ -51,6 +51,11 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 .Description("The images of the product variant")
                 .Resolve(ctx => ctx.Source.Images);
 
+            Field<ImageGraphType, IImage>()
+                .Name("PrimaryImage")
+                .Description("The primary image of the product variant")
+                .Resolve(ctx => ctx.Source.Images.FirstOrDefault());
+
             #region Meta-fields
 
             Field<MetaFieldGraphType, IMetaField>()

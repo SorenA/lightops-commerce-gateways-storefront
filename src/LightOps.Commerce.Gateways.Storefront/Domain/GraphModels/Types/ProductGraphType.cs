@@ -89,6 +89,30 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 .Description("The images of the product")
                 .Resolve(ctx => ctx.Source.Images);
 
+            Field<ImageGraphType, IImage>()
+                .Name("PrimaryImage")
+                .Description("The primary image of the product")
+                .Resolve(ctx =>
+                {
+                    if (ctx.Source.Images.Any())
+                    {
+                        // First image of product
+                        return ctx.Source.Images.First();
+                    }
+
+                    foreach (var productVariant in ctx.Source.Variants)
+                    {
+                        if (productVariant.Images.Any())
+                        {
+                            // First image of product product
+                            return ctx.Source.Images.First();
+                        }
+                    }
+
+                    // No images
+                    return null;
+                });
+
             Field<MoneyGraphType, Money>()
                 .Name("UnitPriceFrom")
                 .Description("The unit price of the cheapest variant")
