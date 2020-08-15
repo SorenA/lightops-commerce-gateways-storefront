@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2020-08-15
+
+### Added
+
+- Product and product variant primary images
+
 ## [0.2.0] - 2020-08-14
 
 ### Added
@@ -46,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Meta-field gRPC service connection
 - Sample applications with mock data and GraphQL API
 
-[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.2.0...develop
+[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.2.1...develop
+[0.2.1]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.1
 [0.2.0]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.0
 [0.1.0]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.1.0
