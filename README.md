@@ -50,6 +50,9 @@ services.AddLightOpsDependencyInjection(root =>
         .AddCqrs()
         .AddStorefrontGateway(gateway =>
         {
+            // Configure CDN
+            gateway.UseImageCdn("https://cdn.example.com");
+
             // Configure service connections
             gateway.UseContentPages("http://sample-content-page-service:80");
             gateway.UseNavigations("http://sample-navigation-service:80");
@@ -87,6 +90,8 @@ Using the `IStorefrontGatewayComponent` configuration, the following can be conf
 ```csharp
 public interface IStorefrontGatewayComponent
 {
+    IStorefrontGatewayComponent UseImageCdn(string cdnHost);
+
     IStorefrontGatewayComponent UseContentPages(string grpcEndpoint);
     IStorefrontGatewayComponent UseNavigations(string grpcEndpoint);
     IStorefrontGatewayComponent UseMetaFields(string grpcEndpoint);
@@ -94,3 +99,5 @@ public interface IStorefrontGatewayComponent
     IStorefrontGatewayComponent UseProducts(string grpcEndpoint);
 }
 ```
+
+`UseImageCdn` will enable CDN prefixing, by prefixing the defined host to images without an absolute uri.

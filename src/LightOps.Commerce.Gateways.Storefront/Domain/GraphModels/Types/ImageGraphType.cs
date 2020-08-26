@@ -1,11 +1,12 @@
 ﻿using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Models;
+using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 {
     public sealed class ImageGraphType : ObjectGraphType<IImage>
     {
-        public ImageGraphType()
+        public ImageGraphType(IImageCdnProvider imageCdnProvider)
         {
             Name = "Image";
 
@@ -17,7 +18,17 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field<StringGraphType, string>()
                 .Name("Url")
                 .Description("The url where the image may be accessed")
-                .Resolve(ctx => ctx.Source.Url);
+                .Resolve(ctx =>
+                {
+                    // Check if image CDN is enabled
+                    if (imageCdnProvider.IsEnabled && ctx.Source.Url.StartsWith("/"))
+                    {
+                        // CDN is enabled, url is relative
+                        return $"{imageCdnProvider.CdnHost}{ctx.Source.Url}";
+                    }
+
+                    return ctx.Source.Url;
+                });
 
             Field<StringGraphType, string>()
                 .Name("AltText")

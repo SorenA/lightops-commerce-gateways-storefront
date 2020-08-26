@@ -114,6 +114,8 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         #region Providers
         internal enum Providers
         {
+            ImageCdnProvider,
+
             ContentPageEndpointProvider,
             NavigationEndpointProvider,
             MetaFieldEndpointProvider,
@@ -123,12 +125,24 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 
         private readonly Dictionary<Providers, ServiceRegistration> _providers = new Dictionary<Providers, ServiceRegistration>()
         {
+            [Providers.ImageCdnProvider] = ServiceRegistration.Singleton<IImageCdnProvider>(new ImageCdnProvider()),
+
             [Providers.ContentPageEndpointProvider] = ServiceRegistration.Singleton<IContentPageEndpointProvider>(new ContentPageEndpointProvider()),
             [Providers.NavigationEndpointProvider] = ServiceRegistration.Singleton<INavigationEndpointProvider>(new NavigationEndpointProvider()),
             [Providers.MetaFieldEndpointProvider] = ServiceRegistration.Singleton<IMetaFieldEndpointProvider>(new MetaFieldEndpointProvider()),
             [Providers.CategoryEndpointProvider] = ServiceRegistration.Singleton<ICategoryEndpointProvider>(new CategoryEndpointProvider()),
             [Providers.ProductEndpointProvider] = ServiceRegistration.Singleton<IProductEndpointProvider>(new ProductEndpointProvider()),
         };
+
+        public IStorefrontGatewayComponent UseImageCdn(string cdnHost)
+        {
+            _providers[Providers.ImageCdnProvider].ImplementationInstance = new ImageCdnProvider
+            {
+                IsEnabled = true,
+                CdnHost = cdnHost,
+            };
+            return this;
+        }
 
         public IStorefrontGatewayComponent UseContentPages(string grpcEndpoint)
         {
