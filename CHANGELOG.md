@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.3] - 2020-09-23
+
+### Changed
+
+- Updated GraphQL libraries
+
 ## [0.2.2] - 2020-08-26
 
 ### Added
@@ -58,7 +64,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Meta-field gRPC service connection
 - Sample applications with mock data and GraphQL API
 
-[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.2.2...develop
+[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.2.3...develop
+[0.2.3]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.3
 [0.2.2]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.2
 [0.2.1]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.1
 [0.2.0]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.0
