@@ -42,7 +42,6 @@ namespace Sample.StorefrontGateway
                 .AddGraphQL((options, provider) =>
                 {
                     options.EnableMetrics = true;
-                    options.ExposeExceptions = true;
 
                     var logger = provider.GetRequiredService<ILogger<Startup>>();
                     options.UnhandledExceptionDelegate = ctx =>

@@ -10,11 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL" Version="3.0.0-preview-1660" />
-    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="3.5.0-alpha0070" />
-    <PackageReference Include="GraphQL.Server.Transports.AspNetCore.SystemTextJson" Version="3.5.0-alpha0070" />
-    <PackageReference Include="GraphQL.Server.Ui.GraphiQL" Version="3.5.0-alpha0070" />
-    <PackageReference Include="GraphQL.Server.Ui.Playground" Version="3.5.0-alpha0070" />
+    <PackageReference Include="GraphQL" Version="3.0.0.2057" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="4.0.1" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore.SystemTextJson" Version="4.0.1" />
+    <PackageReference Include="GraphQL.Server.Ui.GraphiQL" Version="4.0.1" />
+    <PackageReference Include="GraphQL.Server.Ui.Playground" Version="4.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.8" />
   </ItemGroup>
 

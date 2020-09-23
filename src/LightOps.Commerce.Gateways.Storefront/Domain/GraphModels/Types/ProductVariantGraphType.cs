@@ -81,7 +81,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field<ListGraphType<MetaFieldGraphType>, IList<IMetaField>>()
                 .Name("MetaFields")
                 .Description("Connection to a all meta-fields")
-                .ResolveAsync(async ctx =>
+                .ResolveAsync(ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
                     {
@@ -90,7 +90,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 
                     var loader = dataLoaderContextAccessor.Context
                         .GetOrAddBatchLoader<string, IList<IMetaField>>("MetaField.LookupByParentIdsAsync", metaFieldLookupService.LookupByParentIdsAsync);
-                    return await loader.LoadAsync(ctx.Source.Id);
+                    return loader.LoadAsync(ctx.Source.Id);
                 });
 
             #endregion Meta-fields

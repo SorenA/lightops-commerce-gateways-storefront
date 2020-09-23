@@ -36,7 +36,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                 .Name("ContentPage")
                 .Argument<StringGraphType>("id", "Id of the content page")
                 .Argument<StringGraphType>("handle", "Handle of the content page")
-                .ResolveAsync(async ctx =>
+                .ResolveAsync(ctx =>
                 {
                     if (!contentPageEndpointProvider.IsEnabled)
                     {
@@ -47,14 +47,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                     {
                         var loader = dataLoaderContextAccessor.Context
                             .GetOrAddBatchLoader<string, IContentPage>("ContentPage.LookupByIdAsync", contentPageLookupService.LookupByIdAsync);
-                        return await loader.LoadAsync(ctx.GetArgument<string>("id"));
+                        return loader.LoadAsync(ctx.GetArgument<string>("id"));
                     }
 
                     if (ctx.HasArgument("handle"))
                     {
                         var loader = dataLoaderContextAccessor.Context
                             .GetOrAddBatchLoader<string, IContentPage>("ContentPage.LookupByHandleAsync", contentPageLookupService.LookupByHandleAsync);
-                        return await loader.LoadAsync(ctx.GetArgument<string>("handle"));
+                        return loader.LoadAsync(ctx.GetArgument<string>("handle"));
                     }
 
                     return null;
@@ -92,7 +92,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                 .Name("Navigation")
                 .Argument<StringGraphType>("id", "Id of the navigation")
                 .Argument<StringGraphType>("handle", "Handle of the navigation")
-                .ResolveAsync(async ctx =>
+                .ResolveAsync(ctx =>
                 {
                     if (!navigationEndpointProvider.IsEnabled)
                     {
@@ -103,14 +103,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                     {
                         var loader = dataLoaderContextAccessor.Context
                             .GetOrAddBatchLoader<string, INavigation>("Navigation.LookupByIdAsync", navigationLookupService.LookupByIdAsync);
-                        return await loader.LoadAsync(ctx.GetArgument<string>("id"));
+                        return loader.LoadAsync(ctx.GetArgument<string>("id"));
                     }
 
                     if (ctx.HasArgument("handle"))
                     {
                         var loader = dataLoaderContextAccessor.Context
                             .GetOrAddBatchLoader<string, INavigation>("Navigation.LookupByHandleAsync", navigationLookupService.LookupByHandleAsync);
-                        return await loader.LoadAsync(ctx.GetArgument<string>("handle"));
+                        return loader.LoadAsync(ctx.GetArgument<string>("handle"));
                     }
 
                     return null;
@@ -124,7 +124,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                 .Name("Category")
                 .Argument<StringGraphType>("id", "Id of the category")
                 .Argument<StringGraphType>("handle", "Handle of the category")
-                .ResolveAsync(async ctx =>
+                .ResolveAsync(ctx =>
                 {
                     if (!categoryEndpointProvider.IsEnabled)
                     {
@@ -135,14 +135,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                     {
                         var loader = dataLoaderContextAccessor.Context
                             .GetOrAddBatchLoader<string, ICategory>("Category.LookupByIdAsync", categoryLookupService.LookupByIdAsync);
-                        return await loader.LoadAsync(ctx.GetArgument<string>("id"));
+                        return loader.LoadAsync(ctx.GetArgument<string>("id"));
                     }
 
                     if (ctx.HasArgument("handle"))
                     {
                         var loader = dataLoaderContextAccessor.Context
                             .GetOrAddBatchLoader<string, ICategory>("Category.LookupByHandleAsync", categoryLookupService.LookupByHandleAsync);
-                        return await loader.LoadAsync(ctx.GetArgument<string>("handle"));
+                        return loader.LoadAsync(ctx.GetArgument<string>("handle"));
                     }
 
                     return null;
@@ -180,7 +180,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                 .Name("Product")
                 .Argument<StringGraphType>("id", "Id of the category")
                 .Argument<StringGraphType>("handle", "Handle of the category")
-                .ResolveAsync(async ctx =>
+                .ResolveAsync(ctx =>
                 {
                     if (!productEndpointProvider.IsEnabled)
                     {
@@ -191,14 +191,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                     {
                         var loader = dataLoaderContextAccessor.Context
                             .GetOrAddBatchLoader<string, IProduct>("Product.LookupByIdAsync", productLookupService.LookupByIdAsync);
-                        return await loader.LoadAsync(ctx.GetArgument<string>("id"));
+                        return loader.LoadAsync(ctx.GetArgument<string>("id"));
                     }
 
                     if (ctx.HasArgument("handle"))
                     {
                         var loader = dataLoaderContextAccessor.Context
                             .GetOrAddBatchLoader<string, IProduct>("Product.LookupByHandleAsync", productLookupService.LookupByHandleAsync);
-                        return await loader.LoadAsync(ctx.GetArgument<string>("handle"));
+                        return loader.LoadAsync(ctx.GetArgument<string>("handle"));
                     }
 
                     return null;

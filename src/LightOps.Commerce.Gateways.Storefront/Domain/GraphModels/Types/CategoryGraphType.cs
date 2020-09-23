@@ -102,7 +102,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field<ListGraphType<MetaFieldGraphType>, IList<IMetaField>>()
                 .Name("MetaFields")
                 .Description("Connection to a all meta-fields")
-                .ResolveAsync(async ctx =>
+                .ResolveAsync(ctx =>
                 {
                     if (!metaFieldEndpointProvider.IsEnabled)
                     {
@@ -111,7 +111,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 
                     var loader = dataLoaderContextAccessor.Context
                         .GetOrAddBatchLoader<string, IList<IMetaField>>("MetaField.LookupByParentIdsAsync", metaFieldLookupService.LookupByParentIdsAsync);
-                    return await loader.LoadAsync(ctx.Source.Id);
+                    return loader.LoadAsync(ctx.Source.Id);
                 });
 
             #endregion
@@ -120,7 +120,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 
             Field<CategoryGraphType, ICategory>()
                 .Name("Parent")
-                .ResolveAsync(async ctx =>
+                .ResolveAsync(ctx =>
                 {
                     if (string.IsNullOrEmpty(ctx.Source.ParentId))
                     {
@@ -129,7 +129,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 
                     var loader = dataLoaderContextAccessor.Context
                         .GetOrAddBatchLoader<string, ICategory>("Category.LookupByIdAsync", categoryLookupService.LookupByIdAsync);
-                    return await loader.LoadAsync(ctx.Source.ParentId);
+                    return loader.LoadAsync(ctx.Source.ParentId);
                 });
 
             Connection<CategoryGraphType>()
