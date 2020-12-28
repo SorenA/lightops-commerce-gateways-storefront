@@ -14,6 +14,8 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Mappers
                 Id = src.Id,
                 Url = src.Url,
                 AltText = src.AltText,
+                FocalCenterTop = src.FocalCenterTop ?? 0.5,
+                FocalCenterLeft = src.FocalCenterLeft ?? 0.5,
             };
         }
     }

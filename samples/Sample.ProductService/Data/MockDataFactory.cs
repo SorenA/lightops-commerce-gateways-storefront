@@ -107,7 +107,9 @@ namespace Sample.ProductService.Data
             return new Faker<Image>()
                 .RuleFor(x => x.Id, f => $"gid://Image/{f.UniqueIndex}")
                 .RuleFor(x => x.Url, f => f.Image.PicsumUrl())
-                .RuleFor(x => x.AltText, f => f.Commerce.ProductAdjective());
+                .RuleFor(x => x.AltText, f => f.Commerce.ProductAdjective())
+                .RuleFor(x => x.FocalCenterTop, f => f.Random.Double(0, 1))
+                .RuleFor(x => x.FocalCenterLeft, f => f.Random.Double(0, 1));
         }
     }
 }

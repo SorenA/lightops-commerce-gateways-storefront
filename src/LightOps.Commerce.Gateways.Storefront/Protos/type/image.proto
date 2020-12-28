@@ -4,13 +4,21 @@ package lightops.type;
 
 option csharp_namespace = "LightOps.Commerce.Proto.Types";
 
+import "google/protobuf/wrappers.proto";
+
 message ImageProto {
-  // Globally unique identifier, eg: gid://Image/1000
-  string id = 1;
+	// Globally unique identifier, eg: gid://Image/1000
+	string id = 1;
 
-  // The url where the image may be accessed
-  string url = 2;
+	// The url where the image may be accessed
+	string url = 2;
 
-  // The alt text of the image
-  string alt_text = 3;
+	// The alt text of the image
+	string alt_text = 3;
+
+	// The focal center of the image from the top ranging 0-1
+	google.protobuf.DoubleValue focal_center_top = 4;
+
+	// The focal center of the image from the left ranging 0-1
+	google.protobuf.DoubleValue focal_center_left = 5;
 }

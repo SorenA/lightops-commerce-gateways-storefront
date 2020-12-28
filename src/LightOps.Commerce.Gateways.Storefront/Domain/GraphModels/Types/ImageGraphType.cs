@@ -34,6 +34,16 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 .Name("AltText")
                 .Description("The alt text of the image")
                 .Resolve(ctx => ctx.Source.AltText);
+
+            Field<FloatGraphType, double>()
+                .Name("FocalCenterTop")
+                .Description("The focal center of the image from the top ranging 0-1")
+                .Resolve(ctx => ctx.Source.FocalCenterTop);
+
+            Field<FloatGraphType, double>()
+                .Name("FocalCenterLeft")
+                .Description("The focal center of the image from the left ranging 0-1")
+                .Resolve(ctx => ctx.Source.FocalCenterLeft);
         }
     }
 }

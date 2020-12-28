@@ -54,6 +54,8 @@ namespace Sample.CategoryService.Data
                     Id = $"gid://Image/1000{f.UniqueIndex}",
                     Url = f.Image.PicsumUrl(),
                     AltText = f.Lorem.Sentence(),
+                    FocalCenterTop = f.Random.Double(0, 1),
+                    FocalCenterLeft = f.Random.Double(0, 1),
                 });
         }
     }

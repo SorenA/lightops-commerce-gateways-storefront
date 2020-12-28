@@ -16,5 +16,15 @@
         /// The alt text of the image
         /// </summary>
         string AltText { get; set; }
+
+        /// <summary>
+        /// The focal center of the image from the top ranging 0-1
+        /// </summary>
+        double FocalCenterTop { get; set; }
+
+        /// <summary>
+        /// The focal center of the image from the left ranging 0-1
+        /// </summary>
+        double FocalCenterLeft { get; set; }
     }
 }
