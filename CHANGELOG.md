@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.4] - 2020-12-28
+
+### Added
+
+- Image focal center
+
 ## [0.2.3] - 2020-09-23
 
 ### Changed
@@ -64,7 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Meta-field gRPC service connection
 - Sample applications with mock data and GraphQL API
 
-[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.2.3...develop
+[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.2.4...develop
+[0.2.4]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.4
 [0.2.3]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.3
 [0.2.2]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.2
 [0.2.1]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.1
