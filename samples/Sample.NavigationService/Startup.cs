@@ -1,9 +1,8 @@
 using LightOps.Commerce.Services.Navigation.Backends.InMemory.Configuration;
 using LightOps.Commerce.Services.Navigation.Configuration;
-using LightOps.Commerce.Services.Navigation.Domain.Services.Grpc;
+using LightOps.Commerce.Services.Navigation.Domain.GprcServices;
 using LightOps.CQRS.Configuration;
 using LightOps.DependencyInjection.Configuration;
-using LightOps.Mapping.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -22,7 +21,6 @@ namespace Sample.NavigationService
             services.AddLightOpsDependencyInjection(root =>
             {
                 root
-                    .AddMapping()
                     .AddCqrs()
                     .AddNavigationService(service =>
                     {

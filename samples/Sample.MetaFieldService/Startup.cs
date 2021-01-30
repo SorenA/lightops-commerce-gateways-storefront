@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using LightOps.Commerce.Services.MetaField.Backends.InMemory.Configuration;
 using LightOps.Commerce.Services.MetaField.Configuration;
-using LightOps.Commerce.Services.MetaField.Domain.Services.Grpc;
+using LightOps.Commerce.Services.MetaField.Domain.GrpcServices;
 using LightOps.CQRS.Configuration;
 using LightOps.DependencyInjection.Configuration;
-using LightOps.Mapping.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,7 +21,6 @@ namespace Sample.MetaFieldService
             services.AddLightOpsDependencyInjection(root =>
             {
                 root
-                    .AddMapping()
                     .AddCqrs()
                     .AddMetaFieldService(service =>
                     {

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
-using LightOps.Commerce.Services.Navigation.Api.Models;
-using LightOps.Commerce.Services.Navigation.Domain.Models;
+using Google.Protobuf.WellKnownTypes;
+using LightOps.Commerce.Proto.Types;
 
 namespace Sample.NavigationService.Data
 {
@@ -15,7 +15,7 @@ namespace Sample.NavigationService.Data
         public int LeafEntities { get; set; } = 3;
         public int LinksPerLeafEntity { get; set; } = 3;
 
-        public IList<INavigation> Navigations { get; internal set; } = new List<INavigation>();
+        public IList<Navigation> Navigations { get; internal set; } = new List<Navigation>();
 
         public void Generate()
         {
@@ -53,12 +53,12 @@ namespace Sample.NavigationService.Data
                 .RuleFor(x => x.ParentId, f => "gid://")
                 .RuleFor(x => x.Handle, (f, x) => $"navigation-{f.UniqueIndex}")
                 .RuleFor(x => x.Type, f => "navigation")
-                .RuleFor(x => x.CreatedAt, f => f.Date.Past(2))
-                .RuleFor(x => x.UpdatedAt, f => f.Date.Past())
+                .RuleFor(x => x.CreatedAt, f => Timestamp.FromDateTime(f.Date.Past(2).ToUniversalTime()))
+                .RuleFor(x => x.UpdatedAt, f => Timestamp.FromDateTime(f.Date.Past().ToUniversalTime()))
                 .RuleFor(x => x.Header, (f, x) => new NavigationLink
                 {
-                    Title = f.Commerce.Categories(1).First(),
-                    Url = f.Internet.UrlRootedPath(),
+                    Titles = {GetLocalizedStrings(f.Commerce.Categories(1).First())},
+                    Urls = {GetLocalizedStrings(f.Internet.UrlRootedPath(), true)},
                 });
         }
 
@@ -67,16 +67,40 @@ namespace Sample.NavigationService.Data
             return new Faker<SubNavigation>()
                 .RuleFor(x => x.Header, (f, x) => new NavigationLink
                 {
-                    Title = f.Commerce.Categories(1).First(),
-                    Url = f.Internet.UrlRootedPath(),
+                    Titles = {GetLocalizedStrings(f.Commerce.Categories(1).First())},
+                    Urls = {GetLocalizedStrings(f.Internet.UrlRootedPath(), true)},
                 });
         }
 
         private Faker<NavigationLink> GetNavigationLinkFaker()
         {
             return new Faker<NavigationLink>()
-                .RuleFor(x => x.Title, f => f.Commerce.ProductName())
-                .RuleFor(x => x.Url, f => f.Internet.UrlRootedPath());
+                .FinishWith((f, x) =>
+                {
+                    x.Titles.AddRange(GetLocalizedStrings(f.Commerce.ProductName()));
+                    x.Urls.AddRange(GetLocalizedStrings(f.Internet.UrlRootedPath(), true));
+                });
+        }
+
+        private IList<LocalizedString> GetLocalizedStrings(string value, bool isUrl = false)
+        {
+            return new List<LocalizedString>
+            {
+                new LocalizedString
+                {
+                    LanguageCode = "en-US",
+                    Value = isUrl
+                        ? $"/en-us{value}"
+                        : $"{value} [en-US]",
+                },
+                new LocalizedString
+                {
+                    LanguageCode = "da-DK",
+                    Value = isUrl
+                        ? $"/da-dk{value}"
+                        : $"{value} [da-DK]",
+                }
+            };
         }
     }
 }

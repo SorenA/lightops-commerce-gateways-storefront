@@ -1,9 +1,8 @@
 using LightOps.Commerce.Services.Category.Backends.InMemory.Configuration;
 using LightOps.Commerce.Services.Category.Configuration;
-using LightOps.Commerce.Services.Category.Domain.Services.Grpc;
+using LightOps.Commerce.Services.Category.Domain.GrpcServices;
 using LightOps.CQRS.Configuration;
 using LightOps.DependencyInjection.Configuration;
-using LightOps.Mapping.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -22,7 +21,6 @@ namespace Sample.CategoryService
             services.AddLightOpsDependencyInjection(root =>
             {
                 root
-                    .AddMapping()
                     .AddCqrs()
                     .AddCategoryService(service =>
                     {

@@ -1,9 +1,8 @@
 using LightOps.Commerce.Services.Product.Backends.InMemory.Configuration;
 using LightOps.Commerce.Services.Product.Configuration;
-using LightOps.Commerce.Services.Product.Domain.Services.Grpc;
+using LightOps.Commerce.Services.Product.Domain.GrpcServices;
 using LightOps.CQRS.Configuration;
 using LightOps.DependencyInjection.Configuration;
-using LightOps.Mapping.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -22,7 +21,6 @@ namespace Sample.ProductService
             services.AddLightOpsDependencyInjection(root =>
             {
                 root
-                    .AddMapping()
                     .AddCqrs()
                     .AddProductService(service =>
                     {
