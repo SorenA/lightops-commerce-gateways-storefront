@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
 
     <PackageId>LightOps.Commerce.Gateways.Storefront</PackageId>
     <Authors>SorenA</Authors>
@@ -16,12 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.12.3" />
-    <PackageReference Include="GraphQL" Version="3.0.0.2057" />
-    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="4.0.1" />
-    <PackageReference Include="GraphQL.Server.Ui.GraphiQL" Version="4.0.1" />
-    <PackageReference Include="Grpc.Net.Client" Version="2.29.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.30.0">
+    <PackageReference Include="Google.Protobuf" Version="3.14.0" />
+    <PackageReference Include="GraphQL" Version="3.3.2" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="4.4.1" />
+    <PackageReference Include="GraphQL.Server.Ui.GraphiQL" Version="4.4.1" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.34.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.35.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
