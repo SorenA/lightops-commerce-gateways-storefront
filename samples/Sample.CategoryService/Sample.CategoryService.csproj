@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LightOps.Commerce.Services.Category" Version="0.5.0" />
-    <PackageReference Include="LightOps.Commerce.Services.Category.Backends.InMemory" Version="0.5.0" />
+    <PackageReference Include="LightOps.Commerce.Services.Category" Version="0.5.1" />
+    <PackageReference Include="LightOps.Commerce.Services.Category.Backends.InMemory" Version="0.5.1" />
     <PackageReference Include="Bogus" Version="32.0.2" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.34.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />

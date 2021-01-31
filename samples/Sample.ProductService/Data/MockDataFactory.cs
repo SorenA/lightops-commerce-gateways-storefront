@@ -75,6 +75,7 @@ namespace Sample.ProductService.Data
                 .RuleFor(x => x.UpdatedAt, f => Timestamp.FromDateTime(f.Date.Past().ToUniversalTime()))
                 .RuleFor(x => x.PrimaryCategoryId, f => primaryCategoryId)
                 .RuleFor(x => x.IsSearchable, f => true)
+                .RuleFor(x => x.SortOrder, f => f.Random.Long(0, 10000))
                 .FinishWith((f, x) =>
                 {
                     var title = f.Commerce.ProductName();
@@ -100,6 +101,7 @@ namespace Sample.ProductService.Data
                 .RuleFor(x => x.Id, f => $"gid://ProductVariant/{f.UniqueIndex}")
                 .RuleFor(x => x.ProductId, f => productId)
                 .RuleFor(x => x.Sku, f => f.Commerce.Ean8())
+                .RuleFor(x => x.SortOrder, f => f.Random.Long(0, 10000))
                 .FinishWith((f, x) =>
                 {
                     x.Titles.AddRange(GetLocalizedStrings(f.Commerce.Color()));

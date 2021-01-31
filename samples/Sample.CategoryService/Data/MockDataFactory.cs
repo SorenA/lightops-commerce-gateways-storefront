@@ -55,6 +55,7 @@ namespace Sample.CategoryService.Data
                     FocalCenterLeft = f.Random.Double(0, 1),
                 })
                 .RuleFor(x => x.IsSearchable, f => true)
+                .RuleFor(x => x.SortOrder, f => f.Random.Long(0, 10000))
                 .FinishWith((f, x) =>
                 {
                     var title = f.Address.City();

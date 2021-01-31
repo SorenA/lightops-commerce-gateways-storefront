@@ -1,6 +1,6 @@
 using LightOps.Commerce.Services.Navigation.Backends.InMemory.Configuration;
 using LightOps.Commerce.Services.Navigation.Configuration;
-using LightOps.Commerce.Services.Navigation.Domain.GprcServices;
+using LightOps.Commerce.Services.Navigation.Domain.GrpcServices;
 using LightOps.CQRS.Configuration;
 using LightOps.DependencyInjection.Configuration;
 using Microsoft.AspNetCore.Builder;

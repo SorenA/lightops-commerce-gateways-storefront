@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bogus;
-using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using LightOps.Commerce.Proto.Types;
 
@@ -14,7 +13,7 @@ namespace Sample.ContentPageService.Data
         public int RootEntities { get; set; } = 2;
         public int LeafEntities { get; set; } = 3;
 
-        public IList<ContentPage> ContentPages { get; internal set; } = new List<LightOps.Commerce.Proto.Types.ContentPage>();
+        public IList<ContentPage> ContentPages { get; internal set; } = new List<ContentPage>();
 
         public void Generate()
         {
@@ -56,6 +55,7 @@ namespace Sample.ContentPageService.Data
                     FocalCenterLeft = f.Random.Double(0, 1),
                 })
                 .RuleFor(x => x.IsSearchable, f => true)
+                .RuleFor(x => x.SortOrder, f => f.Random.Long(0, 10000))
                 .FinishWith((f, x) =>
                 {
                     var title = f.Address.City();
