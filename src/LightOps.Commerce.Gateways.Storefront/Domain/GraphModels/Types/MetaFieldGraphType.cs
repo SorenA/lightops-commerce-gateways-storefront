@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using GraphQL.Types;
+using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Contexts;
 using LightOps.Commerce.Proto.Types;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
@@ -38,7 +40,24 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field<StringGraphType, string>()
                 .Name("Value")
                 .Description("The value of the meta-field")
-                .Resolve(ctx => ctx.Source.Value);
+                .Resolve(ctx =>
+                {
+                    switch (ctx.Source.ValueOneofCase)
+                    {
+                        case MetaField.ValueOneofOneofCase.Value:
+                            // Return non-localized value
+                            return ctx.Source.Value;
+                        case MetaField.ValueOneofOneofCase.LocalizedValues:
+                            // Return localized value
+                            var userContext = (StorefrontGraphUserContext)ctx.UserContext;
+
+                            return ctx.Source.LocalizedValues.Values
+                                .FirstOrDefault(x => x.LanguageCode == userContext.LanguageCode)
+                                ?.Value;
+                    }
+
+                    return null;
+                });
 
             Field<DateTimeGraphType, DateTime>()
                 .Name("CreatedAt")

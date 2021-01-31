@@ -35,7 +35,10 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
                     Ids = {ids}
                 });
 
-                return response.MetaFields;
+                // Filter out non-public meta-fields
+                return response.MetaFields
+                    .Where(x => x.IsPublic)
+                    .ToList();
             });
         }
 
@@ -52,7 +55,10 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
                 return response.MetaFields
                     .ToDictionary(
                         k => k.Key,
-                        v => (IList<MetaField>)v.Value.MetaFields);
+                        // Filter out non-public meta-fields
+                        v => (IList<MetaField>) v.Value.MetaFields
+                            .Where(x => x.IsPublic)
+                            .ToList());
             });
         }
 
@@ -68,7 +74,10 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
                     Name = name,
                 });
 
-                return response.Results;
+                // Filter out non-public meta-fields
+                return response.Results
+                    .Where(x => x.IsPublic)
+                    .ToList();
             });
         }
     }

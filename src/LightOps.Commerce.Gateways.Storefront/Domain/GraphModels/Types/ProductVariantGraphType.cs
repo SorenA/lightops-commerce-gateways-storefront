@@ -29,7 +29,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 .Resolve(ctx => ctx.Source.Id);
 
             Field<StringGraphType, string>()
-                .Name("ParentId")
+                .Name("ProductId")
                 .Description("Globally unique identifier of the parent product")
                 .Resolve(ctx => ctx.Source.ProductId);
 
