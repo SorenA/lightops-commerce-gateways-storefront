@@ -1,8 +1,10 @@
 using GraphQL.Server;
+using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.Server.Ui.GraphiQL;
 using GraphQL.Server.Ui.Playground;
 using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Configuration;
+using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Contexts;
 using LightOps.DependencyInjection.Configuration;
 using LightOps.Mapping.Configuration;
 using Microsoft.AspNetCore.Builder;
@@ -25,6 +27,12 @@ namespace Sample.StorefrontGateway
                     .AddMapping()
                     .AddStorefrontGateway(gateway =>
                     {
+                        // Configure languages
+                        gateway.UseLanguages("en-US", "da-DK");
+
+                        // Configure currencies
+                        gateway.UseCurrencies("EUR", "DKK");
+
                         // Configure CDN
                         gateway.UseImageCdn("https://cdn.example.com");
 
@@ -48,6 +56,7 @@ namespace Sample.StorefrontGateway
                         logger.LogError("{Error} occured", ctx.OriginalException.Message);
                 })
                 .AddDataLoader()
+                .AddUserContextBuilder<StorefrontGraphUserContextBuilder>()
                 .AddSystemTextJson(deserializerSettings => { }, serializerSettings => { });
         }
 

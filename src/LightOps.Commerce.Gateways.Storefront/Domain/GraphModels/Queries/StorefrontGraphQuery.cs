@@ -1,4 +1,6 @@
-﻿using GraphQL;
+﻿using System.Collections.Generic;
+using System.Linq;
+using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
@@ -14,6 +16,8 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
     {
         public StorefrontGraphQuery(
             IDataLoaderContextAccessor dataLoaderContextAccessor,
+            ILanguageProvider languageProvider,
+            ICurrencyProvider currencyProvider,
             IContentPageServiceProvider contentPageServiceProvider,
             INavigationServiceProvider navigationServiceProvider,
             ICategoryServiceProvider categoryServiceProvider,
@@ -27,7 +31,27 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
             IProductLookupService productLookupService)
         {
             Name = "Query";
-            
+
+            #region Languages
+
+            Field<ListGraphType<LanguageGraphType>, IList<string>>()
+                .Name("Languages")
+                .Description("The languages supported")
+                .Resolve(ctx => languageProvider.Languages);
+
+            #endregion Languages
+
+            #region Currencies
+
+            Field<ListGraphType<CurrencyGraphType>, IList<NodaMoney.Currency>>()
+                .Name("Currencies")
+                .Description("The currencies supported")
+                .Resolve(ctx => currencyProvider.Currencies
+                    .Select(NodaMoney.Currency.FromCode)
+                    .ToList());
+
+            #endregion Currencies
+
             #region Content Pages
 
             Field<ContentPageGraphType, ContentPage>()

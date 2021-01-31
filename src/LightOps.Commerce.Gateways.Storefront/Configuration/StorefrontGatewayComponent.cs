@@ -5,6 +5,7 @@ using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
+using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Contexts;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Enum;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Schemas;
@@ -84,6 +85,9 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         #region Providers
         internal enum Providers
         {
+            LanguageProvider,
+            CurrencyProvider,
+
             ImageCdnProvider,
 
             ContentPageServiceProvider,
@@ -95,6 +99,9 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 
         private readonly Dictionary<Providers, ServiceRegistration> _providers = new Dictionary<Providers, ServiceRegistration>()
         {
+            [Providers.LanguageProvider] = ServiceRegistration.Singleton<ILanguageProvider>(new LanguageProvider()),
+            [Providers.CurrencyProvider] = ServiceRegistration.Singleton<ICurrencyProvider>(new CurrencyProvider()),
+
             [Providers.ImageCdnProvider] = ServiceRegistration.Singleton<IImageCdnProvider>(new ImageCdnProvider()),
 
             [Providers.ContentPageServiceProvider] = ServiceRegistration.Singleton<IContentPageServiceProvider>(new ContentPageServiceProvider()),
@@ -103,6 +110,38 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             [Providers.CategoryServiceProvider] = ServiceRegistration.Singleton<ICategoryServiceProvider>(new CategoryServiceProvider()),
             [Providers.ProductServiceProvider] = ServiceRegistration.Singleton<IProductServiceProvider>(new ProductServiceProvider()),
         };
+
+        public IStorefrontGatewayComponent UseLanguages(string defaultLanguage, params string[] otherLanguages)
+        {
+            var languages = new List<string>
+            {
+                defaultLanguage,
+            };
+            languages.AddRange(otherLanguages);
+
+            _providers[Providers.LanguageProvider].ImplementationInstance = new LanguageProvider
+            {
+                DefaultLanguage = defaultLanguage,
+                Languages = languages,
+            };
+            return this;
+        }
+
+        public IStorefrontGatewayComponent UseCurrencies(string defaultCurrency, params string[] otherCurrencies)
+        {
+            var currencies = new List<string>
+            {
+                defaultCurrency,
+            };
+            currencies.AddRange(otherCurrencies);
+
+            _providers[Providers.CurrencyProvider].ImplementationInstance = new CurrencyProvider
+            {
+                DefaultCurrency = defaultCurrency,
+                Currencies = currencies,
+            };
+            return this;
+        }
 
         public IStorefrontGatewayComponent UseImageCdn(string cdnHost)
         {
@@ -172,6 +211,9 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             DataLoaderContextAccessor,
             DataLoaderDocumentListener,
 
+            // User context
+            UserContextBuilder,
+
             // Schemas
             Schema,
 
@@ -184,6 +226,9 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             ProductSortKeyGraphType,
 
             // Types
+            LanguageGraphType,
+            CurrencyGraphType,
+
             ImageGraphType,
             MoneyGraphType,
 
@@ -207,6 +252,9 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             [Graph.DataLoaderContextAccessor] = ServiceRegistration.Singleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>(),
             [Graph.DataLoaderDocumentListener] = ServiceRegistration.Singleton<DataLoaderDocumentListener, DataLoaderDocumentListener>(),
 
+            // User context
+            [Graph.UserContextBuilder] = ServiceRegistration.Singleton<IUserContextBuilder, StorefrontGraphUserContextBuilder>(),
+
             // Schemas
             [Graph.Schema] = ServiceRegistration.Singleton<ISchema, StorefrontGraphSchema>(),
 
@@ -219,6 +267,9 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             [Graph.ProductSortKeyGraphType] = ServiceRegistration.Singleton<ProductSortKeyGraphType, ProductSortKeyGraphType>(),
 
             // Types
+            [Graph.LanguageGraphType] = ServiceRegistration.Singleton<LanguageGraphType, LanguageGraphType>(),
+            [Graph.CurrencyGraphType] = ServiceRegistration.Singleton<CurrencyGraphType, CurrencyGraphType>(),
+
             [Graph.ImageGraphType] = ServiceRegistration.Singleton<ImageGraphType, ImageGraphType>(),
             [Graph.MoneyGraphType] = ServiceRegistration.Singleton<MoneyGraphType, MoneyGraphType>(),
 
