@@ -4,10 +4,10 @@ package lightops.type;
 
 option csharp_namespace = "LightOps.Commerce.Proto.Types";
 
-import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
+import "Protos/type/localized_string.proto";
 
-message MetaFieldProto {
+message MetaField {
   // Globally unique identifier, eg: gid://MetaField/1000
   string id = 1;
 
@@ -23,12 +23,25 @@ message MetaFieldProto {
   // The type of the meta-field
   string type = 5;
 
-  // The value of the meta-field
-  string value = 6;
+  oneof value_oneof {
+    // The value of the meta-field
+    string value = 6;
+
+    // The localized value of the meta-field
+    LocalizedStringList localized_values = 7;
+  }
 
   // The timestamp of meta-field creation
-  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp created_at = 8;
 
   // The timestamp of the latest meta-field update
-  google.protobuf.Timestamp updated_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+
+  // Whether or not the meta-field is public
+  bool is_public = 10;
+
+  message LocalizedStringList {
+    // The localized values of the meta-field
+    repeated lightops.type.LocalizedString values = 1;
+  }
 }

@@ -4,19 +4,19 @@ using System.Linq;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
-using LightOps.Commerce.Gateways.Storefront.Api.Enums;
-using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
+using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Contexts;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Enum;
+using LightOps.Commerce.Proto.Types;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 {
-    public sealed class ContentPageGraphType : ObjectGraphType<IContentPage>
+    public sealed class ContentPageGraphType : ObjectGraphType<ContentPage>
     {
         public ContentPageGraphType(
             IDataLoaderContextAccessor dataLoaderContextAccessor,
-            IMetaFieldEndpointProvider metaFieldEndpointProvider,
+            IMetaFieldServiceProvider metaFieldServiceProvider,
             IMetaFieldService metaFieldService,
             IMetaFieldLookupService metaFieldLookupService,
             IContentPageService contentPageService,
@@ -43,12 +43,26 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field<StringGraphType, string>()
                 .Name("Title")
                 .Description("The title of the content page")
-                .Resolve(ctx => ctx.Source.Title);
+                .Resolve(ctx =>
+                {
+                    var userContext = (StorefrontGraphUserContext)ctx.UserContext;
+
+                    return ctx.Source.Titles
+                        .FirstOrDefault(x => x.LanguageCode == userContext.LanguageCode)
+                        ?.Value;
+                });
 
             Field<StringGraphType, string>()
                 .Name("Url")
                 .Description("The url of the content page")
-                .Resolve(ctx => ctx.Source.Url);
+                .Resolve(ctx =>
+                {
+                    var userContext = (StorefrontGraphUserContext)ctx.UserContext;
+
+                    return ctx.Source.Urls
+                        .FirstOrDefault(x => x.LanguageCode == userContext.LanguageCode)
+                        ?.Value;
+                });
 
             Field<StringGraphType, string>()
                 .Name("Type")
@@ -56,35 +70,43 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 .Resolve(ctx => ctx.Source.Type);
 
             Field<StringGraphType, string>()
-                .Name("Summary")
-                .Description("The summary of the content page")
-                .Resolve(ctx => ctx.Source.Summary);
+                .Name("Description")
+                .Description("The description of the content page")
+                .Resolve(ctx =>
+                {
+
+                    var userContext = (StorefrontGraphUserContext)ctx.UserContext;
+
+                    return ctx.Source.Descriptions
+                        .FirstOrDefault(x => x.LanguageCode == userContext.LanguageCode)
+                        ?.Value;
+                });
 
             Field<DateTimeGraphType, DateTime>()
                 .Name("CreatedAt")
                 .Description("The timestamp of content page creation")
-                .Resolve(ctx => ctx.Source.CreatedAt);
+                .Resolve(ctx => ctx.Source.CreatedAt.ToDateTime());
 
             Field<DateTimeGraphType, DateTime>()
                 .Name("UpdatedAt")
                 .Description("The timestamp of the latest content page update")
-                .Resolve(ctx => ctx.Source.UpdatedAt);
+                .Resolve(ctx => ctx.Source.UpdatedAt.ToDateTime());
 
-            Field<ImageGraphType, IImage>()
+            Field<ImageGraphType, Image>()
                 .Name("PrimaryImage")
                 .Description("The primary image of the content page")
                 .Resolve(ctx => ctx.Source.PrimaryImage);
 
             #region Meta-fields
 
-            Field<MetaFieldGraphType, IMetaField>()
+            Field<MetaFieldGraphType, MetaField>()
                 .Name("MetaField")
                 .Description("Connection to a specific meta-field")
                 .Argument<NonNullGraphType<StringGraphType>>("namespace", "Namespace of the meta-field")
                 .Argument<NonNullGraphType<StringGraphType>>("name", "Name of the meta-field")
                 .ResolveAsync(async ctx =>
                 {
-                    if (!metaFieldEndpointProvider.IsEnabled)
+                    if (!metaFieldServiceProvider.IsEnabled)
                     {
                         throw new ExecutionError("Meta-fields not supported.");
                     }
@@ -97,18 +119,18 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                     return result.FirstOrDefault();
                 });
 
-            Field<ListGraphType<MetaFieldGraphType>, IList<IMetaField>>()
+            Field<ListGraphType<MetaFieldGraphType>, IList<MetaField>>()
                 .Name("MetaFields")
                 .Description("Connection to a all meta-fields")
                 .ResolveAsync(ctx =>
                 {
-                    if (!metaFieldEndpointProvider.IsEnabled)
+                    if (!metaFieldServiceProvider.IsEnabled)
                     {
                         throw new ExecutionError("Meta-fields not supported.");
                     }
 
                     var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddBatchLoader<string, IList<IMetaField>>("MetaField.LookupByParentIdsAsync", metaFieldLookupService.LookupByParentIdsAsync);
+                        .GetOrAddBatchLoader<string, IList<MetaField>>("MetaField.LookupByParentIdsAsync", metaFieldLookupService.LookupByParentIdsAsync);
                     return loader.LoadAsync(ctx.Source.Id);
                 });
 
@@ -116,7 +138,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 
             #region Content pages
 
-            Field<ContentPageGraphType, IContentPage>()
+            Field<ContentPageGraphType, ContentPage>()
                 .Name("Parent")
                 .ResolveAsync(ctx =>
                 {
@@ -126,7 +148,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                     }
 
                     var loader = dataLoaderContextAccessor.Context
-                        .GetOrAddBatchLoader<string, IContentPage>("ContentPage.LookupByIdAsync", contentPageLookupService.LookupByIdAsync);
+                        .GetOrAddBatchLoader<string, ContentPage>("ContentPage.LookupByIdAsync", contentPageLookupService.LookupByIdAsync);
                     return loader.LoadAsync(ctx.Source.ParentId);
                 });
             Connection<ContentPageGraphType>()
@@ -137,8 +159,11 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
                 .Argument<StringGraphType>("reverse", "Reverse the order of the underlying list")
                 .ResolveAsync(async ctx =>
                 {
+                    var userContext = (StorefrontGraphUserContext)ctx.UserContext;
+
                     var result = await contentPageService.GetBySearchAsync(
                         ctx.GetArgument<string>("query"),
+                        userContext.LanguageCode,
                         ctx.Source.Id,
                         ctx.GetArgument<string>("after"),
                         ctx.GetArgument<int>("first", 24),

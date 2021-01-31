@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using LightOps.Commerce.Gateways.Storefront.Api.Models;
+using LightOps.Commerce.Proto.Types;
 
 namespace LightOps.Commerce.Gateways.Storefront.Api.Services
 {
     public interface INavigationLookupService
     {
-        Task<IDictionary<string, INavigation>> LookupByHandleAsync(IEnumerable<string> handles);
-        Task<IDictionary<string, INavigation>> LookupByIdAsync(IEnumerable<string> ids);
+        Task<IDictionary<string, Navigation>> LookupByHandleAsync(IEnumerable<string> handles);
+        Task<IDictionary<string, Navigation>> LookupByIdAsync(IEnumerable<string> ids);
     }
 }

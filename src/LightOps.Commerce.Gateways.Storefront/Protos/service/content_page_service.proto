@@ -2,103 +2,150 @@ syntax = "proto3";
 
 package lightops.service;
 
-option csharp_namespace = "LightOps.Commerce.Proto.Services";
+option csharp_namespace = "LightOps.Commerce.Proto.Services.ContentPage";
 
 import "google/protobuf/wrappers.proto";
 import "Protos/type/content_page.proto";
 
-enum ContentPageSortKeyProto {
-  DEFAULT = 0;
-  TITLE = 1;
-  CREATED_AT = 2;
-  UPDATED_AT = 3;
-}
+service ContentPageService {
+  // Persists a content page
+  rpc Persist(PersistRequest) returns (PersistResponse) {}
 
-service ContentPageProtoService {
+  // Deletes a content page
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+
   // Gets a list of content pages by handle
-  rpc GetContentPagesByHandles(GetContentPagesByHandlesProtoRequest) returns (GetContentPagesByHandlesProtoResponse) {}
+  rpc GetByHandles(GetByHandlesRequest) returns (GetByHandlesResponse) {}
 
   // Gets a list of content pages by ids
-  rpc GetContentPagesByIds(GetContentPagesByIdsProtoRequest) returns (GetContentPagesByIdsProtoResponse) {}
+  rpc GetByIds(GetByIdsRequest) returns (GetByIdsResponse) {}
 
   // Gets a list of paginated content pages by search
-  rpc GetContentPagesBySearch(GetContentPagesBySearchProtoRequest) returns (GetContentPagesBySearchProtoResponse) {}
+  rpc GetBySearch(GetBySearchRequest) returns (GetBySearchResponse) {}
 }
 
-// GetContentPagesByHandles request model
-message GetContentPagesByHandlesProtoRequest {
+/*
+ * Persist messages
+ */
+message PersistRequest {
+  // The id of the content page to persist
+  string id = 1;
+
+  // The content page to persist
+  lightops.type.ContentPage content_page = 2;
+}
+
+message PersistResponse {
+  // The status code of the operation
+  StatusCode status_code = 1;
+
+  // The errors occoured, if any
+  repeated string errors = 2;
+
+  enum StatusCode {
+    UNKNOWN = 0;
+    OK = 1;
+    UNAVAILABLE = 2;
+    INVALID = 3;
+  }
+}
+
+/*
+ * Delete messages
+ */
+message DeleteRequest {
+  // The id of the content page to delete
+  string id = 1;
+}
+
+message DeleteResponse {
+  // The status code of the operation
+  StatusCode status_code = 1;
+
+  enum StatusCode {
+    UNKNOWN = 0;
+    OK = 1;
+    UNAVAILABLE = 2;
+  }
+}
+
+/*
+ * GetByHandles messages
+ */
+message GetByHandlesRequest {
   // The handles of the content page requested
   repeated string handles = 1;
 }
 
-// GetContentPagesByHandles response model
-message GetContentPagesByHandlesProtoResponse {
+message GetByHandlesResponse {
   // The content pages found, if any
-  repeated lightops.type.ContentPageProto content_pages = 1;
+  repeated lightops.type.ContentPage content_pages = 1;
 }
 
-// GetContentPagesByIds request model
-message GetContentPagesByIdsProtoRequest {
+/*
+ * GetByIds messages
+ */
+message GetByIdsRequest {
   // The ids of the content pages requested
   repeated string ids = 1;
 }
 
-// GetContentPagesByIds response model
-message GetContentPagesByIdsProtoResponse {
+message GetByIdsResponse {
   // The content pages found, if any
-  repeated lightops.type.ContentPageProto content_pages = 1;
+  repeated lightops.type.ContentPage content_pages = 1;
 }
 
-// GetContentPagesBySearch, request model
-message GetContentPagesBySearchProtoRequest {
-  reserved 1;
-
+/*
+ * GetBySearch messages
+ */
+message GetBySearchRequest {
   // The term to search for, if any
-  google.protobuf.StringValue search_term = 7;
+  google.protobuf.StringValue search_term = 1;
+
+  // Search only in localized strings with a specific language code, if any specified.
+  // ISO 639 2-letter language code matched with ISO 3166 2-letter country code, eg. en-US, da-DK
+  google.protobuf.StringValue language_code = 2;
 
   // Search only in children with a specific parent id, if any specified. For no parent: 'gid://'
-  google.protobuf.StringValue parent_id = 2;
+  google.protobuf.StringValue parent_id = 3;
 
   // The page cursor to use
-  google.protobuf.StringValue page_cursor = 3;
+  google.protobuf.StringValue page_cursor = 4;
 
   // The page size to use
-  google.protobuf.Int32Value page_size = 4;
+  google.protobuf.Int32Value page_size = 5;
 
   // Sort the underlying list by the given key
-  ContentPageSortKeyProto sort_key = 5;
+  lightops.type.ContentPageSortKey sort_key = 6;
 
   // Whether to reverse the order of the underlying list
-  google.protobuf.BoolValue reverse = 6;
+  google.protobuf.BoolValue reverse = 7;
 }
 
-// GetContentPagesBySearch, response model
-message GetContentPagesBySearchProtoResponse {
-  reserved 1, 2;
-
-  message ContentPageResult {
-    // The cursor of the result
-    string cursor = 1;
-
-    // The result node
-    lightops.type.ContentPageProto node = 2;
-  }
+message GetBySearchResponse {
+  // The content pages found, if any
+  repeated Result results = 1;
 
   // The total amount of results available
-  int32 total_results = 4;
+  int32 total_results = 2;
 
   // Whether another page can be fetched
   bool has_next_page = 3;
 
   // Whether a previous page can be fetched
-  bool has_previous_page = 5;
+  bool has_previous_page = 4;
 
   // The cursor of the first result
-  string start_cursor = 6;
+  string start_cursor = 5;
 
   // The cursor of the last result
-  string end_cursor = 7;
+  string end_cursor = 6;
 
-  // The content pages found, if any
-  repeated ContentPageResult results = 8;
+  message Result {
+    // The cursor of the result
+    string cursor = 1;
+
+    // The result node
+    lightops.type.ContentPage node = 2;
+  }
 }

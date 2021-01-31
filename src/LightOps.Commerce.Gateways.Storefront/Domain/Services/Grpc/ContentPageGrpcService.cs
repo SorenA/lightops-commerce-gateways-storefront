@@ -1,96 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LightOps.Commerce.Gateways.Storefront.Api.Enums;
-using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.QueryResults;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
-using LightOps.Commerce.Proto.Services;
+using LightOps.Commerce.Proto.Services.ContentPage;
 using LightOps.Commerce.Proto.Types;
-using LightOps.Mapping.Api.Services;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
 {
     public class ContentPageGrpcService : IContentPageService
     {
-        private readonly IContentPageEndpointProvider _contentPageEndpointProvider;
+        private readonly IContentPageServiceProvider _contentPageServiceProvider;
         private readonly IGrpcCallerService _grpcCallerService;
-        private readonly IMappingService _mappingService;
 
         public ContentPageGrpcService(
-            IContentPageEndpointProvider contentPageEndpointProvider,
-            IGrpcCallerService grpcCallerService,
-            IMappingService mappingService)
+            IContentPageServiceProvider contentPageServiceProvider,
+            IGrpcCallerService grpcCallerService)
         {
-            _contentPageEndpointProvider = contentPageEndpointProvider;
+            _contentPageServiceProvider = contentPageServiceProvider;
             _grpcCallerService = grpcCallerService;
-            _mappingService = mappingService;
         }
-
-        public async Task<IList<IContentPage>> GetByHandleAsync(IList<string> handles)
+        
+        public async Task<IList<ContentPage>> GetByHandleAsync(IList<string> handles)
         {
-            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            return await _grpcCallerService.CallService(_contentPageServiceProvider.GrpcEndpoint, async (grpcChannel) =>
             {
-                var client = new ContentPageProtoService.ContentPageProtoServiceClient(grpcChannel);
-                var request = new GetContentPagesByHandlesProtoRequest();
-                request.Handles.AddRange(handles);
+                var client = new ContentPageService.ContentPageServiceClient(grpcChannel);
+                var response = await client.GetByHandlesAsync(new GetByHandlesRequest
+                {
+                    Handles = {handles}
+                });
 
-                var response = await client.GetContentPagesByHandlesAsync(request);
-
-                return _mappingService
-                    .Map<ContentPageProto, IContentPage>(response.ContentPages)
-                    .ToList();
+                return response.ContentPages;
             });
         }
 
-        public async Task<IList<IContentPage>> GetByIdAsync(IList<string> ids)
+        public async Task<IList<ContentPage>> GetByIdAsync(IList<string> ids)
         {
-            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            return await _grpcCallerService.CallService(_contentPageServiceProvider.GrpcEndpoint, async (grpcChannel) =>
             {
-                var client = new ContentPageProtoService.ContentPageProtoServiceClient(grpcChannel);
-                var request = new GetContentPagesByIdsProtoRequest();
-                request.Ids.AddRange(ids);
+                var client = new ContentPageService.ContentPageServiceClient(grpcChannel);
+                var response = await client.GetByIdsAsync(new GetByIdsRequest
+                {
+                    Ids = {ids}
+                });
 
-                var response = await client.GetContentPagesByIdsAsync(request);
-
-                return _mappingService
-                    .Map<ContentPageProto, IContentPage>(response.ContentPages)
-                    .ToList();
+                return response.ContentPages;
             });
         }
 
-        public async Task<SearchResult<IContentPage>> GetBySearchAsync(string searchTerm,
-                                                                string parentId,
-                                                                string pageCursor,
-                                                                int pageSize,
-                                                                ContentPageSortKey sortKey,
-                                                                bool reverse)
+        public async Task<SearchResult<ContentPage>> GetBySearchAsync(string searchTerm,
+                                                                      string languageCode,
+                                                                      string parentId,
+                                                                      string pageCursor,
+                                                                      int pageSize,
+                                                                      ContentPageSortKey sortKey,
+                                                                      bool reverse)
         {
-            return await _grpcCallerService.CallService(_contentPageEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            return await _grpcCallerService.CallService(_contentPageServiceProvider.GrpcEndpoint, async (grpcChannel) =>
             {
-                var client = new ContentPageProtoService.ContentPageProtoServiceClient(grpcChannel);
-                var response = await client.GetContentPagesBySearchAsync(new GetContentPagesBySearchProtoRequest
+                var client = new ContentPageService.ContentPageServiceClient(grpcChannel);
+                var response = await client.GetBySearchAsync(new GetBySearchRequest
                 {
                     SearchTerm = searchTerm,
+                    LanguageCode = languageCode,
                     ParentId = parentId,
                     PageCursor = pageCursor,
                     PageSize = pageSize,
-                    SortKey = ConvertSortKey(sortKey),
+                    SortKey = sortKey,
                     Reverse = reverse,
                 });
 
                 var results = response
                     .Results
-                    .Select(x => new CursorNodeResult<IContentPage>
+                    .Select(x => new CursorNodeResult<ContentPage>
                     {
                         Cursor = x.Cursor,
-                        Node = _mappingService.Map<ContentPageProto, IContentPage>(x.Node),
+                        Node = x.Node
                     })
                     .ToList();
 
-                return new SearchResult<IContentPage>
+                return new SearchResult<ContentPage>
                 {
                     HasNextPage = response.HasNextPage,
                     HasPreviousPage = response.HasPreviousPage,
@@ -100,23 +91,6 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
                     Results = results,
                 };
             });
-        }
-
-        private ContentPageSortKeyProto ConvertSortKey(ContentPageSortKey sortKey)
-        {
-            switch (sortKey)
-            {
-                case ContentPageSortKey.Default:
-                    return ContentPageSortKeyProto.Default;
-                case ContentPageSortKey.Title:
-                    return ContentPageSortKeyProto.Title;
-                case ContentPageSortKey.CreatedAt:
-                    return ContentPageSortKeyProto.CreatedAt;
-                case ContentPageSortKey.UpdatedAt:
-                    return ContentPageSortKeyProto.UpdatedAt;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
     }
 }

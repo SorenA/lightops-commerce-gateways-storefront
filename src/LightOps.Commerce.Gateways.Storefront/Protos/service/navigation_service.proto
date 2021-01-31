@@ -2,39 +2,91 @@ syntax = "proto3";
 
 package lightops.service;
 
-option csharp_namespace = "LightOps.Commerce.Proto.Services";
+option csharp_namespace = "LightOps.Commerce.Proto.Services.Navigation";
 
-import "google/protobuf/wrappers.proto";
 import "Protos/type/navigation.proto";
 
-service NavigationProtoService {
+service NavigationService {
+  // Persists a navigation
+  rpc Persist(PersistRequest) returns (PersistResponse) {}
+
+  // Deletes a navigation
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+
   // Gets a list of navigations by handle
-  rpc GetNavigationsByHandles(GetNavigationsByHandlesProtoRequest) returns (GetNavigationsByHandlesProtoResponse) {}
+  rpc GetByHandles(GetByHandlesRequest) returns (GetByHandlesResponse) {}
 
   // Gets a list of navigations by ids
-  rpc GetNavigationsByIds(GetNavigationsByIdsProtoRequest) returns (GetNavigationsByIdsProtoResponse) {}
+  rpc GetByIds(GetByIdsRequest) returns (GetByIdsResponse) {}
 }
 
-// GetNavigationsByHandles request model
-message GetNavigationsByHandlesProtoRequest {
-  // The handles of the navigations requested
+/*
+ * Persist messages
+ */
+ message PersistRequest {
+  // The id of the navigation to persist
+  string id = 1;
+
+  // The navigation to persist
+  lightops.type.Navigation navigation = 2;
+}
+
+message PersistResponse {
+  // The status code of the operation
+  StatusCode status_code = 1;
+
+  // The errors occoured, if any
+  repeated string errors = 2;
+
+  enum StatusCode {
+    UNKNOWN = 0;
+    OK = 1;
+    UNAVAILABLE = 2;
+    INVALID = 3;
+  }
+}
+
+/*
+ * Delete messages
+ */
+message DeleteRequest {
+  // The id of the navigation to delete
+  string id = 1;
+}
+
+message DeleteResponse {
+  // The status code of the operation
+  StatusCode status_code = 1;
+
+  enum StatusCode {
+    UNKNOWN = 0;
+    OK = 1;
+    UNAVAILABLE = 2;
+  }
+}
+
+/*
+ * GetByHandles messages
+ */
+message GetByHandlesRequest {
+  // The handles of the navigation requested
   repeated string handles = 1;
 }
 
-// GetNavigationsByHandles response model
-message GetNavigationsByHandlesProtoResponse {
+message GetByHandlesResponse {
   // The navigations found, if any
-  repeated lightops.type.NavigationProto navigations = 1;
+  repeated lightops.type.Navigation navigations = 1;
 }
 
-// GetNavigationsByIds request model
-message GetNavigationsByIdsProtoRequest {
+/*
+ * GetByIds messages
+ */
+message GetByIdsRequest {
   // The ids of the navigations requested
   repeated string ids = 1;
 }
 
-// GetNavigationsByIds response model
-message GetNavigationsByIdsProtoResponse {
+message GetByIdsResponse {
   // The navigations found, if any
-  repeated lightops.type.NavigationProto navigations = 1;
+  repeated lightops.type.Navigation navigations = 1;
 }

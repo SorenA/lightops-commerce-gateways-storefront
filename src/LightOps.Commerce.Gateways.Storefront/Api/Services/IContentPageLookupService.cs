@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using LightOps.Commerce.Gateways.Storefront.Api.Models;
+using LightOps.Commerce.Proto.Types;
 
 namespace LightOps.Commerce.Gateways.Storefront.Api.Services
 {
     public interface IContentPageLookupService
     {
-        Task<IDictionary<string, IContentPage>> LookupByHandleAsync(IEnumerable<string> handles);
-        Task<IDictionary<string, IContentPage>> LookupByIdAsync(IEnumerable<string> ids);
+        Task<IDictionary<string, ContentPage>> LookupByHandleAsync(IEnumerable<string> handles);
+        Task<IDictionary<string, ContentPage>> LookupByIdAsync(IEnumerable<string> ids);
     }
 }

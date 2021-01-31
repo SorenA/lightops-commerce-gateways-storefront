@@ -2,53 +2,122 @@ syntax = "proto3";
 
 package lightops.service;
 
-option csharp_namespace = "LightOps.Commerce.Proto.Services";
+option csharp_namespace = "LightOps.Commerce.Proto.Services.MetaField";
 
 import "google/protobuf/wrappers.proto";
 import "Protos/type/meta_field.proto";
 
-service MetaFieldProtoService {
-  // Gets a list of meta-field by ids
-  rpc GetMetaFieldsByIds(GetMetaFieldsByIdsProtoRequest) returns (GetMetaFieldsByIdsProtoResponse) {}
+service MetaFieldService {
+  // Persists a meta-field
+  rpc Persist(PersistRequest) returns (PersistResponse) {}
 
-  // Gets a map with lists of meta-field by parent ids
-  rpc GetMetaFieldsByParentIds(GetMetaFieldsByParentIdsProtoRequest) returns (GetMetaFieldsByParentIdsProtoResponse) {}
+  // Deletes a meta-field
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {}
 
-  // Gets a list of paginated meta-field by search
-  rpc GetMetaFieldsBySearch(GetMetaFieldsBySearchProtoRequest) returns (GetMetaFieldsBySearchProtoResponse) {}
+  // Gets a list of meta-fields by ids
+  rpc GetByIds(GetByIdsRequest) returns (GetByIdsResponse) {}
+
+  // Gets a list of meta-fields by parent ids
+  rpc GetByParentIds(GetByParentIdsRequest) returns (GetByParentIdsResponse) {}
+
+  // Gets a list of paginated meta-fields by search
+  rpc GetBySearch(GetBySearchRequest) returns (GetBySearchResponse) {}
 }
 
-// GetMetaFieldsByIds request model
-message GetMetaFieldsByIdsProtoRequest {
+
+/*
+ * Persist messages
+ */
+ message PersistRequest {
+  // The id of the meta-field to persist
+  string id = 1;
+
+  // The meta-field to persist
+  lightops.type.MetaField meta_field = 2;
+}
+
+message PersistResponse {
+  // The status code of the operation
+  StatusCode status_code = 1;
+
+  // The errors occoured, if any
+  repeated string errors = 2;
+
+  enum StatusCode {
+    UNKNOWN = 0;
+    OK = 1;
+    UNAVAILABLE = 2;
+    INVALID = 3;
+  }
+}
+
+/*
+ * Delete messages
+ */
+message DeleteRequest {
+  // The id of the meta-field to delete
+  string id = 1;
+}
+
+message DeleteResponse {
+  // The status code of the operation
+  StatusCode status_code = 1;
+
+  enum StatusCode {
+    UNKNOWN = 0;
+    OK = 1;
+    UNAVAILABLE = 2;
+  }
+}
+
+/*
+ * GetByHandles messages
+ */
+message GetByHandlesRequest {
+  // The handles of the meta-field requested
+  repeated string handles = 1;
+}
+
+message GetByHandlesResponse {
+  // The meta-fields found, if any
+  repeated lightops.type.MetaField meta_fields = 1;
+}
+
+/*
+ * GetByIds messages
+ */
+message GetByIdsRequest {
   // The ids of the meta-fields requested
   repeated string ids = 1;
 }
 
-// GetMetaFieldsByIds response model
-message GetMetaFieldsByIdsProtoResponse {
-  // The  meta-fields found, if any
-  repeated lightops.type.MetaFieldProto meta_fields = 1;
+message GetByIdsResponse {
+  // The meta-fields found, if any
+  repeated lightops.type.MetaField meta_fields = 1;
 }
 
-// GetMetaFieldsByParentIds request model
-message GetMetaFieldsByParentIdsProtoRequest {
+/*
+ * GetByParentIds messages
+ */
+message GetByParentIdsRequest {
   // The parent ids of the meta-fields requested
   repeated string parent_ids = 1;
 }
 
-// GetMetaFieldsByParentIds response model
-message GetMetaFieldsByParentIdsProtoResponse {
+message GetByParentIdsResponse {
   message MetaFieldList {
     // The meta-fields found, if any
-    repeated lightops.type.MetaFieldProto meta_fields = 1;
+    repeated lightops.type.MetaField meta_fields = 1;
   }
 
   // Map of meta-field found, grouped by parent id
   map<string, MetaFieldList> meta_fields = 1;
 }
 
-// GetMetaFieldsBySearch, request model
-message GetMetaFieldsBySearchProtoRequest {
+/*
+ * GetBySearch messages
+ */
+message GetBySearchRequest {
   // Globally unique identifier of parent to search in meta-fields of
   string parent_id = 1;
 
@@ -59,8 +128,7 @@ message GetMetaFieldsBySearchProtoRequest {
   google.protobuf.StringValue name = 3;
 }
 
-// GetMetaFieldsBySearch, response model
-message GetMetaFieldsBySearchProtoResponse {
+message GetBySearchResponse {
   // The meta-fields found, if any
-  repeated lightops.type.MetaFieldProto results = 1;
+  repeated lightops.type.MetaField results = 1;
 }

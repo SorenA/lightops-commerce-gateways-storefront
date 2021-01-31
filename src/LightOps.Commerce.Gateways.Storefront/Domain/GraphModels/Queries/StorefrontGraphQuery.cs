@@ -1,14 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using GraphQL;
+﻿using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
-using LightOps.Commerce.Gateways.Storefront.Api.Enums;
-using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
+using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Contexts;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Enum;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types;
+using LightOps.Commerce.Proto.Types;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
 {
@@ -16,10 +14,10 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
     {
         public StorefrontGraphQuery(
             IDataLoaderContextAccessor dataLoaderContextAccessor,
-            IContentPageEndpointProvider contentPageEndpointProvider,
-            INavigationEndpointProvider navigationEndpointProvider,
-            ICategoryEndpointProvider categoryEndpointProvider,
-            IProductEndpointProvider productEndpointProvider,
+            IContentPageServiceProvider contentPageServiceProvider,
+            INavigationServiceProvider navigationServiceProvider,
+            ICategoryServiceProvider categoryServiceProvider,
+            IProductServiceProvider productServiceProvider,
             IContentPageService contentPageService,
             IContentPageLookupService contentPageLookupService,
             INavigationLookupService navigationLookupService,
@@ -29,16 +27,16 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
             IProductLookupService productLookupService)
         {
             Name = "Query";
-
+            
             #region Content Pages
 
-            Field<ContentPageGraphType, IContentPage>()
+            Field<ContentPageGraphType, ContentPage>()
                 .Name("ContentPage")
                 .Argument<StringGraphType>("id", "Id of the content page")
                 .Argument<StringGraphType>("handle", "Handle of the content page")
                 .ResolveAsync(ctx =>
                 {
-                    if (!contentPageEndpointProvider.IsEnabled)
+                    if (!contentPageServiceProvider.IsEnabled)
                     {
                         throw new ExecutionError("Content pages not supported.");
                     }
@@ -46,14 +44,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                     if (ctx.HasArgument("id"))
                     {
                         var loader = dataLoaderContextAccessor.Context
-                            .GetOrAddBatchLoader<string, IContentPage>("ContentPage.LookupByIdAsync", contentPageLookupService.LookupByIdAsync);
+                            .GetOrAddBatchLoader<string, ContentPage>("ContentPage.LookupByIdAsync", contentPageLookupService.LookupByIdAsync);
                         return loader.LoadAsync(ctx.GetArgument<string>("id"));
                     }
 
                     if (ctx.HasArgument("handle"))
                     {
                         var loader = dataLoaderContextAccessor.Context
-                            .GetOrAddBatchLoader<string, IContentPage>("ContentPage.LookupByHandleAsync", contentPageLookupService.LookupByHandleAsync);
+                            .GetOrAddBatchLoader<string, ContentPage>("ContentPage.LookupByHandleAsync", contentPageLookupService.LookupByHandleAsync);
                         return loader.LoadAsync(ctx.GetArgument<string>("handle"));
                     }
 
@@ -68,13 +66,16 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                 .Argument<StringGraphType>("reverse", "Reverse the order of the underlying list")
                 .ResolveAsync(async ctx =>
                 {
-                    if (!contentPageEndpointProvider.IsEnabled)
+                    if (!contentPageServiceProvider.IsEnabled)
                     {
                         throw new ExecutionError("Content pages not supported.");
                     }
 
+                    var userContext = (StorefrontGraphUserContext) ctx.UserContext;
+
                     var result = await contentPageService.GetBySearchAsync(
                         ctx.GetArgument<string>("query"),
+                        userContext.LanguageCode,
                         null,
                         ctx.GetArgument<string>("after"),
                         ctx.GetArgument<int>("first", 24),
@@ -88,13 +89,13 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
 
             #region Navigations
 
-            Field<NavigationGraphType, INavigation>()
+            Field<NavigationGraphType, Navigation>()
                 .Name("Navigation")
                 .Argument<StringGraphType>("id", "Id of the navigation")
                 .Argument<StringGraphType>("handle", "Handle of the navigation")
                 .ResolveAsync(ctx =>
                 {
-                    if (!navigationEndpointProvider.IsEnabled)
+                    if (!navigationServiceProvider.IsEnabled)
                     {
                         throw new ExecutionError("Navigations not supported.");
                     }
@@ -102,14 +103,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                     if (ctx.HasArgument("id"))
                     {
                         var loader = dataLoaderContextAccessor.Context
-                            .GetOrAddBatchLoader<string, INavigation>("Navigation.LookupByIdAsync", navigationLookupService.LookupByIdAsync);
+                            .GetOrAddBatchLoader<string, Navigation>("Navigation.LookupByIdAsync", navigationLookupService.LookupByIdAsync);
                         return loader.LoadAsync(ctx.GetArgument<string>("id"));
                     }
 
                     if (ctx.HasArgument("handle"))
                     {
                         var loader = dataLoaderContextAccessor.Context
-                            .GetOrAddBatchLoader<string, INavigation>("Navigation.LookupByHandleAsync", navigationLookupService.LookupByHandleAsync);
+                            .GetOrAddBatchLoader<string, Navigation>("Navigation.LookupByHandleAsync", navigationLookupService.LookupByHandleAsync);
                         return loader.LoadAsync(ctx.GetArgument<string>("handle"));
                     }
 
@@ -120,13 +121,13 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
 
             #region Categories
 
-            Field<CategoryGraphType, ICategory>()
+            Field<CategoryGraphType, Category>()
                 .Name("Category")
                 .Argument<StringGraphType>("id", "Id of the category")
                 .Argument<StringGraphType>("handle", "Handle of the category")
                 .ResolveAsync(ctx =>
                 {
-                    if (!categoryEndpointProvider.IsEnabled)
+                    if (!categoryServiceProvider.IsEnabled)
                     {
                         throw new ExecutionError("Categories not supported.");
                     }
@@ -134,14 +135,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                     if (ctx.HasArgument("id"))
                     {
                         var loader = dataLoaderContextAccessor.Context
-                            .GetOrAddBatchLoader<string, ICategory>("Category.LookupByIdAsync", categoryLookupService.LookupByIdAsync);
+                            .GetOrAddBatchLoader<string, Category>("Category.LookupByIdAsync", categoryLookupService.LookupByIdAsync);
                         return loader.LoadAsync(ctx.GetArgument<string>("id"));
                     }
 
                     if (ctx.HasArgument("handle"))
                     {
                         var loader = dataLoaderContextAccessor.Context
-                            .GetOrAddBatchLoader<string, ICategory>("Category.LookupByHandleAsync", categoryLookupService.LookupByHandleAsync);
+                            .GetOrAddBatchLoader<string, Category>("Category.LookupByHandleAsync", categoryLookupService.LookupByHandleAsync);
                         return loader.LoadAsync(ctx.GetArgument<string>("handle"));
                     }
 
@@ -156,13 +157,16 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                 .Argument<StringGraphType>("reverse", "Reverse the order of the underlying list")
                 .ResolveAsync(async ctx =>
                 {
-                    if (!categoryEndpointProvider.IsEnabled)
+                    if (!categoryServiceProvider.IsEnabled)
                     {
                         throw new ExecutionError("Categories not supported.");
                     }
 
+                    var userContext = (StorefrontGraphUserContext)ctx.UserContext;
+
                     var result = await categoryService.GetBySearchAsync(
                         ctx.GetArgument<string>("query"),
+                        userContext.LanguageCode,
                         null,
                         ctx.GetArgument<string>("after"),
                         ctx.GetArgument<int>("first", 24),
@@ -176,13 +180,13 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
 
             #region Products
 
-            Field<ProductGraphType, IProduct>()
+            Field<ProductGraphType, Product>()
                 .Name("Product")
                 .Argument<StringGraphType>("id", "Id of the category")
                 .Argument<StringGraphType>("handle", "Handle of the category")
                 .ResolveAsync(ctx =>
                 {
-                    if (!productEndpointProvider.IsEnabled)
+                    if (!productServiceProvider.IsEnabled)
                     {
                         throw new ExecutionError("Products not supported.");
                     }
@@ -190,14 +194,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                     if (ctx.HasArgument("id"))
                     {
                         var loader = dataLoaderContextAccessor.Context
-                            .GetOrAddBatchLoader<string, IProduct>("Product.LookupByIdAsync", productLookupService.LookupByIdAsync);
+                            .GetOrAddBatchLoader<string, Product>("Product.LookupByIdAsync", productLookupService.LookupByIdAsync);
                         return loader.LoadAsync(ctx.GetArgument<string>("id"));
                     }
 
                     if (ctx.HasArgument("handle"))
                     {
                         var loader = dataLoaderContextAccessor.Context
-                            .GetOrAddBatchLoader<string, IProduct>("Product.LookupByHandleAsync", productLookupService.LookupByHandleAsync);
+                            .GetOrAddBatchLoader<string, Product>("Product.LookupByHandleAsync", productLookupService.LookupByHandleAsync);
                         return loader.LoadAsync(ctx.GetArgument<string>("handle"));
                     }
 
@@ -212,18 +216,22 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
                 .Argument<StringGraphType>("reverse", "Reverse the order of the underlying list")
                 .ResolveAsync(async ctx =>
                 {
-                    if (!productEndpointProvider.IsEnabled)
+                    if (!productServiceProvider.IsEnabled)
                     {
                         throw new ExecutionError("Products not supported.");
                     }
 
+                    var userContext = (StorefrontGraphUserContext)ctx.UserContext;
+
                     var result = await productService.GetBySearchAsync(
                         ctx.GetArgument<string>("query"),
+                        userContext.LanguageCode,
                         null,
                         ctx.GetArgument<string>("after"),
                         ctx.GetArgument<int>("first", 24),
                         ctx.GetArgument<ProductSortKey>("sortKey"),
-                        ctx.GetArgument<bool>("reverse"));
+                        ctx.GetArgument<bool>("reverse"),
+                        userContext.CurrencyCode);
 
                     return result.ToGraphConnection();
                 });

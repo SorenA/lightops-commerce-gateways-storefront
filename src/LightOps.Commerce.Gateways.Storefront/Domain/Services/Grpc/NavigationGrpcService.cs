@@ -1,60 +1,50 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
-using LightOps.Commerce.Proto.Services;
+using LightOps.Commerce.Proto.Services.Navigation;
 using LightOps.Commerce.Proto.Types;
-using LightOps.Mapping.Api.Services;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
 {
     public class NavigationGrpcService : INavigationService
     {
-        private readonly INavigationEndpointProvider _navigationEndpointProvider;
+        private readonly INavigationServiceProvider _navigationServiceProvider;
         private readonly IGrpcCallerService _grpcCallerService;
-        private readonly IMappingService _mappingService;
 
         public NavigationGrpcService(
-            INavigationEndpointProvider navigationEndpointProvider,
-            IGrpcCallerService grpcCallerService,
-            IMappingService mappingService)
+            INavigationServiceProvider navigationServiceProvider,
+            IGrpcCallerService grpcCallerService)
         {
-            _navigationEndpointProvider = navigationEndpointProvider;
+            _navigationServiceProvider = navigationServiceProvider;
             _grpcCallerService = grpcCallerService;
-            _mappingService = mappingService;
         }
 
-        public async Task<IList<INavigation>> GetByHandleAsync(IList<string> handles)
+        public async Task<IList<Navigation>> GetByHandleAsync(IList<string> handles)
         {
-            return await _grpcCallerService.CallService(_navigationEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            return await _grpcCallerService.CallService(_navigationServiceProvider.GrpcEndpoint, async (grpcChannel) =>
             {
-                var client = new NavigationProtoService.NavigationProtoServiceClient(grpcChannel);
-                var request = new GetNavigationsByHandlesProtoRequest();
-                request.Handles.AddRange(handles);
+                var client = new NavigationService.NavigationServiceClient(grpcChannel);
+                var response = await client.GetByHandlesAsync(new GetByHandlesRequest
+                {
+                    Handles = {handles}
+                });
 
-                var response = await client.GetNavigationsByHandlesAsync(request);
-
-                return _mappingService
-                    .Map<NavigationProto, INavigation>(response.Navigations)
-                    .ToList();
+                return response.Navigations;
             });
         }
 
-        public async Task<IList<INavigation>> GetByIdAsync(IList<string> ids)
+        public async Task<IList<Navigation>> GetByIdAsync(IList<string> ids)
         {
-            return await _grpcCallerService.CallService(_navigationEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            return await _grpcCallerService.CallService(_navigationServiceProvider.GrpcEndpoint, async (grpcChannel) =>
             {
-                var client = new NavigationProtoService.NavigationProtoServiceClient(grpcChannel);
-                var request = new GetNavigationsByIdsProtoRequest();
-                request.Ids.AddRange(ids);
+                var client = new NavigationService.NavigationServiceClient(grpcChannel);
+                var response = await client.GetByIdsAsync(new GetByIdsRequest
+                {
+                    Ids = {ids}
+                });
 
-                var response = await client.GetNavigationsByIdsAsync(request);
-
-                return _mappingService
-                    .Map<NavigationProto, INavigation>(response.Navigations)
-                    .ToList();
+                return response.Navigations;
             });
         }
     }

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using GraphQL.DataLoader;
+using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.Types;
-using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
 using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Enum;
@@ -13,11 +13,9 @@ using LightOps.Commerce.Gateways.Storefront.Domain.Mappers;
 using LightOps.Commerce.Gateways.Storefront.Domain.Providers;
 using LightOps.Commerce.Gateways.Storefront.Domain.Services;
 using LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc;
-using LightOps.Commerce.Proto.Types;
 using LightOps.DependencyInjection.Api.Configuration;
 using LightOps.DependencyInjection.Domain.Configuration;
 using LightOps.Mapping.Api.Mappers;
-using NodaMoney;
 
 namespace LightOps.Commerce.Gateways.Storefront.Configuration
 {
@@ -74,40 +72,12 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         #region Mappers
         internal enum Mappers
         {
-            ImageProtoMapper,
             MoneyProtoMapper,
-
-            ContentPageProtoMapper,
-
-            NavigationProtoMapper,
-            SubNavigationProtoMapper,
-            NavigationLinkProtoMapper,
-
-            MetaFieldProtoMapper,
-
-            CategoryProtoMapper,
-
-            ProductProtoMapper,
-            ProductVariantProtoMapper,
         }
 
         private readonly Dictionary<Mappers, ServiceRegistration> _mappers = new Dictionary<Mappers, ServiceRegistration>
         {
-            [Mappers.ImageProtoMapper] = ServiceRegistration.Transient<IMapper<ImageProto, IImage>, ImageProtoMapper>(),
-            [Mappers.MoneyProtoMapper] = ServiceRegistration.Transient<IMapper<MoneyProto, Money>, MoneyProtoMapper>(),
-
-            [Mappers.ContentPageProtoMapper] = ServiceRegistration.Transient<IMapper<ContentPageProto, IContentPage>, ContentPageProtoMapper>(),
-
-            [Mappers.NavigationProtoMapper] = ServiceRegistration.Transient<IMapper<NavigationProto, INavigation>, NavigationProtoMapper>(),
-            [Mappers.SubNavigationProtoMapper] = ServiceRegistration.Transient<IMapper<SubNavigationProto, ISubNavigation>, SubNavigationProtoMapper>(),
-            [Mappers.NavigationLinkProtoMapper] = ServiceRegistration.Transient<IMapper<NavigationLinkProto, INavigationLink>, NavigationLinkProtoMapper>(),
-
-            [Mappers.MetaFieldProtoMapper] = ServiceRegistration.Transient<IMapper<MetaFieldProto, IMetaField>, MetaFieldProtoMapper>(),
-
-            [Mappers.CategoryProtoMapper] = ServiceRegistration.Transient<IMapper<CategoryProto, ICategory>, CategoryProtoMapper>(),
-
-            [Mappers.ProductProtoMapper] = ServiceRegistration.Transient<IMapper<ProductProto, IProduct>, ProductProtoMapper>(),
-            [Mappers.ProductVariantProtoMapper] = ServiceRegistration.Transient<IMapper<ProductVariantProto, IProductVariant>, ProductVariantProtoMapper>(),
+            [Mappers.MoneyProtoMapper] = ServiceRegistration.Transient<IMapper<Proto.Types.Money, NodaMoney.Money>, MoneyProtoMapper>(),
         };
         #endregion Mappers
 
@@ -116,22 +86,22 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         {
             ImageCdnProvider,
 
-            ContentPageEndpointProvider,
-            NavigationEndpointProvider,
-            MetaFieldEndpointProvider,
-            CategoryEndpointProvider,
-            ProductEndpointProvider,
+            ContentPageServiceProvider,
+            NavigationServiceProvider,
+            MetaFieldServiceProvider,
+            CategoryServiceProvider,
+            ProductServiceProvider,
         }
 
         private readonly Dictionary<Providers, ServiceRegistration> _providers = new Dictionary<Providers, ServiceRegistration>()
         {
             [Providers.ImageCdnProvider] = ServiceRegistration.Singleton<IImageCdnProvider>(new ImageCdnProvider()),
 
-            [Providers.ContentPageEndpointProvider] = ServiceRegistration.Singleton<IContentPageEndpointProvider>(new ContentPageEndpointProvider()),
-            [Providers.NavigationEndpointProvider] = ServiceRegistration.Singleton<INavigationEndpointProvider>(new NavigationEndpointProvider()),
-            [Providers.MetaFieldEndpointProvider] = ServiceRegistration.Singleton<IMetaFieldEndpointProvider>(new MetaFieldEndpointProvider()),
-            [Providers.CategoryEndpointProvider] = ServiceRegistration.Singleton<ICategoryEndpointProvider>(new CategoryEndpointProvider()),
-            [Providers.ProductEndpointProvider] = ServiceRegistration.Singleton<IProductEndpointProvider>(new ProductEndpointProvider()),
+            [Providers.ContentPageServiceProvider] = ServiceRegistration.Singleton<IContentPageServiceProvider>(new ContentPageServiceProvider()),
+            [Providers.NavigationServiceProvider] = ServiceRegistration.Singleton<INavigationServiceProvider>(new NavigationServiceProvider()),
+            [Providers.MetaFieldServiceProvider] = ServiceRegistration.Singleton<IMetaFieldServiceProvider>(new MetaFieldServiceProvider()),
+            [Providers.CategoryServiceProvider] = ServiceRegistration.Singleton<ICategoryServiceProvider>(new CategoryServiceProvider()),
+            [Providers.ProductServiceProvider] = ServiceRegistration.Singleton<IProductServiceProvider>(new ProductServiceProvider()),
         };
 
         public IStorefrontGatewayComponent UseImageCdn(string cdnHost)
@@ -146,7 +116,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 
         public IStorefrontGatewayComponent UseContentPages(string grpcEndpoint)
         {
-            _providers[Providers.ContentPageEndpointProvider].ImplementationInstance = new ContentPageEndpointProvider
+            _providers[Providers.ContentPageServiceProvider].ImplementationInstance = new ContentPageServiceProvider
             {
                 IsEnabled = true,
                 GrpcEndpoint = grpcEndpoint,
@@ -156,7 +126,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 
         public IStorefrontGatewayComponent UseNavigations(string grpcEndpoint)
         {
-            _providers[Providers.NavigationEndpointProvider].ImplementationInstance = new NavigationEndpointProvider
+            _providers[Providers.NavigationServiceProvider].ImplementationInstance = new NavigationServiceProvider
             {
                 IsEnabled = true,
                 GrpcEndpoint = grpcEndpoint,
@@ -166,7 +136,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 
         public IStorefrontGatewayComponent UseMetaFields(string grpcEndpoint)
         {
-            _providers[Providers.MetaFieldEndpointProvider].ImplementationInstance = new MetaFieldEndpointProvider
+            _providers[Providers.MetaFieldServiceProvider].ImplementationInstance = new MetaFieldServiceProvider
             {
                 IsEnabled = true,
                 GrpcEndpoint = grpcEndpoint,
@@ -176,7 +146,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 
         public IStorefrontGatewayComponent UseCategories(string grpcEndpoint)
         {
-            _providers[Providers.CategoryEndpointProvider].ImplementationInstance = new CategoryEndpointProvider
+            _providers[Providers.CategoryServiceProvider].ImplementationInstance = new CategoryServiceProvider
             {
                 IsEnabled = true,
                 GrpcEndpoint = grpcEndpoint,
@@ -186,7 +156,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
 
         public IStorefrontGatewayComponent UseProducts(string grpcEndpoint)
         {
-            _providers[Providers.ProductEndpointProvider].ImplementationInstance = new ProductEndpointProvider
+            _providers[Providers.ProductServiceProvider].ImplementationInstance = new ProductServiceProvider
             {
                 IsEnabled = true,
                 GrpcEndpoint = grpcEndpoint,

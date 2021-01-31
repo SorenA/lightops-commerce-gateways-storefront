@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
+using LightOps.Commerce.Proto.Types;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.Services
 {
@@ -16,13 +16,13 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services
             _metaFieldService = metaFieldService;
         }
 
-        public async Task<IDictionary<string, IMetaField>> LookupByIdAsync(IEnumerable<string> ids)
+        public async Task<IDictionary<string, MetaField>> LookupByIdAsync(IEnumerable<string> ids)
         {
             var result = await _metaFieldService.GetByIdAsync(ids.ToList());
             return result.ToDictionary(x => x.Id);
         }
 
-        public async Task<IDictionary<string, IList<IMetaField>>> LookupByParentIdsAsync(IEnumerable<string> parentIds)
+        public async Task<IDictionary<string, IList<MetaField>>> LookupByParentIdsAsync(IEnumerable<string> parentIds)
         {
             return await _metaFieldService.GetByParentIdsAsync(parentIds.ToList());
         }

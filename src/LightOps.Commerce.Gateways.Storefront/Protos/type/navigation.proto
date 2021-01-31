@@ -6,8 +6,9 @@ option csharp_namespace = "LightOps.Commerce.Proto.Types";
 
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
+import "Protos/type/localized_string.proto";
 
-message NavigationProto {
+message Navigation {
   // Globally unique identifier, eg: gid://Navigation/1000
   string id = 1;
 
@@ -27,32 +28,32 @@ message NavigationProto {
   google.protobuf.Timestamp updated_at = 6;
 
   // The header link of the navigation
-  NavigationLinkProto header = 7;
+  NavigationLink header = 7;
 
   // The links in the navigation
-  repeated NavigationLinkProto links = 8;
+  repeated NavigationLink links = 8;
 
   // The embedded sub-navigations
-  repeated SubNavigationProto sub_navigations = 9;
+  repeated SubNavigation sub_navigations = 9;
 }
 
-message SubNavigationProto {
+message SubNavigation {
   // The header link of the sub-navigation
-  NavigationLinkProto header = 1;
+  NavigationLink header = 1;
 
   // The links in the sub-navigation
-  repeated NavigationLinkProto links = 2;
+  repeated NavigationLink links = 2;
 
   // The embedded sub-navigations
-  repeated SubNavigationProto sub_navigations = 3;
+  repeated SubNavigation sub_navigations = 3;
 }
 
-message NavigationLinkProto {
-  // The title of the link
-  string title = 1;
+message NavigationLink {
+  // The localized titles of the link
+  repeated lightops.type.LocalizedString titles = 1;
 
-  // The url of the link, if any
-  google.protobuf.StringValue url = 2;
+  // The localized urls of the link, if any
+  repeated lightops.type.LocalizedString urls = 2;
 
   // The target of the link, if any
   google.protobuf.StringValue target = 3;

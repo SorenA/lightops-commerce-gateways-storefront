@@ -2,7 +2,7 @@
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.Providers
 {
-    public class MetaFieldEndpointProvider : IMetaFieldEndpointProvider
+    public class CategoryServiceProvider : ICategoryServiceProvider
     {
         public bool IsEnabled { get; internal set; }
         public string GrpcEndpoint { get; internal set; }

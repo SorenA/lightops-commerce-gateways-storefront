@@ -1,96 +1,89 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LightOps.Commerce.Gateways.Storefront.Api.Enums;
-using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.QueryResults;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
-using LightOps.Commerce.Proto.Services;
+using LightOps.Commerce.Proto.Services.Product;
 using LightOps.Commerce.Proto.Types;
-using LightOps.Mapping.Api.Services;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
 {
     public class ProductGrpcService : IProductService
     {
-        private readonly IProductEndpointProvider _productEndpointProvider;
+        private readonly IProductServiceProvider _productServiceProvider;
         private readonly IGrpcCallerService _grpcCallerService;
-        private readonly IMappingService _mappingService;
 
         public ProductGrpcService(
-            IProductEndpointProvider productEndpointProvider,
-            IGrpcCallerService grpcCallerService,
-            IMappingService mappingService)
+            IProductServiceProvider productServiceProvider,
+            IGrpcCallerService grpcCallerService)
         {
-            _productEndpointProvider = productEndpointProvider;
+            _productServiceProvider = productServiceProvider;
             _grpcCallerService = grpcCallerService;
-            _mappingService = mappingService;
         }
 
-        public async Task<IList<IProduct>> GetByHandleAsync(IList<string> handles)
+        public async Task<IList<Product>> GetByHandleAsync(IList<string> handles)
         {
-            return await _grpcCallerService.CallService(_productEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            return await _grpcCallerService.CallService(_productServiceProvider.GrpcEndpoint, async (grpcChannel) =>
             {
-                var client = new ProductProtoService.ProductProtoServiceClient(grpcChannel);
-                var request = new GetProductsByHandlesProtoRequest();
-                request.Handles.AddRange(handles);
+                var client = new ProductService.ProductServiceClient(grpcChannel);
+                var response = await client.GetByHandlesAsync(new GetByHandlesRequest
+                {
+                    Handles = {handles}
+                });
 
-                var response = await client.GetProductsByHandlesAsync(request);
-
-                return _mappingService
-                    .Map<ProductProto, IProduct>(response.Products)
-                    .ToList();
+                return response.Products;
             });
         }
 
-        public async Task<IList<IProduct>> GetByIdAsync(IList<string> ids)
+        public async Task<IList<Product>> GetByIdAsync(IList<string> ids)
         {
-            return await _grpcCallerService.CallService(_productEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            return await _grpcCallerService.CallService(_productServiceProvider.GrpcEndpoint, async (grpcChannel) =>
             {
-                var client = new ProductProtoService.ProductProtoServiceClient(grpcChannel);
-                var request = new GetProductsByIdsProtoRequest();
-                request.Ids.AddRange(ids);
+                var client = new ProductService.ProductServiceClient(grpcChannel);
+                var response = await client.GetByIdsAsync(new GetByIdsRequest
+                {
+                    Ids = {ids}
+                });
 
-                var response = await client.GetProductsByIdsAsync(request);
-
-                return _mappingService
-                    .Map<ProductProto, IProduct>(response.Products)
-                    .ToList();
+                return response.Products;
             });
         }
 
-        public async Task<SearchResult<IProduct>> GetBySearchAsync(string searchTerm,
-                                                                   string categoryId,
-                                                                   string pageCursor,
-                                                                   int pageSize,
-                                                                   ProductSortKey sortKey,
-                                                                   bool reverse)
+        public async Task<SearchResult<Product>> GetBySearchAsync(string searchTerm,
+                                                                  string languageCode,
+                                                                  string categoryId,
+                                                                  string pageCursor,
+                                                                  int pageSize,
+                                                                  ProductSortKey sortKey,
+                                                                  bool reverse,
+                                                                  string currencyCode)
         {
-            return await _grpcCallerService.CallService(_productEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            return await _grpcCallerService.CallService(_productServiceProvider.GrpcEndpoint, async (grpcChannel) =>
             {
-                var client = new ProductProtoService.ProductProtoServiceClient(grpcChannel);
-                var response = await client.GetProductsBySearchAsync(new GetProductsBySearchProtoRequest()
+                var client = new ProductService.ProductServiceClient(grpcChannel);
+                var response = await client.GetBySearchAsync(new GetBySearchRequest
                 {
                     SearchTerm = searchTerm,
+                    LanguageCode = languageCode,
                     CategoryId = categoryId,
                     PageCursor = pageCursor,
                     PageSize = pageSize,
-                    SortKey = ConvertSortKey(sortKey),
+                    SortKey = sortKey,
                     Reverse = reverse,
+                    CurrencyCode = currencyCode,
                 });
 
                 var results = response
                     .Results
-                    .Select(x => new CursorNodeResult<IProduct>
+                    .Select(x => new CursorNodeResult<Product>
                     {
                         Cursor = x.Cursor,
-                        Node = _mappingService.Map<ProductProto, IProduct>(x.Node),
+                        Node = x.Node,
                     })
                     .ToList();
 
-                return new SearchResult<IProduct>
+                return new SearchResult<Product>
                 {
                     HasNextPage = response.HasNextPage,
                     HasPreviousPage = response.HasPreviousPage,
@@ -100,25 +93,6 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
                     Results = results,
                 };
             });
-        }
-
-        private ProductSortKeyProto ConvertSortKey(ProductSortKey sortKey)
-        {
-            switch (sortKey)
-            {
-                case ProductSortKey.Default:
-                    return ProductSortKeyProto.Default;
-                case ProductSortKey.Title:
-                    return ProductSortKeyProto.Title;
-                case ProductSortKey.CreatedAt:
-                    return ProductSortKeyProto.CreatedAt;
-                case ProductSortKey.UpdatedAt:
-                    return ProductSortKeyProto.UpdatedAt;
-                case ProductSortKey.UnitPrice:
-                    return ProductSortKeyProto.UnitPrice;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
     }
 }

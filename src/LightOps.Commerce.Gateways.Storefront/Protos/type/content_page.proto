@@ -4,11 +4,11 @@ package lightops.type;
 
 option csharp_namespace = "LightOps.Commerce.Proto.Types";
 
-import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
 import "Protos/type/image.proto";
+import "Protos/type/localized_string.proto";
 
-message ContentPageProto {
+message ContentPage {
   // Globally unique identifier, eg: gid://ContentPage/1000
   string id = 1;
 
@@ -18,17 +18,17 @@ message ContentPageProto {
   // A human-friendly unique string for the content page
   string handle = 3;
 
-  // The title of the content page
-  string title = 4;
+  // The localized titles of the content page
+  repeated lightops.type.LocalizedString titles = 4;
 
-  // The url of the content page
-  string url = 5;
+  // The localized urls of the content page
+  repeated lightops.type.LocalizedString urls = 5;
 
   // The type of the content page
   string type = 6;
 
-  // The summary of the content page
-  string summary = 7;
+  // The localized descriptions of the content page
+  repeated lightops.type.LocalizedString descriptions = 7;
 
   // The timestamp of content page creation
   google.protobuf.Timestamp created_at = 8;
@@ -37,5 +37,18 @@ message ContentPageProto {
   google.protobuf.Timestamp updated_at = 9;
 
   // The primary image of the content page
-  lightops.type.ImageProto primary_image = 10;
+  lightops.type.Image primary_image = 10;
+
+  // Whether or not the content page is searchable
+  bool is_searchable = 11;
+
+  // The sort order of the content page when no sorting key is specified
+  int64 sort_order = 12;
+}
+
+enum ContentPageSortKey {
+  DEFAULT = 0;
+  TITLE = 1;
+  CREATED_AT = 2;
+  UPDATED_AT = 3;
 }

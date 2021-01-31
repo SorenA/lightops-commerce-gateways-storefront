@@ -4,7 +4,7 @@ package lightops.type;
 
 option csharp_namespace = "LightOps.Commerce.Proto.Types";
 
-message MoneyProto {
+message Money {
   // ISO 4217 3-letter currency code
   string currency_code = 1;
 

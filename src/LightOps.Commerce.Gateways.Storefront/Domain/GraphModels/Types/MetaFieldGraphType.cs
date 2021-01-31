@@ -1,10 +1,10 @@
 ﻿using System;
 using GraphQL.Types;
-using LightOps.Commerce.Gateways.Storefront.Api.Models;
+using LightOps.Commerce.Proto.Types;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 {
-    public sealed class MetaFieldGraphType : ObjectGraphType<IMetaField>
+    public sealed class MetaFieldGraphType : ObjectGraphType<MetaField>
     {
         public MetaFieldGraphType()
         {
@@ -43,12 +43,12 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field<DateTimeGraphType, DateTime>()
                 .Name("CreatedAt")
                 .Description("The timestamp of meta-field creation")
-                .Resolve(ctx => ctx.Source.CreatedAt);
+                .Resolve(ctx => ctx.Source.CreatedAt.ToDateTime());
 
             Field<DateTimeGraphType, DateTime>()
                 .Name("UpdatedAt")
                 .Description("The timestamp of the latest meta-field update")
-                .Resolve(ctx => ctx.Source.UpdatedAt);
+                .Resolve(ctx => ctx.Source.UpdatedAt.ToDateTime());
         }
     }
 }

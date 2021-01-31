@@ -1,5 +1,5 @@
 ﻿using GraphQL.Types;
-using LightOps.Commerce.Gateways.Storefront.Api.Enums;
+using LightOps.Commerce.Proto.Types;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Enum
 {

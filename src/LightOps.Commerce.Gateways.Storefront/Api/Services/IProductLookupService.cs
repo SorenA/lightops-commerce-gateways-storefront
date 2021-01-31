@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using LightOps.Commerce.Gateways.Storefront.Api.Models;
+using LightOps.Commerce.Proto.Types;
 
 namespace LightOps.Commerce.Gateways.Storefront.Api.Services
 {
     public interface IProductLookupService
     {
-        Task<IDictionary<string, IProduct>> LookupByHandleAsync(IEnumerable<string> handles);
-        Task<IDictionary<string, IProduct>> LookupByIdAsync(IEnumerable<string> ids);
+        Task<IDictionary<string, Product>> LookupByHandleAsync(IEnumerable<string> handles);
+        Task<IDictionary<string, Product>> LookupByIdAsync(IEnumerable<string> ids);
     }
 }

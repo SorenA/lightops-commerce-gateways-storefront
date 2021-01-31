@@ -1,26 +1,26 @@
 ﻿using System.Collections.Generic;
 using GraphQL.Types;
-using LightOps.Commerce.Gateways.Storefront.Api.Models;
+using LightOps.Commerce.Proto.Types;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
 {
-    public sealed class SubNavigationGraphType : ObjectGraphType<ISubNavigation>
+    public sealed class SubNavigationGraphType : ObjectGraphType<SubNavigation>
     {
         public SubNavigationGraphType()
         {
             Name = "SubNavigation";
 
-            Field<NavigationLinkGraphType, INavigationLink>()
+            Field<NavigationLinkGraphType, NavigationLink>()
                 .Name("Header")
                 .Description("The header link of the sub-navigation")
                 .Resolve(ctx => ctx.Source.Header);
 
-            Field<ListGraphType<NavigationLinkGraphType>, IList<INavigationLink>>()
+            Field<ListGraphType<NavigationLinkGraphType>, IList<NavigationLink>>()
                 .Name("Links")
                 .Description("The links in the sub-navigation")
                 .Resolve(ctx => ctx.Source.Links);
 
-            Field<ListGraphType<SubNavigationGraphType>, IList<ISubNavigation>>()
+            Field<ListGraphType<SubNavigationGraphType>, IList<SubNavigation>>()
                 .Name("SubNavigations")
                 .Description("The embedded sub-sub-navigation")
                 .Resolve(ctx => ctx.Source.SubNavigations);

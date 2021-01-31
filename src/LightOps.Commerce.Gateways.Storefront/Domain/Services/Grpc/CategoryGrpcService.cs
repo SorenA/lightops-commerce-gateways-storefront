@@ -1,96 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LightOps.Commerce.Gateways.Storefront.Api.Enums;
-using LightOps.Commerce.Gateways.Storefront.Api.Models;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.QueryResults;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
-using LightOps.Commerce.Proto.Services;
+using LightOps.Commerce.Proto.Services.Category;
 using LightOps.Commerce.Proto.Types;
-using LightOps.Mapping.Api.Services;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
 {
     public class CategoryGrpcService : ICategoryService
     {
-        private readonly ICategoryEndpointProvider _categoryEndpointProvider;
+        private readonly ICategoryServiceProvider _categoryServiceProvider;
         private readonly IGrpcCallerService _grpcCallerService;
-        private readonly IMappingService _mappingService;
 
         public CategoryGrpcService(
-            ICategoryEndpointProvider categoryEndpointProvider,
-            IGrpcCallerService grpcCallerService,
-            IMappingService mappingService)
+            ICategoryServiceProvider categoryServiceProvider,
+            IGrpcCallerService grpcCallerService)
         {
-            _categoryEndpointProvider = categoryEndpointProvider;
+            _categoryServiceProvider = categoryServiceProvider;
             _grpcCallerService = grpcCallerService;
-            _mappingService = mappingService;
         }
 
-        public async Task<IList<ICategory>> GetByHandleAsync(IList<string> handles)
+        public async Task<IList<Category>> GetByHandleAsync(IList<string> handles)
         {
-            return await _grpcCallerService.CallService(_categoryEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            return await _grpcCallerService.CallService(_categoryServiceProvider.GrpcEndpoint, async (grpcChannel) =>
             {
-                var client = new CategoryProtoService.CategoryProtoServiceClient(grpcChannel);
-                var request = new GetCategoriesByHandlesProtoRequest();
-                request.Handles.AddRange(handles);
+                var client = new CategoryService.CategoryServiceClient(grpcChannel);
+                var response = await client.GetByHandlesAsync(new GetByHandlesRequest
+                {
+                    Handles = {handles}
+                });
 
-                var response = await client.GetCategoriesByHandlesAsync(request);
-
-                return _mappingService
-                    .Map<CategoryProto, ICategory>(response.Categories)
-                    .ToList();
+                return response.Categories;
             });
         }
 
-        public async Task<IList<ICategory>> GetByIdAsync(IList<string> ids)
+        public async Task<IList<Category>> GetByIdAsync(IList<string> ids)
         {
-            return await _grpcCallerService.CallService(_categoryEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            return await _grpcCallerService.CallService(_categoryServiceProvider.GrpcEndpoint, async (grpcChannel) =>
             {
-                var client = new CategoryProtoService.CategoryProtoServiceClient(grpcChannel);
-                var request = new GetCategoriesByIdsProtoRequest();
-                request.Ids.AddRange(ids);
+                var client = new CategoryService.CategoryServiceClient(grpcChannel);
+                var response = await client.GetByIdsAsync(new GetByIdsRequest
+                {
+                    Ids = {ids}
+                });
 
-                var response = await client.GetCategoriesByIdsAsync(request);
-
-                return _mappingService
-                    .Map<CategoryProto, ICategory>(response.Categories)
-                    .ToList();
+                return response.Categories;
             });
         }
 
-        public async Task<SearchResult<ICategory>> GetBySearchAsync(string searchTerm,
+        public async Task<SearchResult<Category>> GetBySearchAsync(string searchTerm,
+                                                                    string languageCode,
                                                                     string parentId,
                                                                     string pageCursor,
                                                                     int pageSize,
                                                                     CategorySortKey sortKey,
                                                                     bool reverse)
         {
-            return await _grpcCallerService.CallService(_categoryEndpointProvider.GrpcEndpoint, async (grpcChannel) =>
+            return await _grpcCallerService.CallService(_categoryServiceProvider.GrpcEndpoint, async (grpcChannel) =>
             {
-                var client = new CategoryProtoService.CategoryProtoServiceClient(grpcChannel);
-                var response = await client.GetCategoriesBySearchAsync(new GetCategoriesBySearchProtoRequest
+                var client = new CategoryService.CategoryServiceClient(grpcChannel);
+                var response = await client.GetBySearchAsync(new GetBySearchRequest
                 {
                     SearchTerm = searchTerm,
+                    LanguageCode = languageCode,
                     ParentId = parentId,
                     PageCursor = pageCursor,
                     PageSize = pageSize,
-                    SortKey = ConvertSortKey(sortKey),
+                    SortKey = sortKey,
                     Reverse = reverse,
                 });
 
                 var results = response
                     .Results
-                    .Select(x => new CursorNodeResult<ICategory>
+                    .Select(x => new CursorNodeResult<Category>
                     {
                         Cursor = x.Cursor,
-                        Node = _mappingService.Map<CategoryProto, ICategory>(x.Node),
+                        Node = x.Node
                     })
                     .ToList();
 
-                return new SearchResult<ICategory>
+                return new SearchResult<Category>
                 {
                     HasNextPage = response.HasNextPage,
                     HasPreviousPage = response.HasPreviousPage,
@@ -100,23 +91,6 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
                     Results = results,
                 };
             });
-        }
-
-        private CategorySortKeyProto ConvertSortKey(CategorySortKey sortKey)
-        {
-            switch (sortKey)
-            {
-                case CategorySortKey.Default:
-                    return CategorySortKeyProto.Default;
-                case CategorySortKey.Title:
-                    return CategorySortKeyProto.Title;
-                case CategorySortKey.CreatedAt:
-                    return CategorySortKeyProto.CreatedAt;
-                case CategorySortKey.UpdatedAt:
-                    return CategorySortKeyProto.UpdatedAt;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
     }
 }

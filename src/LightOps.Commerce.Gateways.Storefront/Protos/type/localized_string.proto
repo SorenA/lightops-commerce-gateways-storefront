@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package lightops.type;
+
+option csharp_namespace = "LightOps.Commerce.Proto.Types";
+
+import "google/protobuf/wrappers.proto";
+
+message LocalizedString {
+  // ISO 639 2-letter language code matched with ISO 3166 2-letter country code, eg. en-US, da-DK
+  string language_code = 1;
+
+  // The localized string
+  google.protobuf.StringValue value = 2;
+}

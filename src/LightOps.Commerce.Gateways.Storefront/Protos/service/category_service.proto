@@ -2,103 +2,150 @@ syntax = "proto3";
 
 package lightops.service;
 
-option csharp_namespace = "LightOps.Commerce.Proto.Services";
+option csharp_namespace = "LightOps.Commerce.Proto.Services.Category";
 
 import "google/protobuf/wrappers.proto";
 import "Protos/type/category.proto";
 
-enum CategorySortKeyProto {
-  DEFAULT = 0;
-  TITLE = 1;
-  CREATED_AT = 2;
-  UPDATED_AT = 3;
-}
+service CategoryService {
+  // Persists a category
+  rpc Persist(PersistRequest) returns (PersistResponse) {}
 
-service CategoryProtoService {
+  // Deletes a category
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+
   // Gets a list of categories by handle
-  rpc GetCategoriesByHandles(GetCategoriesByHandlesProtoRequest) returns (GetCategoriesByHandlesProtoResponse) {}
+  rpc GetByHandles(GetByHandlesRequest) returns (GetByHandlesResponse) {}
 
   // Gets a list of categories by ids
-  rpc GetCategoriesByIds(GetCategoriesByIdsProtoRequest) returns (GetCategoriesByIdsProtoResponse) {}
+  rpc GetByIds(GetByIdsRequest) returns (GetByIdsResponse) {}
 
   // Gets a list of paginated categories by search
-  rpc GetCategoriesBySearch(GetCategoriesBySearchProtoRequest) returns (GetCategoriesBySearchProtoResponse) {}
+  rpc GetBySearch(GetBySearchRequest) returns (GetBySearchResponse) {}
 }
 
-// GetCategoriesByHandles request model
-message GetCategoriesByHandlesProtoRequest {
-  // The handles of the categories requested
+/*
+ * Persist messages
+ */
+ message PersistRequest {
+  // The id of the category to persist
+  string id = 1;
+
+  // The category to persist
+  lightops.type.Category category = 2;
+}
+
+message PersistResponse {
+  // The status code of the operation
+  StatusCode status_code = 1;
+
+  // The errors occoured, if any
+  repeated string errors = 2;
+
+  enum StatusCode {
+    UNKNOWN = 0;
+    OK = 1;
+    UNAVAILABLE = 2;
+    INVALID = 3;
+  }
+}
+
+/*
+ * Delete messages
+ */
+message DeleteRequest {
+  // The id of the category to delete
+  string id = 1;
+}
+
+message DeleteResponse {
+  // The status code of the operation
+  StatusCode status_code = 1;
+
+  enum StatusCode {
+    UNKNOWN = 0;
+    OK = 1;
+    UNAVAILABLE = 2;
+  }
+}
+
+/*
+ * GetByHandles messages
+ */
+ message GetByHandlesRequest {
+  // The handles of the category requested
   repeated string handles = 1;
 }
 
-// GetCategoriesByHandles response model
-message GetCategoriesByHandlesProtoResponse {
+message GetByHandlesResponse {
   // The categories found, if any
-  repeated lightops.type.CategoryProto categories = 1;
+  repeated lightops.type.Category categories = 1;
 }
 
-// GetCategoriesByIds request model
-message GetCategoriesByIdsProtoRequest {
+/*
+ * GetByIds messages
+ */
+message GetByIdsRequest {
   // The ids of the categories requested
   repeated string ids = 1;
 }
 
-// GetCategoriesByIds response model
-message GetCategoriesByIdsProtoResponse {
+message GetByIdsResponse {
   // The categories found, if any
-  repeated lightops.type.CategoryProto categories = 1;
+  repeated lightops.type.Category categories = 1;
 }
 
-// GetCategoriesBySearch, request model
-message GetCategoriesBySearchProtoRequest {
-  reserved 1;
-
+/*
+ * GetBySearch messages
+ */
+ message GetBySearchRequest {
   // The term to search for, if any
-  google.protobuf.StringValue search_term = 7;
+  google.protobuf.StringValue search_term = 1;
+
+  // Search only in localized strings with a specific language code, if any specified.
+  // ISO 639 2-letter language code matched with ISO 3166 2-letter country code, eg. en-US, da-DK
+  google.protobuf.StringValue language_code = 2;
 
   // Search only in children with a specific parent id, if any specified. For no parent: 'gid://'
-  google.protobuf.StringValue parent_id = 2;
+  google.protobuf.StringValue parent_id = 3;
 
   // The page cursor to use
-  google.protobuf.StringValue page_cursor = 3;
+  google.protobuf.StringValue page_cursor = 4;
 
   // The page size to use
-  google.protobuf.Int32Value page_size = 4;
+  google.protobuf.Int32Value page_size = 5;
 
   // Sort the underlying list by the given key
-  CategorySortKeyProto sort_key = 5;
+  lightops.type.CategorySortKey sort_key = 6;
 
   // Whether to reverse the order of the underlying list
-  google.protobuf.BoolValue reverse = 6;
+  google.protobuf.BoolValue reverse = 7;
 }
 
-// GetCategoriesBySearch, response model
-message GetCategoriesBySearchProtoResponse {
-  reserved 1, 2;
-
-  message CategoryResult {
-    // The cursor of the result
-    string cursor = 1;
-
-    // The result node
-    lightops.type.CategoryProto node = 2;
-  }
+message GetBySearchResponse {
+  // The categories found, if any
+  repeated Result results = 1;
 
   // The total amount of results available
-  int32 total_results = 4;
+  int32 total_results = 2;
 
   // Whether another page can be fetched
   bool has_next_page = 3;
 
   // Whether a previous page can be fetched
-  bool has_previous_page = 5;
+  bool has_previous_page = 4;
 
   // The cursor of the first result
-  string start_cursor = 6;
+  string start_cursor = 5;
 
   // The cursor of the last result
-  string end_cursor = 7;
+  string end_cursor = 6;
 
-  // The categories found, if any
-  repeated CategoryResult results = 8;
+  message Result {
+    // The cursor of the result
+    string cursor = 1;
+
+    // The result node
+    lightops.type.Category node = 2;
+  }
 }
