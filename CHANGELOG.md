@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2021-01-31
+
+### Added
+
+- User context
+- Languages and localization support based on header `Accept-Language`
+- Currencies and multi-currency support based on header `X-Currency`
+- Ability to serve supported languages through the GraphQL API
+- Ability to serve supported currencies through the GraphQL API
+
+### Changed
+
+- **Breaking** - Migrated to .NET 5
+- **Breaking** - Updated protobuf service and type definitions
+- Use Protobuf generated models and services directly instead of mapping and re-implementing services, reduce code required by a lot
+- **Breaking** - Change protobuf service namespace to prevent message clashes when using multiple services
+- Upgrade to latest gRPC and GraphQL libraries
+- Integrated GraphQL configuration into Storefront Gateway registration
+
+### Removed
+
+- **Breaking** - Local entity interfaces, models and mappers for products, no longer needed
+- **Breaking** - Local entity interfaces, models and mappers for categories, no longer needed
+- **Breaking** - Local entity interfaces, models and mappers for content pages, no longer needed
+- **Breaking** - Local entity interfaces, models and mappers for meta-fields, no longer needed
+- **Breaking** - Local entity interfaces, models and mappers for navigations, no longer needed
+
 ## [0.2.4] - 2020-12-28
 
 ### Added
@@ -70,7 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Meta-field gRPC service connection
 - Sample applications with mock data and GraphQL API
 
-[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.2.4...develop
+[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.3.0...develop
+[0.3.0]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.3.0
 [0.2.4]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.4
 [0.2.3]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.3
 [0.2.2]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.2
