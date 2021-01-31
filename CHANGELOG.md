@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2021-01-31
+
+### Changed
+
+- Fixed meta-field localization
+- Filter non-public meta-fields out at service level
+
 ## [0.3.0] - 2021-01-31
 
 ### Added
@@ -97,7 +104,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Meta-field gRPC service connection
 - Sample applications with mock data and GraphQL API
 
-[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.3.0...develop
+[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.3.1...develop
+[0.3.1]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.3.1
 [0.3.0]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.3.0
 [0.2.4]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.4
 [0.2.3]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.3
