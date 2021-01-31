@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GraphQL.DataLoader;
+using GraphQL.Server;
 using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
@@ -202,6 +204,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             };
             return this;
         }
+
         #endregion Providers
 
         #region GraphQL
@@ -287,5 +290,15 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
             [Graph.ProductVariantGraphType] = ServiceRegistration.Singleton<ProductVariantGraphType, ProductVariantGraphType>(),
         };
         #endregion GraphQL
+
+        #region Configurations
+        // ReSharper disable once InconsistentNaming
+        public Action<GraphQLOptions, IServiceProvider> ConfigureGraphQLDelegate { get; internal set; }
+        public IStorefrontGatewayComponent ConfigureGraphQL(Action<GraphQLOptions, IServiceProvider> config)
+        {
+            ConfigureGraphQLDelegate = config;
+            return this;
+        }
+        #endregion Configuration
     }
 }

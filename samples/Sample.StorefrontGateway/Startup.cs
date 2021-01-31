@@ -1,5 +1,4 @@
 using GraphQL.Server;
-using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.Server.Ui.GraphiQL;
 using GraphQL.Server.Ui.Playground;
 using GraphQL.Types;
@@ -25,7 +24,7 @@ namespace Sample.StorefrontGateway
             {
                 root
                     .AddMapping()
-                    .AddStorefrontGateway(gateway =>
+                    .AddStorefrontGateway(services, gateway =>
                     {
                         // Configure languages
                         gateway.UseLanguages("en-US", "da-DK");
@@ -42,22 +41,14 @@ namespace Sample.StorefrontGateway
                         gateway.UseMetaFields("http://sample-meta-field-service:80");
                         gateway.UseCategories("http://sample-category-service:80");
                         gateway.UseProducts("http://sample-product-service:80");
+
+                        // Configure GraphQL
+                        gateway.ConfigureGraphQL((options, provider) =>
+                        {
+                            options.EnableMetrics = true;
+                        });
                     });
             });
-
-            // Add GraphQL
-            services
-                .AddGraphQL((options, provider) =>
-                {
-                    options.EnableMetrics = true;
-
-                    var logger = provider.GetRequiredService<ILogger<Startup>>();
-                    options.UnhandledExceptionDelegate = ctx =>
-                        logger.LogError("{Error} occured", ctx.OriginalException.Message);
-                })
-                .AddDataLoader()
-                .AddUserContextBuilder<StorefrontGraphUserContextBuilder>()
-                .AddSystemTextJson(deserializerSettings => { }, serializerSettings => { });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

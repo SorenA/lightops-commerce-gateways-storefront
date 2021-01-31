@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using GraphQL.Server;
 
 namespace LightOps.Commerce.Gateways.Storefront.Configuration
 {
@@ -29,5 +31,13 @@ namespace LightOps.Commerce.Gateways.Storefront.Configuration
         IStorefrontGatewayComponent UseMetaFields(string grpcEndpoint);
         IStorefrontGatewayComponent UseCategories(string grpcEndpoint);
         IStorefrontGatewayComponent UseProducts(string grpcEndpoint);
+
+        // ReSharper disable once InconsistentNaming
+        /// <summary>
+        /// Register configuration delegate to configure the GraphQL middleware.
+        /// </summary>
+        /// <param name="config">The delegate to configure the GraphQL middleware</param>
+        /// <returns></returns>
+        IStorefrontGatewayComponent ConfigureGraphQL(Action<GraphQLOptions, IServiceProvider> config);
     }
 }

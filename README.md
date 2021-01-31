@@ -40,7 +40,7 @@ LightOps packages available on NuGet:
 
 ## Using the gateway component
 
-Register during startup through the `AddStorefrontGateway(options)` extension on `IDependencyInjectionRootComponent`.
+Register during startup through the `AddStorefrontGateway(options)` extension on `IDependencyInjectionRootComponent`. (Using app settings in a non-sample setup of course)
 
 ```csharp
 services.AddLightOpsDependencyInjection(root =>
@@ -65,22 +65,15 @@ services.AddLightOpsDependencyInjection(root =>
             gateway.UseMetaFields("http://sample-meta-field-service:80");
             gateway.UseCategories("http://sample-category-service:80");
             gateway.UseProducts("http://sample-product-service:80");
+
+            // Configure GraphQL
+            gateway.ConfigureGraphQL((options, provider) =>
+            {
+                options.EnableMetrics = true;
+                // ...
+            });
         });
 });
-```
-
-Register GraphQL
-
-```csharp
-services
-    .AddGraphQL((options, provider) =>
-    {
-        // Configure GraphQL
-        // ...
-    })
-    .AddDataLoader()
-    .AddUserContextBuilder<StorefrontGraphUserContextBuilder>()
-    .AddSystemTextJson(deserializerSettings => { }, serializerSettings => { });
 ```
 
 Enable GraphQL
