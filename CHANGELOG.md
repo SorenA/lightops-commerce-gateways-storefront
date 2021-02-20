@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2021-02-20
+
+### Changed
+
+- **Breaking** - Change handles to localized strings
+
 ## [0.3.1] - 2021-01-31
 
 ### Changed
@@ -104,7 +110,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Meta-field gRPC service connection
 - Sample applications with mock data and GraphQL API
 
-[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.3.1...develop
+[unreleased]: https://github.com/SorenA/lightops-commerce-gateways-storefront/compare/0.4.0...develop
+[0.4.0]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.4.0
 [0.3.1]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.3.1
 [0.3.0]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.3.0
 [0.2.4]: https://github.com/SorenA/lightops-commerce-gateways-storefront/tree/0.2.4
