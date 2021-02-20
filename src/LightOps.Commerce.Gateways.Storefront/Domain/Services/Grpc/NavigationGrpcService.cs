@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
@@ -20,7 +21,8 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
             _grpcCallerService = grpcCallerService;
         }
 
-        public async Task<IList<Navigation>> GetByHandleAsync(IList<string> handles)
+        public async Task<IList<Navigation>> GetByHandleAsync(IList<string> handles,
+                                                              string languageCode)
         {
             return await _grpcCallerService.CallService(_navigationServiceProvider.GrpcEndpoint, async (grpcChannel) =>
             {
@@ -30,7 +32,11 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
                     Handles = {handles}
                 });
 
-                return response.Navigations;
+                // Filter out matches in other languages
+                return response.Navigations
+                    .Where(x => x.Handles
+                        .Any(ls => ls.LanguageCode == languageCode && handles.Contains(ls.Value)))
+                    .ToList();
             });
         }
 

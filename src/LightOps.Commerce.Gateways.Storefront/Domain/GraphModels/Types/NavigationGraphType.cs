@@ -6,6 +6,7 @@ using GraphQL.DataLoader;
 using GraphQL.Types;
 using LightOps.Commerce.Gateways.Storefront.Api.Providers;
 using LightOps.Commerce.Gateways.Storefront.Api.Services;
+using LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Contexts;
 using LightOps.Commerce.Proto.Types;
 
 namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
@@ -34,7 +35,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field<StringGraphType, string>()
                 .Name("Handle")
                 .Description("A human-friendly unique string for the navigation")
-                .Resolve(ctx => ctx.Source.Handle);
+                .Resolve(ctx =>
+                {
+                    var userContext = (StorefrontGraphUserContext)ctx.UserContext;
+
+                    return ctx.Source.Handles
+                        .FirstOrDefault(x => x.LanguageCode == userContext.LanguageCode)
+                        ?.Value;
+                });
 
             Field<StringGraphType, string>()
                 .Name("Type")

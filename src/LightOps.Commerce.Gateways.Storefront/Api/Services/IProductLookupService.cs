@@ -6,7 +6,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Api.Services
 {
     public interface IProductLookupService
     {
-        Task<IDictionary<string, Product>> LookupByHandleAsync(IEnumerable<string> handles);
+        Task<IDictionary<string, Product>> LookupByHandleAsync(IEnumerable<string> handles, string languageCode);
         Task<IDictionary<string, Product>> LookupByIdAsync(IEnumerable<string> ids);
     }
 }

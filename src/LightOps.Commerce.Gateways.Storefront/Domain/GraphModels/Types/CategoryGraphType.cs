@@ -40,7 +40,14 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Types
             Field<StringGraphType, string>()
                 .Name("Handle")
                 .Description("A human-friendly unique string for the category")
-                .Resolve(ctx => ctx.Source.Handle);
+                .Resolve(ctx =>
+                {
+                    var userContext = (StorefrontGraphUserContext)ctx.UserContext;
+
+                    return ctx.Source.Handles
+                        .FirstOrDefault(x => x.LanguageCode == userContext.LanguageCode)
+                        ?.Value;
+                });
 
             Field<StringGraphType, string>()
                 .Name("Title")

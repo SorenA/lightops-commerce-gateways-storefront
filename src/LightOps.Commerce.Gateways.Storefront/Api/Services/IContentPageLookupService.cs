@@ -6,7 +6,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Api.Services
 {
     public interface IContentPageLookupService
     {
-        Task<IDictionary<string, ContentPage>> LookupByHandleAsync(IEnumerable<string> handles);
+        Task<IDictionary<string, ContentPage>> LookupByHandleAsync(IEnumerable<string> handles, string languageCode);
         Task<IDictionary<string, ContentPage>> LookupByIdAsync(IEnumerable<string> ids);
     }
 }

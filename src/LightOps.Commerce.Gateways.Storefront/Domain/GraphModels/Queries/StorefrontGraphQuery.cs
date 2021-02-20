@@ -74,8 +74,11 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
 
                     if (ctx.HasArgument("handle"))
                     {
+                        var userContext = (StorefrontGraphUserContext)ctx.UserContext;
+
                         var loader = dataLoaderContextAccessor.Context
-                            .GetOrAddBatchLoader<string, ContentPage>("ContentPage.LookupByHandleAsync", contentPageLookupService.LookupByHandleAsync);
+                            .GetOrAddBatchLoader<string, ContentPage>("ContentPage.LookupByHandleAsync", handles =>
+                                contentPageLookupService.LookupByHandleAsync(handles, userContext.LanguageCode));
                         return loader.LoadAsync(ctx.GetArgument<string>("handle"));
                     }
 
@@ -133,8 +136,11 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
 
                     if (ctx.HasArgument("handle"))
                     {
+                        var userContext = (StorefrontGraphUserContext)ctx.UserContext;
+
                         var loader = dataLoaderContextAccessor.Context
-                            .GetOrAddBatchLoader<string, Navigation>("Navigation.LookupByHandleAsync", navigationLookupService.LookupByHandleAsync);
+                            .GetOrAddBatchLoader<string, Navigation>("Navigation.LookupByHandleAsync", handles =>
+                                navigationLookupService.LookupByHandleAsync(handles, userContext.LanguageCode));
                         return loader.LoadAsync(ctx.GetArgument<string>("handle"));
                     }
 
@@ -165,8 +171,11 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
 
                     if (ctx.HasArgument("handle"))
                     {
+                        var userContext = (StorefrontGraphUserContext)ctx.UserContext;
+
                         var loader = dataLoaderContextAccessor.Context
-                            .GetOrAddBatchLoader<string, Category>("Category.LookupByHandleAsync", categoryLookupService.LookupByHandleAsync);
+                            .GetOrAddBatchLoader<string, Category>("Category.LookupByHandleAsync", handles =>
+                                categoryLookupService.LookupByHandleAsync(handles, userContext.LanguageCode));
                         return loader.LoadAsync(ctx.GetArgument<string>("handle"));
                     }
 
@@ -224,8 +233,11 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.GraphModels.Queries
 
                     if (ctx.HasArgument("handle"))
                     {
+                        var userContext = (StorefrontGraphUserContext)ctx.UserContext;
+
                         var loader = dataLoaderContextAccessor.Context
-                            .GetOrAddBatchLoader<string, Product>("Product.LookupByHandleAsync", productLookupService.LookupByHandleAsync);
+                            .GetOrAddBatchLoader<string, Product>("Product.LookupByHandleAsync", handles =>
+                                productLookupService.LookupByHandleAsync(handles, userContext.LanguageCode));
                         return loader.LoadAsync(ctx.GetArgument<string>("handle"));
                     }
 

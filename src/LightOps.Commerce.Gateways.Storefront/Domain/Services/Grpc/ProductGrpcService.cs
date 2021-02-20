@@ -22,7 +22,8 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
             _grpcCallerService = grpcCallerService;
         }
 
-        public async Task<IList<Product>> GetByHandleAsync(IList<string> handles)
+        public async Task<IList<Product>> GetByHandleAsync(IList<string> handles,
+                                                           string languageCode)
         {
             return await _grpcCallerService.CallService(_productServiceProvider.GrpcEndpoint, async (grpcChannel) =>
             {
@@ -32,7 +33,11 @@ namespace LightOps.Commerce.Gateways.Storefront.Domain.Services.Grpc
                     Handles = {handles}
                 });
 
-                return response.Products;
+                // Filter out matches in other languages
+                return response.Products
+                    .Where(x => x.Handles
+                        .Any(ls => ls.LanguageCode == languageCode && handles.Contains(ls.Value)))
+                    .ToList();
             });
         }
 

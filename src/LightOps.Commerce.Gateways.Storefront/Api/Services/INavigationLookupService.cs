@@ -6,7 +6,7 @@ namespace LightOps.Commerce.Gateways.Storefront.Api.Services
 {
     public interface INavigationLookupService
     {
-        Task<IDictionary<string, Navigation>> LookupByHandleAsync(IEnumerable<string> handles);
+        Task<IDictionary<string, Navigation>> LookupByHandleAsync(IEnumerable<string> handles, string languageCode);
         Task<IDictionary<string, Navigation>> LookupByIdAsync(IEnumerable<string> ids);
     }
 }

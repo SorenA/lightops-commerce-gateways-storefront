@@ -11,8 +11,10 @@ namespace LightOps.Commerce.Gateways.Storefront.Api.Services
         /// Gets a list of categories by handle
         /// </summary>
         /// <param name="handles">The handles of the categories</param>
+        /// <param name="languageCode">The language code to match handles in<br/>ISO 639 2-letter language code matched with ISO 3166 2-letter country code, eg. en-US, da-DK</param>
         /// <returns>List of categories, if any</returns>
-        Task<IList<Category>> GetByHandleAsync(IList<string> handles);
+        Task<IList<Category>> GetByHandleAsync(IList<string> handles,
+                                               string languageCode);
 
         /// <summary>
         /// Gets a list of categories by ids
