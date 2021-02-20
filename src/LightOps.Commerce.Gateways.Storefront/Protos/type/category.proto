@@ -15,8 +15,8 @@ message Category {
   // Globally unique identifier of parent, 'gid://' if none
   string parent_id = 2;
 
-  // A human-friendly unique string for the category
-  string handle = 3;
+  // The localized human-friendly unique handles for the category
+  repeated lightops.type.LocalizedString handles = 3;
 
   // The localized titles of the category
   repeated lightops.type.LocalizedString titles = 4;

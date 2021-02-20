@@ -15,8 +15,8 @@ message Navigation {
   // Globally unique identifier of parent, 'gid://' if none
   string parent_id = 2;
 
-  // A human-friendly unique string for the navigation
-  string handle = 3;
+  // The localized human-friendly unique handles for the navigation
+  repeated lightops.type.LocalizedString handles = 3;
 
   // The type of the navigation
   string type = 4;

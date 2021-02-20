@@ -15,8 +15,8 @@ message ContentPage {
   // Globally unique identifier of parent, 'gid://' if none
   string parent_id = 2;
 
-  // A human-friendly unique string for the content page
-  string handle = 3;
+  // The localized human-friendly unique handles for the content page
+  repeated lightops.type.LocalizedString handles = 3;
 
   // The localized titles of the content page
   repeated lightops.type.LocalizedString titles = 4;

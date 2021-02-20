@@ -42,7 +42,6 @@ namespace Sample.ContentPageService.Data
             return new Faker<ContentPage>()
                 .RuleFor(x => x.Id, f => $"gid://ContentPage/{f.UniqueIndex}")
                 .RuleFor(x => x.ParentId, f => parentId ?? "gid://")
-                .RuleFor(x => x.Handle, (f, x) => $"content-page-{f.UniqueIndex}")
                 .RuleFor(x => x.Type, f => "page")
                 .RuleFor(x => x.CreatedAt, f => Timestamp.FromDateTime(f.Date.Past(2).ToUniversalTime()))
                 .RuleFor(x => x.UpdatedAt, f => Timestamp.FromDateTime(f.Date.Past().ToUniversalTime()))
@@ -50,7 +49,7 @@ namespace Sample.ContentPageService.Data
                 {
                     Id = $"gid://Image/1000{f.UniqueIndex}",
                     Url = f.Image.PicsumUrl(),
-                    AltText = {GetLocalizedStrings(f.Lorem.Sentence())},
+                    AltTexts = {GetLocalizedStrings(f.Lorem.Sentence())},
                     FocalCenterTop = f.Random.Double(0, 1),
                     FocalCenterLeft = f.Random.Double(0, 1),
                 })
@@ -58,6 +57,7 @@ namespace Sample.ContentPageService.Data
                 .RuleFor(x => x.SortOrder, f => f.Random.Long(0, 10000))
                 .FinishWith((f, x) =>
                 {
+                    x.Handles.AddRange(GetLocalizedStrings($"content-page-{f.UniqueIndex}", false, true));
                     var title = f.Address.City();
                     x.Titles.AddRange(GetLocalizedStrings(title));
                     x.Descriptions.AddRange(GetLocalizedStrings($"{title} - Description"));
@@ -65,7 +65,7 @@ namespace Sample.ContentPageService.Data
                 });
         }
 
-        private IList<LocalizedString> GetLocalizedStrings(string value, bool isUrl = false)
+        private IList<LocalizedString> GetLocalizedStrings(string value, bool isUrl = false, bool isHandle = false)
         {
             return new List<LocalizedString>
             {
@@ -74,14 +74,18 @@ namespace Sample.ContentPageService.Data
                     LanguageCode = "en-US",
                     Value = isUrl
                         ? $"/en-us{value}"
-                        : $"{value} [en-US]",
+                        : isHandle
+                            ? $"{value}-en"
+                            : $"{value} [en-US]",
                 },
                 new LocalizedString
                 {
                     LanguageCode = "da-DK",
                     Value = isUrl
                         ? $"/da-dk{value}"
-                        : $"{value} [da-DK]",
+                        : isHandle
+                            ? $"{value}-da"
+                            : $"{value} [da-DK]",
                 }
             };
         }

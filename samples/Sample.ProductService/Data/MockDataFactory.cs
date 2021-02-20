@@ -69,7 +69,6 @@ namespace Sample.ProductService.Data
             return new Faker<Product>()
                 .RuleFor(x => x.Id, f => $"gid://Product/{f.UniqueIndex}")
                 .RuleFor(x => x.ParentId, f => "gid://")
-                .RuleFor(x => x.Handle, (f, x) => $"product-{f.UniqueIndex}")
                 .RuleFor(x => x.Type, f => "product")
                 .RuleFor(x => x.CreatedAt, f => Timestamp.FromDateTime(f.Date.Past(2).ToUniversalTime()))
                 .RuleFor(x => x.UpdatedAt, f => Timestamp.FromDateTime(f.Date.Past().ToUniversalTime()))
@@ -78,6 +77,7 @@ namespace Sample.ProductService.Data
                 .RuleFor(x => x.SortOrder, f => f.Random.Long(0, 10000))
                 .FinishWith((f, x) =>
                 {
+                    x.Handles.AddRange(GetLocalizedStrings($"product-{f.UniqueIndex}", false, true));
                     var title = f.Commerce.ProductName();
                     x.Titles.AddRange(GetLocalizedStrings(title));
                     x.Descriptions.AddRange(GetLocalizedStrings($"{title} - Description"));
@@ -118,11 +118,11 @@ namespace Sample.ProductService.Data
                 .RuleFor(x => x.FocalCenterLeft, f => f.Random.Double(0, 1))
                 .FinishWith((f, x) =>
                 {
-                    x.AltText.AddRange(GetLocalizedStrings(f.Commerce.ProductAdjective()));
+                    x.AltTexts.AddRange(GetLocalizedStrings(f.Commerce.ProductAdjective()));
                 });
         }
 
-        private IList<LocalizedString> GetLocalizedStrings(string value, bool isUrl = false)
+        private IList<LocalizedString> GetLocalizedStrings(string value, bool isUrl = false, bool isHandle = false)
         {
             return new List<LocalizedString>
             {
@@ -131,14 +131,18 @@ namespace Sample.ProductService.Data
                     LanguageCode = "en-US",
                     Value = isUrl
                         ? $"/en-us{value}"
-                        : $"{value} [en-US]",
+                        : isHandle
+                            ? $"{value}-en"
+                            : $"{value} [en-US]",
                 },
                 new LocalizedString
                 {
                     LanguageCode = "da-DK",
                     Value = isUrl
                         ? $"/da-dk{value}"
-                        : $"{value} [da-DK]",
+                        : isHandle
+                            ? $"{value}-da"
+                            : $"{value} [da-DK]",
                 }
             };
         }

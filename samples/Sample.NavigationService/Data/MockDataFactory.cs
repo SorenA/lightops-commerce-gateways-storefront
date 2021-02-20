@@ -51,7 +51,6 @@ namespace Sample.NavigationService.Data
             return new Faker<Navigation>()
                 .RuleFor(x => x.Id, f => $"gid://Navigation/{f.UniqueIndex}")
                 .RuleFor(x => x.ParentId, f => "gid://")
-                .RuleFor(x => x.Handle, (f, x) => $"navigation-{f.UniqueIndex}")
                 .RuleFor(x => x.Type, f => "navigation")
                 .RuleFor(x => x.CreatedAt, f => Timestamp.FromDateTime(f.Date.Past(2).ToUniversalTime()))
                 .RuleFor(x => x.UpdatedAt, f => Timestamp.FromDateTime(f.Date.Past().ToUniversalTime()))
@@ -59,6 +58,9 @@ namespace Sample.NavigationService.Data
                 {
                     Titles = {GetLocalizedStrings(f.Commerce.Categories(1).First())},
                     Urls = {GetLocalizedStrings(f.Internet.UrlRootedPath(), true)},
+                }).FinishWith((f, x) =>
+                {
+                    x.Handles.AddRange(GetLocalizedStrings($"navigation-{f.UniqueIndex}", false, true));
                 });
         }
 
@@ -82,7 +84,7 @@ namespace Sample.NavigationService.Data
                 });
         }
 
-        private IList<LocalizedString> GetLocalizedStrings(string value, bool isUrl = false)
+        private IList<LocalizedString> GetLocalizedStrings(string value, bool isUrl = false, bool isHandle = false)
         {
             return new List<LocalizedString>
             {
@@ -91,14 +93,18 @@ namespace Sample.NavigationService.Data
                     LanguageCode = "en-US",
                     Value = isUrl
                         ? $"/en-us{value}"
-                        : $"{value} [en-US]",
+                        : isHandle
+                            ? $"{value}-en"
+                            : $"{value} [en-US]",
                 },
                 new LocalizedString
                 {
                     LanguageCode = "da-DK",
                     Value = isUrl
                         ? $"/da-dk{value}"
-                        : $"{value} [da-DK]",
+                        : isHandle
+                            ? $"{value}-da"
+                            : $"{value} [da-DK]",
                 }
             };
         }
